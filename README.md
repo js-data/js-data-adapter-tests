@@ -4,7 +4,7 @@
 
 Tests for [js-data](http://www.js-data.io/) adapters.
 
-See [js-data-sql](https://github.com/js-data/js-data-adapter-tests/blob/master/mocha.start.js) for usage.
+See [js-data-sql](https://github.com/js-data/js-data-sql/blob/master/mocha.start.js) for usage.
 
 ### Changelog
 [CHANGELOG.md](https://github.com/js-data/js-data-adapter-tests/blob/master/CHANGELOG.md)
