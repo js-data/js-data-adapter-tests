@@ -1,0 +1,126 @@
+var assert = require('chai').assert
+
+assert.equalObjects = function (a, b, m) {
+  assert.deepEqual(JSON.parse(JSON.stringify(a)), JSON.parse(JSON.stringify(b)), m || 'Objects should be equal!')
+}
+
+var prefix = 'TestRunner.init(options): options'
+var methods = [
+  'create',
+  'destroy',
+  'destroyAll',
+  'find',
+  'findAll',
+  'update',
+  'updateAll'
+]
+
+module.exports = {
+  init: function (options) {
+    options = options || {}
+    options.methods = options.methods || 'all'
+    if (!options.DS || typeof options.DS !== 'function') {
+      throw new Error(prefix + '.DS: Expected function, Actual: ' + typeof options.DS)
+    }
+    if (!options.Adapter || typeof options.Adapter !== 'function') {
+      throw new Error(prefix + '.Adapter: Expected function, Actual: ' + typeof options.Adapter)
+    }
+    beforeEach(function () {
+      this.$$adapter = new options.Adapter(options.adapterConfig)
+      this.$$store = new options.DS({
+        log: false,
+        debug: false
+      })
+      this.$$User = this.$$store.defineResource({
+        name: 'user',
+        relations: {
+          hasMany: {
+            post: {
+              localField: 'posts',
+              foreignKey: 'post'
+            }
+          },
+          hasOne: {
+            profile: {
+              localField: 'profile',
+              localKey: 'profileId'
+            }
+          }
+        }
+      } || options.userConfig)
+      this.$$Profile = this.$$store.defineResource({
+        name: 'profile'
+      } || options.profileConfig)
+      this.$$Post = this.$$store.defineResource({
+        name: 'post',
+        relations: {
+          belongsTo: {
+            user: {
+              localField: 'user',
+              localKey: 'userId'
+            }
+          },
+          hasMany: {
+            comment: {
+              localField: 'comments',
+              foreignKey: 'postId'
+            }
+          }
+        }
+      } || options.postConfig)
+      this.$$Comment = this.$$store.defineResource({
+        name: 'comment',
+        relations: {
+          belongsTo: {
+            post: {
+              localField: 'post',
+              localKey: 'postId'
+            },
+            user: {
+              localField: 'user',
+              localKey: 'userId'
+            }
+          }
+        }
+      })
+    } || options.commentConfig)
+
+    describe('js-data-adapter-tests', function () {
+      methods.forEach(function (method) {
+        if (options.methods === 'all' || options.methods.indexOf(method) !== -1) {
+          require('./' + method + '.test')()
+        }
+      }, this)
+    })
+
+    afterEach(function * () {
+      yield this.$$adapter.destroyAll(this.$$Comment)
+      yield this.$$adapter.destroyAll(this.$$Post)
+      yield this.$$adapter.destroyAll(this.$$User)
+      yield this.$$adapter.destroyAll(this.$$Profile)
+    })
+  },
+  assert: assert,
+  fail: function (msg) {
+    assert.equal('should not reach this!: ' + msg, 'failure')
+  },
+  TYPES_EXCEPT_STRING: [123, 123.123, null, undefined, {}, [], true, false, function () {
+  }],
+  TYPES_EXCEPT_STRING_OR_ARRAY: [123, 123.123, null, undefined, {}, true, false, function () {
+  }],
+  TYPES_EXCEPT_STRING_OR_NUMBER: [null, undefined, {}, [], true, false, function () {
+  }],
+  TYPES_EXCEPT_STRING_OR_OBJECT: [123, 123.123, null, undefined, [], true, false, function () {
+  }],
+  TYPES_EXCEPT_STRING_OR_NUMBER_OBJECT: [null, undefined, [], true, false, function () {
+  }],
+  TYPES_EXCEPT_STRING_OR_ARRAY_OR_NUMBER: [null, undefined, {}, true, false, function () {
+  }],
+  TYPES_EXCEPT_NUMBER: ['string', null, undefined, {}, [], true, false, function () {
+  }],
+  TYPES_EXCEPT_OBJECT: ['string', 123, 123.123, null, undefined, true, false, function () {
+  }],
+  TYPES_EXCEPT_BOOLEAN: ['string', 123, 123.123, null, undefined, {}, [], function () {
+  }],
+  TYPES_EXCEPT_FUNCTION: ['string', 123, 123.123, null, undefined, {}, [], true, false]
+}
