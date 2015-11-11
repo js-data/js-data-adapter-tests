@@ -1,3 +1,4 @@
+require('babel-polyfill')
 var assert = require('chai').assert
 
 assert.equalObjects = function (a, b, m) {
@@ -5,15 +6,6 @@ assert.equalObjects = function (a, b, m) {
 }
 
 var prefix = 'TestRunner.init(options): options'
-var methods = [
-  'create',
-  'destroy',
-  'destroyAll',
-  'find',
-  'findAll',
-  'update',
-  'updateAll'
-]
 
 module.exports = {
   init: function (options) {
@@ -86,11 +78,27 @@ module.exports = {
     } || options.commentConfig)
 
     describe('js-data-adapter-tests', function () {
-      methods.forEach(function (method) {
-        if (options.methods === 'all' || options.methods.indexOf(method) !== -1) {
-          require('./' + method + '.test')()
-        }
-      }, this)
+      if (options.methods === 'all' || options.methods.indexOf('create') !== -1) {
+        require('./create.test')()
+      }
+      if (options.methods === 'all' || options.methods.indexOf('find') !== -1) {
+        require('./find.test')()
+      }
+      if (options.methods === 'all' || options.methods.indexOf('findAll') !== -1) {
+        require('./findAll.test')()
+      }
+      if (options.methods === 'all' || options.methods.indexOf('destroy') !== -1) {
+        require('./destroy.test')()
+      }
+      if (options.methods === 'all' || options.methods.indexOf('destroyAll') !== -1) {
+        require('./destroyAll.test')()
+      }
+      if (options.methods === 'all' || options.methods.indexOf('update') !== -1) {
+        require('./update.test')()
+      }
+      if (options.methods === 'all' || options.methods.indexOf('updateAll') !== -1) {
+        require('./updateAll.test')()
+      }
     })
 
     afterEach(function * () {
