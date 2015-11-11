@@ -1,4 +1,6 @@
 require('babel-polyfill')
+let coMocha = require('co-mocha')
+coMocha(mocha)
 var assert = require('chai').assert
 
 assert.equalObjects = function (a, b, m) {
