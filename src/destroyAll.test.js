@@ -1,4 +1,4 @@
-module.exports = function (adapter) {
+module.exports = function (options) {
   describe('Adapter#destroyAll', function () {
     it('should exist', function * () {
       assert.equal(typeof this.$$adapter.destroyAll, 'function', 'adapter should have a "destroyAll" method')
@@ -11,7 +11,8 @@ module.exports = function (adapter) {
 
       var findUsers = yield adapter.findAll(User, { name: 'John' })
       assert.equal(findUsers.length, 1)
-      assert.equalObjects(findUsers[0], {id: id, name: 'John', age: null, profileId: null})
+      assert.equal(findUsers[0].id, id)
+      assert.equal(findUsers[0].name, 'John')
 
       yield adapter.destroyAll(User, { name: 'John' })
       var findUsers2 = yield adapter.findAll(User, { name: 'John' })

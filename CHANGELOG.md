@@ -1,3 +1,7 @@
+##### 1.3.0 - 10 November 2015
+
+- Fixed coMocha and some assertions
+
 ##### 1.2.0 - 10 November 2015
 
 - Added coMocha

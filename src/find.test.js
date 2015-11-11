@@ -1,4 +1,4 @@
-module.exports = function (adapter) {
+module.exports = function (options) {
   describe('Adapter#find', function () {
     var adapter, User, Profile, Post, Comment
 
@@ -23,7 +23,8 @@ module.exports = function (adapter) {
       var user2 = yield adapter.find(User, user.id)
       assert.equal(user2.name, 'John')
       assert.isDefined(user2.id)
-      assert.equalObjects(user2, {id: userId, name: 'John', age: null, profileId: null})
+      assert.equal(user2.id, userId)
+      assert.equal(user2.name, 'John')
 
       var post = yield adapter.create(Post, { content: 'test', userId: userId })
       var postId = post.id

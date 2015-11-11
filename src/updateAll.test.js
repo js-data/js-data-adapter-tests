@@ -1,4 +1,4 @@
-module.exports = function (adapter) {
+module.exports = function (options) {
   describe('Adapter#updateAll', function () {
     it('should exist', function * () {
       assert.equal(typeof this.$$adapter.updateAll, 'function', 'adapter should have a "updateAll" method')
@@ -16,19 +16,23 @@ module.exports = function (adapter) {
       users.sort(function (a, b) {
         return a.age - b.age
       })
-      assert.equalObjects(users, [
-        {id: userId1, name: 'John', age: 20, profileId: null},
-        {id: userId2, name: 'John', age: 30, profileId: null}
-      ])
+      assert.equal(users[0].name, 'John')
+      assert.equal(users[0].name, 'John')
+      assert.equal(users.filter(function (x) { return x.id === userId1 }).length, 1)
+      assert.equal(users.filter(function (x) { return x.id === userId2 }).length, 1)
+      assert.equal(users.filter(function (x) { return x.age === 20 }).length, 1)
+      assert.equal(users.filter(function (x) { return x.age === 30 }).length, 1)
 
       var users2 = yield adapter.updateAll(User, { name: 'Johnny' }, { name: 'John' })
       users2.sort(function (a, b) {
         return a.age - b.age
       })
-      assert.equalObjects(users2, [
-        {id: userId1, name: 'Johnny', age: 20, profileId: null},
-        {id: userId2, name: 'Johnny', age: 30, profileId: null}
-      ])
+      assert.equal(users2[0].name, 'Johnny')
+      assert.equal(users2[0].name, 'Johnny')
+      assert.equal(users2.filter(function (x) { return x.id === userId1 }).length, 1)
+      assert.equal(users2.filter(function (x) { return x.id === userId2 }).length, 1)
+      assert.equal(users2.filter(function (x) { return x.age === 20 }).length, 1)
+      assert.equal(users2.filter(function (x) { return x.age === 30 }).length, 1)
 
       var users3 = yield adapter.findAll(User, { name: 'John' })
       assert.equalObjects(users3, [])
@@ -38,13 +42,12 @@ module.exports = function (adapter) {
       users4.sort(function (a, b) {
         return a.age - b.age
       })
-      assert.equalObjects(users4, [
-        {id: userId1, name: 'Johnny', age: 20, profileId: null},
-        {id: userId2, name: 'Johnny', age: 30, profileId: null}
-      ])
-
-      var destroyedUser = yield adapter.destroyAll(User)
-      assert.isFalse(!!destroyedUser)
+      assert.equal(users4[0].name, 'Johnny')
+      assert.equal(users4[0].name, 'Johnny')
+      assert.equal(users4.filter(function (x) { return x.id === userId1 }).length, 1)
+      assert.equal(users4.filter(function (x) { return x.id === userId2 }).length, 1)
+      assert.equal(users4.filter(function (x) { return x.age === 20 }).length, 1)
+      assert.equal(users4.filter(function (x) { return x.age === 30 }).length, 1)
     })
   })
 }

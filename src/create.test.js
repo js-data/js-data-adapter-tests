@@ -1,4 +1,4 @@
-module.exports = function (adapter) {
+module.exports = function (options) {
   describe('Adapter#create', function () {
     it('should exist', function * () {
       assert.equal(typeof this.$$adapter.create, 'function', 'adapter should have a "create" method')
@@ -14,7 +14,8 @@ module.exports = function (adapter) {
       var findUser = yield adapter.find(User, createUser.id)
       assert.equal(findUser.name, 'John')
       assert.isDefined(findUser.id)
-      assert.equalObjects(findUser, {id: id, name: 'John', age: null, profileId: null})
+      assert.equal(findUser.id, id)
+      assert.equal(findUser.name, 'John')
 
       var destoryUser = yield adapter.destroy(User, findUser.id)
       assert.isFalse(!!destoryUser)

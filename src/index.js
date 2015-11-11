@@ -1,10 +1,15 @@
 require('babel-polyfill')
-let coMocha = require('co-mocha')
-coMocha(mocha)
+
+try {
+  require('co-mocha')(Mocha)
+} catch (err) {
+
+}
+
 var assert = require('chai').assert
 
 assert.equalObjects = function (a, b, m) {
-  assert.deepEqual(JSON.parse(JSON.stringify(a)), JSON.parse(JSON.stringify(b)), m || 'Objects should be equal!')
+  assert.deepEqual(JSON.parse(JSON.stringify(a)), JSON.parse(JSON.stringify(b)), m || (JSON.stringify(a) + ' should be equal to ' + JSON.stringify(b)))
 }
 
 var prefix = 'TestRunner.init(options): options'
@@ -13,6 +18,7 @@ module.exports = {
   init: function (options) {
     options = options || {}
     options.methods = options.methods || 'all'
+    options.features = options.features || 'all'
     if (!options.DS || typeof options.DS !== 'function') {
       throw new Error(prefix + '.DS: Expected function, Actual: ' + typeof options.DS)
     }
@@ -76,30 +82,30 @@ module.exports = {
             }
           }
         }
-      })
-    } || options.commentConfig)
+      } || options.commentConfig)
+    })
 
     describe('js-data-adapter-tests', function () {
       if (options.methods === 'all' || options.methods.indexOf('create') !== -1) {
-        require('./create.test')()
+        require('./create.test')(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('find') !== -1) {
-        require('./find.test')()
+        require('./find.test')(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('findAll') !== -1) {
-        require('./findAll.test')()
+        require('./findAll.test')(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('destroy') !== -1) {
-        require('./destroy.test')()
+        require('./destroy.test')(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('destroyAll') !== -1) {
-        require('./destroyAll.test')()
+        require('./destroyAll.test')(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('update') !== -1) {
-        require('./update.test')()
+        require('./update.test')(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('updateAll') !== -1) {
-        require('./updateAll.test')()
+        require('./updateAll.test')(options)
       }
     })
 

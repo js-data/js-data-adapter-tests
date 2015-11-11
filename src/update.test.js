@@ -1,4 +1,4 @@
-module.exports = function (adapter) {
+module.exports = function (options) {
   describe('Adapter#update', function () {
     it('should exist', function * () {
       assert.equal(typeof this.$$adapter.update, 'function', 'adapter should have a "update" method')
@@ -14,17 +14,20 @@ module.exports = function (adapter) {
       var foundUser = yield adapter.find(User, user.id)
       assert.equal(foundUser.name, 'John')
       assert.isDefined(foundUser.id)
-      assert.equalObjects(foundUser, {id: id, name: 'John', age: null, profileId: null})
+      assert.equal(foundUser.id, id)
+      assert.equal(foundUser.name, 'John')
 
       var updatedUser = yield adapter.update(User, foundUser.id, {name: 'Johnny'})
       assert.equal(updatedUser.name, 'Johnny')
       assert.isDefined(updatedUser.id)
-      assert.equalObjects(updatedUser, {id: id, name: 'Johnny', age: null, profileId: null})
+      assert.equal(updatedUser.id, id)
+      assert.equal(updatedUser.name, 'Johnny')
 
       var foundUser2 = yield adapter.find(User, updatedUser.id)
       assert.equal(foundUser2.name, 'Johnny')
       assert.isDefined(foundUser2.id)
-      assert.equalObjects(foundUser2, {id: id, name: 'Johnny', age: null, profileId: null})
+      assert.equal(foundUser2.id, id)
+      assert.equal(foundUser2.name, 'Johnny')
 
       var destroyUser = yield adapter.destroy(User, foundUser2.id)
       assert.isFalse(!!destroyUser)
