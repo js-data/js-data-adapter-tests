@@ -44,6 +44,10 @@ module.exports = {
             profile: {
               localField: 'profile',
               localKey: 'profileId'
+            },
+            address: {
+              localField: 'address',
+              localKey: 'addressId'
             }
           }
         }
@@ -51,6 +55,9 @@ module.exports = {
       this.$$Profile = this.$$store.defineResource({
         name: 'profile'
       } || options.profileConfig)
+      this.$$Address = this.$$store.defineResource({
+        name: 'address'
+      } || options.addressConfig)
       this.$$Post = this.$$store.defineResource({
         name: 'post',
         relations: {
