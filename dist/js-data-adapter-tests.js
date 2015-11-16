@@ -85,11 +85,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    beforeEach(function () {
 	      this.$$adapter = new options.Adapter(options.adapterConfig);
-	      this.$$store = new options.DS({
+	      this.$$store = new options.DS(options.storeConfig || {
 	        log: false,
 	        debug: false
 	      });
-	      this.$$User = this.$$store.defineResource({
+	      this.$$User = this.$$store.defineResource(options.userConfig || {
 	        name: 'user',
 	        relations: {
 	          hasMany: {
@@ -102,14 +102,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	            profile: {
 	              localField: 'profile',
 	              localKey: 'profileId'
+	            },
+	            address: {
+	              localField: 'address',
+	              localKey: 'addressId'
 	            }
 	          }
 	        }
-	      } || options.userConfig);
-	      this.$$Profile = this.$$store.defineResource({
+	      });
+	      this.$$Profile = this.$$store.defineResource(options.profileConfig || {
 	        name: 'profile'
-	      } || options.profileConfig);
-	      this.$$Post = this.$$store.defineResource({
+	      });
+	      this.$$Address = this.$$store.defineResource(options.addressConfig || {
+	        name: 'address'
+	      });
+	      this.$$Post = this.$$store.defineResource(options.postConfig || {
 	        name: 'post',
 	        relations: {
 	          belongsTo: {
@@ -125,8 +132,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	          }
 	        }
-	      } || options.postConfig);
-	      this.$$Comment = this.$$store.defineResource({
+	      });
+	      this.$$Comment = this.$$store.defineResource(options.commentConfig || {
 	        name: 'comment',
 	        relations: {
 	          belongsTo: {
@@ -140,7 +147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	          }
 	        }
-	      } || options.commentConfig);
+	      });
 	    });
 
 	    describe('js-data-adapter-tests', function () {
@@ -169,26 +176,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    afterEach(regeneratorRuntime.mark(function _callee() {
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
-	        while (1) switch (_context.prev = _context.next) {
-	          case 0:
-	            _context.next = 2;
-	            return this.$$adapter.destroyAll(this.$$Comment);
+	        while (1) {
+	          switch (_context.prev = _context.next) {
+	            case 0:
+	              _context.next = 2;
+	              return this.$$adapter.destroyAll(this.$$Comment);
 
-	          case 2:
-	            _context.next = 4;
-	            return this.$$adapter.destroyAll(this.$$Post);
+	            case 2:
+	              _context.next = 4;
+	              return this.$$adapter.destroyAll(this.$$Post);
 
-	          case 4:
-	            _context.next = 6;
-	            return this.$$adapter.destroyAll(this.$$User);
+	            case 4:
+	              _context.next = 6;
+	              return this.$$adapter.destroyAll(this.$$User);
 
-	          case 6:
-	            _context.next = 8;
-	            return this.$$adapter.destroyAll(this.$$Profile);
+	            case 6:
+	              _context.next = 8;
+	              return this.$$adapter.destroyAll(this.$$Profile);
 
-	          case 8:
-	          case 'end':
-	            return _context.stop();
+	            case 8:
+	            case 'end':
+	              return _context.stop();
+	          }
 	        }
 	      }, _callee, this);
 	    }));
@@ -9046,7 +9055,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      // valid surrogate pair
-	      codePoint = leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00 | 0x10000
+	      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
 	    } else if (leadSurrogate) {
 	      // valid bmp char, but last char was a lead
 	      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
@@ -13682,68 +13691,72 @@ return /******/ (function(modules) { // webpackBootstrap
 	  describe('Adapter#create', function () {
 	    it('should exist', regeneratorRuntime.mark(function _callee() {
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
-	        while (1) switch (_context.prev = _context.next) {
-	          case 0:
-	            assert.equal(_typeof(this.$$adapter.create), 'function', 'adapter should have a "create" method');
+	        while (1) {
+	          switch (_context.prev = _context.next) {
+	            case 0:
+	              assert.equal(_typeof(this.$$adapter.create), 'function', 'adapter should have a "create" method');
 
-	          case 1:
-	          case 'end':
-	            return _context.stop();
+	            case 1:
+	            case 'end':
+	              return _context.stop();
+	          }
 	        }
 	      }, _callee, this);
 	    }));
 	    it('should create a user', regeneratorRuntime.mark(function _callee2() {
 	      var adapter, User, createUser, id, findUser, destoryUser;
 	      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	        while (1) switch (_context2.prev = _context2.next) {
-	          case 0:
-	            adapter = this.$$adapter;
-	            User = this.$$User;
-	            _context2.next = 4;
-	            return adapter.create(User, { name: 'John' });
+	        while (1) {
+	          switch (_context2.prev = _context2.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	              _context2.next = 4;
+	              return adapter.create(User, { name: 'John' });
 
-	          case 4:
-	            createUser = _context2.sent;
-	            id = createUser.id;
+	            case 4:
+	              createUser = _context2.sent;
+	              id = createUser.id;
 
-	            assert.equal(createUser.name, 'John');
-	            assert.isDefined(createUser.id);
+	              assert.equal(createUser.name, 'John');
+	              assert.isDefined(createUser.id);
 
-	            _context2.next = 10;
-	            return adapter.find(User, createUser.id);
+	              _context2.next = 10;
+	              return adapter.find(User, createUser.id);
 
-	          case 10:
-	            findUser = _context2.sent;
+	            case 10:
+	              findUser = _context2.sent;
 
-	            assert.equal(findUser.name, 'John');
-	            assert.isDefined(findUser.id);
-	            assert.equal(findUser.id, id);
-	            assert.equal(findUser.name, 'John');
+	              assert.equal(findUser.name, 'John');
+	              assert.isDefined(findUser.id);
+	              assert.equal(findUser.id, id);
+	              assert.equal(findUser.name, 'John');
 
-	            _context2.next = 17;
-	            return adapter.destroy(User, findUser.id);
+	              _context2.next = 17;
+	              return adapter.destroy(User, findUser.id);
 
-	          case 17:
-	            destoryUser = _context2.sent;
+	            case 17:
+	              destoryUser = _context2.sent;
 
-	            assert.isFalse(!!destoryUser);
+	              assert.isFalse(!!destoryUser);
 
-	            _context2.prev = 19;
-	            _context2.next = 22;
-	            return adapter.find(User, id);
+	              _context2.prev = 19;
+	              _context2.next = 22;
+	              return adapter.find(User, id);
 
-	          case 22:
-	            throw new Error('Should not have reached here!');
+	            case 22:
+	              throw new Error('Should not have reached here!');
 
-	          case 25:
-	            _context2.prev = 25;
-	            _context2.t0 = _context2['catch'](19);
+	            case 25:
+	              _context2.prev = 25;
+	              _context2.t0 = _context2['catch'](19);
 
-	            assert.equal(_context2.t0.message, 'Not Found!');
+	              assert.equal(_context2.t0.message, 'Not Found!');
 
-	          case 28:
-	          case 'end':
-	            return _context2.stop();
+	            case 28:
+	            case 'end':
+	              return _context2.stop();
+	          }
 	        }
 	      }, _callee2, this, [[19, 25]]);
 	    }));
@@ -13772,13 +13785,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    it('should exist', regeneratorRuntime.mark(function _callee() {
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
-	        while (1) switch (_context.prev = _context.next) {
-	          case 0:
-	            assert.equal(_typeof(adapter.find), 'function', 'adapter should have a "find" method');
+	        while (1) {
+	          switch (_context.prev = _context.next) {
+	            case 0:
+	              assert.equal(_typeof(adapter.find), 'function', 'adapter should have a "find" method');
 
-	          case 1:
-	          case 'end':
-	            return _context.stop();
+	            case 1:
+	            case 'end':
+	              return _context.stop();
+	          }
 	        }
 	      }, _callee, this);
 	    }));
@@ -13786,102 +13801,104 @@ return /******/ (function(modules) { // webpackBootstrap
 	    it('should find a user', regeneratorRuntime.mark(function _callee2() {
 	      var user, userId, user2, post, postId, comments, findPost, destroyUser;
 	      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	        while (1) switch (_context2.prev = _context2.next) {
-	          case 0:
-	            _context2.next = 2;
-	            return adapter.create(User, { name: 'John' });
+	        while (1) {
+	          switch (_context2.prev = _context2.next) {
+	            case 0:
+	              _context2.next = 2;
+	              return adapter.create(User, { name: 'John' });
 
-	          case 2:
-	            user = _context2.sent;
-	            userId = user.id;
+	            case 2:
+	              user = _context2.sent;
+	              userId = user.id;
 
-	            assert.equal(user.name, 'John');
-	            assert.isDefined(user.id);
+	              assert.equal(user.name, 'John');
+	              assert.isDefined(user.id);
 
-	            _context2.next = 8;
-	            return adapter.find(User, user.id);
+	              _context2.next = 8;
+	              return adapter.find(User, user.id);
 
-	          case 8:
-	            user2 = _context2.sent;
+	            case 8:
+	              user2 = _context2.sent;
 
-	            assert.equal(user2.name, 'John');
-	            assert.isDefined(user2.id);
-	            assert.equal(user2.id, userId);
-	            assert.equal(user2.name, 'John');
+	              assert.equal(user2.name, 'John');
+	              assert.isDefined(user2.id);
+	              assert.equal(user2.id, userId);
+	              assert.equal(user2.name, 'John');
 
-	            _context2.next = 15;
-	            return adapter.create(Post, { content: 'test', userId: userId });
+	              _context2.next = 15;
+	              return adapter.create(Post, { content: 'test', userId: userId });
 
-	          case 15:
-	            post = _context2.sent;
-	            postId = post.id;
+	            case 15:
+	              post = _context2.sent;
+	              postId = post.id;
 
-	            assert.equal(post.content, 'test');
-	            assert.isDefined(post.id);
-	            assert.isDefined(post.userId);
+	              assert.equal(post.content, 'test');
+	              assert.isDefined(post.id);
+	              assert.isDefined(post.userId);
 
-	            _context2.next = 22;
-	            return [adapter.create(Comment, {
-	              content: 'test2',
-	              postId: post.id,
-	              userId: user.id
-	            }), adapter.create(Comment, {
-	              content: 'test3',
-	              postId: post.id,
-	              userId: user.id
-	            })];
+	              _context2.next = 22;
+	              return [adapter.create(Comment, {
+	                content: 'test2',
+	                postId: post.id,
+	                userId: user.id
+	              }), adapter.create(Comment, {
+	                content: 'test3',
+	                postId: post.id,
+	                userId: user.id
+	              })];
 
-	          case 22:
-	            comments = _context2.sent;
+	            case 22:
+	              comments = _context2.sent;
 
-	            comments.sort(function (a, b) {
-	              return a.content > b.content;
-	            });
+	              comments.sort(function (a, b) {
+	                return a.content > b.content;
+	              });
 
-	            _context2.next = 26;
-	            return adapter.find(Post, postId, { with: ['user', 'comment'] });
+	              _context2.next = 26;
+	              return adapter.find(Post, postId, { with: ['user', 'comment'] });
 
-	          case 26:
-	            findPost = _context2.sent;
+	            case 26:
+	              findPost = _context2.sent;
 
-	            findPost.comments.sort(function (a, b) {
-	              return a.content > b.content;
-	            });
-	            assert.equalObjects(findPost.user, user);
-	            assert.equalObjects(findPost.comments, comments);
+	              findPost.comments.sort(function (a, b) {
+	                return a.content > b.content;
+	              });
+	              assert.equalObjects(findPost.user, user);
+	              assert.equalObjects(findPost.comments, comments);
 
-	            _context2.next = 32;
-	            return adapter.destroyAll(Comment);
+	              _context2.next = 32;
+	              return adapter.destroyAll(Comment);
 
-	          case 32:
-	            _context2.next = 34;
-	            return adapter.destroy(Post, postId);
+	            case 32:
+	              _context2.next = 34;
+	              return adapter.destroy(Post, postId);
 
-	          case 34:
-	            _context2.next = 36;
-	            return adapter.destroy(User, userId);
+	            case 34:
+	              _context2.next = 36;
+	              return adapter.destroy(User, userId);
 
-	          case 36:
-	            destroyUser = _context2.sent;
+	            case 36:
+	              destroyUser = _context2.sent;
 
-	            assert.isFalse(!!destroyUser);
+	              assert.isFalse(!!destroyUser);
 
-	            _context2.prev = 38;
-	            _context2.next = 41;
-	            return adapter.find(User, userId);
+	              _context2.prev = 38;
+	              _context2.next = 41;
+	              return adapter.find(User, userId);
 
-	          case 41:
-	            throw new Error('Should not have reached here!');
+	            case 41:
+	              throw new Error('Should not have reached here!');
 
-	          case 44:
-	            _context2.prev = 44;
-	            _context2.t0 = _context2['catch'](38);
+	            case 44:
+	              _context2.prev = 44;
+	              _context2.t0 = _context2['catch'](38);
 
-	            assert.equal(_context2.t0.message, 'Not Found!');
+	              assert.equal(_context2.t0.message, 'Not Found!');
 
-	          case 47:
-	          case 'end':
-	            return _context2.stop();
+	            case 47:
+	            case 'end':
+	              return _context2.stop();
+	          }
 	        }
 	      }, _callee2, this, [[38, 44]]);
 	    }));
@@ -13889,43 +13906,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	    it('should load belongsTo relations', regeneratorRuntime.mark(function _callee3() {
 	      var profile, user, post, comment;
 	      return regeneratorRuntime.wrap(function _callee3$(_context3) {
-	        while (1) switch (_context3.prev = _context3.next) {
-	          case 0:
-	            _context3.next = 2;
-	            return adapter.create(Profile, { email: 'foo@test.com' });
+	        while (1) {
+	          switch (_context3.prev = _context3.next) {
+	            case 0:
+	              _context3.next = 2;
+	              return adapter.create(Profile, { email: 'foo@test.com' });
 
-	          case 2:
-	            profile = _context3.sent;
-	            _context3.next = 5;
-	            return adapter.create(User, { name: 'John', profileId: profile.id });
+	            case 2:
+	              profile = _context3.sent;
+	              _context3.next = 5;
+	              return adapter.create(User, { name: 'John', profileId: profile.id });
 
-	          case 5:
-	            user = _context3.sent;
-	            _context3.next = 8;
-	            return adapter.create(Post, { content: 'foo', userId: user.id });
+	            case 5:
+	              user = _context3.sent;
+	              _context3.next = 8;
+	              return adapter.create(Post, { content: 'foo', userId: user.id });
 
-	          case 8:
-	            post = _context3.sent;
-	            _context3.next = 11;
-	            return adapter.create(Comment, { content: 'test2', postId: post.id, userId: post.userId });
+	            case 8:
+	              post = _context3.sent;
+	              _context3.next = 11;
+	              return adapter.create(Comment, { content: 'test2', postId: post.id, userId: post.userId });
 
-	          case 11:
-	            comment = _context3.sent;
-	            _context3.next = 14;
-	            return adapter.find(Comment, comment.id, { 'with': ['user', 'user.profile', 'post', 'post.user'] });
+	            case 11:
+	              comment = _context3.sent;
+	              _context3.next = 14;
+	              return adapter.find(Comment, comment.id, { 'with': ['user', 'user.profile', 'post', 'post.user'] });
 
-	          case 14:
-	            comment = _context3.sent;
+	            case 14:
+	              comment = _context3.sent;
 
-	            assert.isDefined(comment);
-	            assert.isDefined(comment.post);
-	            assert.isDefined(comment.post.user);
-	            assert.isDefined(comment.user);
-	            assert.isDefined(comment.user.profile);
+	              assert.isDefined(comment);
+	              assert.isDefined(comment.post);
+	              assert.isDefined(comment.post.user);
+	              assert.isDefined(comment.user);
+	              assert.isDefined(comment.user.profile);
 
-	          case 20:
-	          case 'end':
-	            return _context3.stop();
+	            case 20:
+	            case 'end':
+	              return _context3.stop();
+	          }
 	        }
 	      }, _callee3, this);
 	    }));
@@ -13933,41 +13952,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	    it('should load hasMany and belongsTo relations', regeneratorRuntime.mark(function _callee4() {
 	      var profile, user, post, foundPost;
 	      return regeneratorRuntime.wrap(function _callee4$(_context4) {
-	        while (1) switch (_context4.prev = _context4.next) {
-	          case 0:
-	            _context4.next = 2;
-	            return adapter.create(Profile, { email: 'foo@test.com' });
+	        while (1) {
+	          switch (_context4.prev = _context4.next) {
+	            case 0:
+	              _context4.next = 2;
+	              return adapter.create(Profile, { email: 'foo@test.com' });
 
-	          case 2:
-	            profile = _context4.sent;
-	            _context4.next = 5;
-	            return adapter.create(User, { name: 'John', profileId: profile.id });
+	            case 2:
+	              profile = _context4.sent;
+	              _context4.next = 5;
+	              return adapter.create(User, { name: 'John', profileId: profile.id });
 
-	          case 5:
-	            user = _context4.sent;
-	            _context4.next = 8;
-	            return adapter.create(Post, { content: 'foo', userId: user.id });
+	            case 5:
+	              user = _context4.sent;
+	              _context4.next = 8;
+	              return adapter.create(Post, { content: 'foo', userId: user.id });
 
-	          case 8:
-	            post = _context4.sent;
-	            _context4.next = 11;
-	            return adapter.create(Comment, { content: 'test2', postId: post.id, userId: post.userId });
+	            case 8:
+	              post = _context4.sent;
+	              _context4.next = 11;
+	              return adapter.create(Comment, { content: 'test2', postId: post.id, userId: post.userId });
 
-	          case 11:
-	            _context4.next = 13;
-	            return adapter.find(Post, post.id, { 'with': ['user', 'comment', 'comment.user', 'comment.user.profile'] });
+	            case 11:
+	              _context4.next = 13;
+	              return adapter.find(Post, post.id, { 'with': ['user', 'comment', 'comment.user', 'comment.user.profile'] });
 
-	          case 13:
-	            foundPost = _context4.sent;
+	            case 13:
+	              foundPost = _context4.sent;
 
-	            assert.isDefined(foundPost.comments);
-	            assert.isDefined(foundPost.comments[0].user);
-	            assert.isDefined(foundPost.comments[0].user.profile);
-	            assert.isDefined(foundPost.user);
+	              assert.isDefined(foundPost.comments);
+	              assert.isDefined(foundPost.comments[0].user);
+	              assert.isDefined(foundPost.comments[0].user.profile);
+	              assert.isDefined(foundPost.user);
 
-	          case 18:
-	          case 'end':
-	            return _context4.stop();
+	            case 18:
+	            case 'end':
+	              return _context4.stop();
+	          }
 	        }
 	      }, _callee4, this);
 	    }));
@@ -13996,13 +14017,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    it('should exist', regeneratorRuntime.mark(function _callee() {
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
-	        while (1) switch (_context.prev = _context.next) {
-	          case 0:
-	            assert.equal(_typeof(adapter.findAll), 'function', 'adapter should have a "findAll" method');
+	        while (1) {
+	          switch (_context.prev = _context.next) {
+	            case 0:
+	              assert.equal(_typeof(adapter.findAll), 'function', 'adapter should have a "findAll" method');
 
-	          case 1:
-	          case 'end':
-	            return _context.stop();
+	            case 1:
+	            case 'end':
+	              return _context.stop();
+	          }
 	        }
 	      }, _callee, this);
 	    }));
@@ -14010,43 +14033,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	    it('should filter users', regeneratorRuntime.mark(function _callee2() {
 	      var users, user, id, users2, destroyedUser;
 	      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	        while (1) switch (_context2.prev = _context2.next) {
-	          case 0:
-	            _context2.next = 2;
-	            return adapter.findAll(User, { age: 30 });
+	        while (1) {
+	          switch (_context2.prev = _context2.next) {
+	            case 0:
+	              _context2.next = 2;
+	              return adapter.findAll(User, { age: 30 });
 
-	          case 2:
-	            users = _context2.sent;
+	            case 2:
+	              users = _context2.sent;
 
-	            assert.equal(users.length, 0);
+	              assert.equal(users.length, 0);
 
-	            _context2.next = 6;
-	            return adapter.create(User, { name: 'John' });
+	              _context2.next = 6;
+	              return adapter.create(User, { name: 'John' });
 
-	          case 6:
-	            user = _context2.sent;
-	            id = user.id;
-	            _context2.next = 10;
-	            return adapter.findAll(User, { name: 'John' });
+	            case 6:
+	              user = _context2.sent;
+	              id = user.id;
+	              _context2.next = 10;
+	              return adapter.findAll(User, { name: 'John' });
 
-	          case 10:
-	            users2 = _context2.sent;
+	            case 10:
+	              users2 = _context2.sent;
 
-	            assert.equal(users2.length, 1);
-	            assert.equal(users2[0].id, id);
-	            assert.equal(users2[0].name, 'John');
+	              assert.equal(users2.length, 1);
+	              assert.equal(users2[0].id, id);
+	              assert.equal(users2[0].name, 'John');
 
-	            _context2.next = 16;
-	            return adapter.destroy(User, id);
+	              _context2.next = 16;
+	              return adapter.destroy(User, id);
 
-	          case 16:
-	            destroyedUser = _context2.sent;
+	            case 16:
+	              destroyedUser = _context2.sent;
 
-	            assert.isFalse(!!destroyedUser);
+	              assert.isFalse(!!destroyedUser);
 
-	          case 18:
-	          case 'end':
-	            return _context2.stop();
+	            case 18:
+	            case 'end':
+	              return _context2.stop();
+	          }
 	        }
 	      }, _callee2, this);
 	    }));
@@ -14054,49 +14079,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	    it('should filter users using the "in" operator', regeneratorRuntime.mark(function _callee3() {
 	      var users, user, id, users2, destroyedUser;
 	      return regeneratorRuntime.wrap(function _callee3$(_context3) {
-	        while (1) switch (_context3.prev = _context3.next) {
-	          case 0:
-	            _context3.next = 2;
-	            return adapter.findAll(User, {
-	              where: {
-	                age: {
-	                  'in': [30]
+	        while (1) {
+	          switch (_context3.prev = _context3.next) {
+	            case 0:
+	              _context3.next = 2;
+	              return adapter.findAll(User, {
+	                where: {
+	                  age: {
+	                    'in': [30]
+	                  }
 	                }
-	              }
-	            });
+	              });
 
-	          case 2:
-	            users = _context3.sent;
+	            case 2:
+	              users = _context3.sent;
 
-	            assert.equal(users.length, 0);
+	              assert.equal(users.length, 0);
 
-	            _context3.next = 6;
-	            return adapter.create(User, { name: 'John' });
+	              _context3.next = 6;
+	              return adapter.create(User, { name: 'John' });
 
-	          case 6:
-	            user = _context3.sent;
-	            id = user.id;
-	            _context3.next = 10;
-	            return adapter.findAll(User, { name: 'John' });
+	            case 6:
+	              user = _context3.sent;
+	              id = user.id;
+	              _context3.next = 10;
+	              return adapter.findAll(User, { name: 'John' });
 
-	          case 10:
-	            users2 = _context3.sent;
+	            case 10:
+	              users2 = _context3.sent;
 
-	            assert.equal(users2.length, 1);
-	            assert.equal(users2[0].id, id);
-	            assert.equal(users2[0].name, 'John');
+	              assert.equal(users2.length, 1);
+	              assert.equal(users2[0].id, id);
+	              assert.equal(users2[0].name, 'John');
 
-	            _context3.next = 16;
-	            return adapter.destroy(User, id);
+	              _context3.next = 16;
+	              return adapter.destroy(User, id);
 
-	          case 16:
-	            destroyedUser = _context3.sent;
+	            case 16:
+	              destroyedUser = _context3.sent;
 
-	            assert.isFalse(!!destroyedUser);
+	              assert.isFalse(!!destroyedUser);
 
-	          case 18:
-	          case 'end':
-	            return _context3.stop();
+	            case 18:
+	            case 'end':
+	              return _context3.stop();
+	          }
 	        }
 	      }, _callee3, this);
 	    }));
@@ -14104,55 +14131,57 @@ return /******/ (function(modules) { // webpackBootstrap
 	    it('should filter users using the "like" operator', regeneratorRuntime.mark(function _callee4() {
 	      var users, user, id, users2, destroyedUser;
 	      return regeneratorRuntime.wrap(function _callee4$(_context4) {
-	        while (1) switch (_context4.prev = _context4.next) {
-	          case 0:
-	            _context4.next = 2;
-	            return adapter.findAll(User, {
-	              where: {
-	                name: {
-	                  'like': '%J%'
+	        while (1) {
+	          switch (_context4.prev = _context4.next) {
+	            case 0:
+	              _context4.next = 2;
+	              return adapter.findAll(User, {
+	                where: {
+	                  name: {
+	                    'like': '%J%'
+	                  }
 	                }
-	              }
-	            });
+	              });
 
-	          case 2:
-	            users = _context4.sent;
+	            case 2:
+	              users = _context4.sent;
 
-	            assert.equal(users.length, 0);
+	              assert.equal(users.length, 0);
 
-	            _context4.next = 6;
-	            return adapter.create(User, { name: 'John' });
+	              _context4.next = 6;
+	              return adapter.create(User, { name: 'John' });
 
-	          case 6:
-	            user = _context4.sent;
-	            id = user.id;
-	            _context4.next = 10;
-	            return adapter.findAll(User, {
-	              where: {
-	                name: {
-	                  'like': '%J%'
+	            case 6:
+	              user = _context4.sent;
+	              id = user.id;
+	              _context4.next = 10;
+	              return adapter.findAll(User, {
+	                where: {
+	                  name: {
+	                    'like': '%J%'
+	                  }
 	                }
-	              }
-	            });
+	              });
 
-	          case 10:
-	            users2 = _context4.sent;
+	            case 10:
+	              users2 = _context4.sent;
 
-	            assert.equal(users2.length, 1);
-	            assert.equal(users2[0].id, id);
-	            assert.equal(users2[0].name, 'John');
+	              assert.equal(users2.length, 1);
+	              assert.equal(users2[0].id, id);
+	              assert.equal(users2[0].name, 'John');
 
-	            _context4.next = 16;
-	            return adapter.destroy(User, id);
+	              _context4.next = 16;
+	              return adapter.destroy(User, id);
 
-	          case 16:
-	            destroyedUser = _context4.sent;
+	            case 16:
+	              destroyedUser = _context4.sent;
 
-	            assert.isFalse(!!destroyedUser);
+	              assert.isFalse(!!destroyedUser);
 
-	          case 18:
-	          case 'end':
-	            return _context4.stop();
+	            case 18:
+	            case 'end':
+	              return _context4.stop();
+	          }
 	        }
 	      }, _callee4, this);
 	    }));
@@ -14160,21 +14189,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (options.features === 'all' || options.features.indexOf('filterOpNotFound') !== -1) {
 	      it('should throw "Operator not found" error', regeneratorRuntime.mark(function _callee5() {
 	        return regeneratorRuntime.wrap(function _callee5$(_context5) {
-	          while (1) switch (_context5.prev = _context5.next) {
-	            case 0:
-	              assert.throw(function () {
-	                return adapter.findAll(User, {
-	                  where: {
-	                    name: {
-	                      op: 'John'
+	          while (1) {
+	            switch (_context5.prev = _context5.next) {
+	              case 0:
+	                assert.throw(function () {
+	                  return adapter.findAll(User, {
+	                    where: {
+	                      name: {
+	                        op: 'John'
+	                      }
 	                    }
-	                  }
-	                });
-	              }, Error, 'Operator not found');
+	                  });
+	                }, Error, 'Operator not found');
 
-	            case 1:
-	            case 'end':
-	              return _context5.stop();
+	              case 1:
+	              case 'end':
+	                return _context5.stop();
+	            }
 	          }
 	        }, _callee5, this);
 	      }));
@@ -14183,58 +14214,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	    it('should load belongsTo relations', regeneratorRuntime.mark(function _callee6() {
 	      var profile1, user1, post1, user2, post2, comments;
 	      return regeneratorRuntime.wrap(function _callee6$(_context6) {
-	        while (1) switch (_context6.prev = _context6.next) {
-	          case 0:
-	            _context6.next = 2;
-	            return adapter.create(Profile, { email: 'foo@test.com' });
+	        while (1) {
+	          switch (_context6.prev = _context6.next) {
+	            case 0:
+	              _context6.next = 2;
+	              return adapter.create(Profile, { email: 'foo@test.com' });
 
-	          case 2:
-	            profile1 = _context6.sent;
-	            _context6.next = 5;
-	            return adapter.create(User, { name: 'John', profileId: profile1.id });
+	            case 2:
+	              profile1 = _context6.sent;
+	              _context6.next = 5;
+	              return adapter.create(User, { name: 'John', profileId: profile1.id });
 
-	          case 5:
-	            user1 = _context6.sent;
-	            _context6.next = 8;
-	            return adapter.create(Post, { content: 'foo', userId: user1.id });
+	            case 5:
+	              user1 = _context6.sent;
+	              _context6.next = 8;
+	              return adapter.create(Post, { content: 'foo', userId: user1.id });
 
-	          case 8:
-	            post1 = _context6.sent;
-	            _context6.next = 11;
-	            return adapter.create(Comment, { content: 'test2', postId: post1.id, userId: post1.userId });
+	            case 8:
+	              post1 = _context6.sent;
+	              _context6.next = 11;
+	              return adapter.create(Comment, { content: 'test2', postId: post1.id, userId: post1.userId });
 
-	          case 11:
-	            _context6.next = 13;
-	            return adapter.create(User, { name: 'Sally' });
+	            case 11:
+	              _context6.next = 13;
+	              return adapter.create(User, { name: 'Sally' });
 
-	          case 13:
-	            user2 = _context6.sent;
-	            _context6.next = 16;
-	            return adapter.create(Post, { content: 'bar', userId: user2.id });
+	            case 13:
+	              user2 = _context6.sent;
+	              _context6.next = 16;
+	              return adapter.create(Post, { content: 'bar', userId: user2.id });
 
-	          case 16:
-	            post2 = _context6.sent;
-	            _context6.next = 19;
-	            return adapter.create(Comment, { content: 'test3', postId: post2.id, userId: post2.userId });
+	            case 16:
+	              post2 = _context6.sent;
+	              _context6.next = 19;
+	              return adapter.create(Comment, { content: 'test3', postId: post2.id, userId: post2.userId });
 
-	          case 19:
-	            _context6.next = 21;
-	            return adapter.findAll(Comment, {}, { 'with': ['user', 'user.profile', 'post', 'post.user'] });
+	            case 19:
+	              _context6.next = 21;
+	              return adapter.findAll(Comment, {}, { 'with': ['user', 'user.profile', 'post', 'post.user'] });
 
-	          case 21:
-	            comments = _context6.sent;
+	            case 21:
+	              comments = _context6.sent;
 
-	            assert.isDefined(comments[0].post);
-	            assert.isDefined(comments[0].post.user);
-	            assert.isDefined(comments[0].user);
-	            assert.isDefined(comments[0].user.profile || comments[1].user.profile);
-	            assert.isDefined(comments[1].post);
-	            assert.isDefined(comments[1].post.user);
-	            assert.isDefined(comments[1].user);
+	              assert.isDefined(comments[0].post);
+	              assert.isDefined(comments[0].post.user);
+	              assert.isDefined(comments[0].user);
+	              assert.isDefined(comments[0].user.profile || comments[1].user.profile);
+	              assert.isDefined(comments[1].post);
+	              assert.isDefined(comments[1].post.user);
+	              assert.isDefined(comments[1].user);
 
-	          case 29:
-	          case 'end':
-	            return _context6.stop();
+	            case 29:
+	            case 'end':
+	              return _context6.stop();
+	          }
 	        }
 	      }, _callee6, this);
 	    }));
@@ -14242,58 +14275,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	    it('should load hasMany and belongsTo relations', regeneratorRuntime.mark(function _callee7() {
 	      var profile, user1, post1, user2, post2, posts;
 	      return regeneratorRuntime.wrap(function _callee7$(_context7) {
-	        while (1) switch (_context7.prev = _context7.next) {
-	          case 0:
-	            _context7.next = 2;
-	            return adapter.create(Profile, { email: 'foo@test.com' });
+	        while (1) {
+	          switch (_context7.prev = _context7.next) {
+	            case 0:
+	              _context7.next = 2;
+	              return adapter.create(Profile, { email: 'foo@test.com' });
 
-	          case 2:
-	            profile = _context7.sent;
-	            _context7.next = 5;
-	            return adapter.create(User, { name: 'John', profileId: profile.id });
+	            case 2:
+	              profile = _context7.sent;
+	              _context7.next = 5;
+	              return adapter.create(User, { name: 'John', profileId: profile.id });
 
-	          case 5:
-	            user1 = _context7.sent;
-	            _context7.next = 8;
-	            return adapter.create(Post, { content: 'foo', userId: user1.id });
+	            case 5:
+	              user1 = _context7.sent;
+	              _context7.next = 8;
+	              return adapter.create(Post, { content: 'foo', userId: user1.id });
 
-	          case 8:
-	            post1 = _context7.sent;
-	            _context7.next = 11;
-	            return adapter.create(Comment, { content: 'test2', postId: post1.id, userId: post1.userId });
+	            case 8:
+	              post1 = _context7.sent;
+	              _context7.next = 11;
+	              return adapter.create(Comment, { content: 'test2', postId: post1.id, userId: post1.userId });
 
-	          case 11:
-	            _context7.next = 13;
-	            return adapter.create(User, { name: 'Sally' });
+	            case 11:
+	              _context7.next = 13;
+	              return adapter.create(User, { name: 'Sally' });
 
-	          case 13:
-	            user2 = _context7.sent;
-	            _context7.next = 16;
-	            return adapter.create(Post, { content: 'bar', userId: user2.id });
+	            case 13:
+	              user2 = _context7.sent;
+	              _context7.next = 16;
+	              return adapter.create(Post, { content: 'bar', userId: user2.id });
 
-	          case 16:
-	            post2 = _context7.sent;
-	            _context7.next = 19;
-	            return adapter.create(Comment, { content: 'test3', postId: post2.id, userId: post2.userId });
+	            case 16:
+	              post2 = _context7.sent;
+	              _context7.next = 19;
+	              return adapter.create(Comment, { content: 'test3', postId: post2.id, userId: post2.userId });
 
-	          case 19:
-	            _context7.next = 21;
-	            return adapter.findAll(Post, {}, { 'with': ['user', 'comment', 'comment.user', 'comment.user.profile'] });
+	            case 19:
+	              _context7.next = 21;
+	              return adapter.findAll(Post, {}, { 'with': ['user', 'comment', 'comment.user', 'comment.user.profile'] });
 
-	          case 21:
-	            posts = _context7.sent;
+	            case 21:
+	              posts = _context7.sent;
 
-	            assert.isDefined(posts[0].comments);
-	            assert.isDefined(posts[0].comments[0].user);
-	            assert.isDefined(posts[0].comments[0].user.profile || posts[1].comments[0].user.profile);
-	            assert.isDefined(posts[0].user);
-	            assert.isDefined(posts[1].comments);
-	            assert.isDefined(posts[1].comments[0].user);
-	            assert.isDefined(posts[1].user);
+	              assert.isDefined(posts[0].comments);
+	              assert.isDefined(posts[0].comments[0].user);
+	              assert.isDefined(posts[0].comments[0].user.profile || posts[1].comments[0].user.profile);
+	              assert.isDefined(posts[0].user);
+	              assert.isDefined(posts[1].comments);
+	              assert.isDefined(posts[1].comments[0].user);
+	              assert.isDefined(posts[1].user);
 
-	          case 29:
-	          case 'end':
-	            return _context7.stop();
+	            case 29:
+	            case 'end':
+	              return _context7.stop();
+	          }
 	        }
 	      }, _callee7, this);
 	    }));
@@ -14302,54 +14337,56 @@ return /******/ (function(modules) { // webpackBootstrap
 	      it('should filter using belongsTo relation', regeneratorRuntime.mark(function _callee8() {
 	        var profile1, user1, post1, user2, post2, users;
 	        return regeneratorRuntime.wrap(function _callee8$(_context8) {
-	          while (1) switch (_context8.prev = _context8.next) {
-	            case 0:
-	              _context8.next = 2;
-	              return adapter.create(Profile, { email: 'foo@test.com' });
+	          while (1) {
+	            switch (_context8.prev = _context8.next) {
+	              case 0:
+	                _context8.next = 2;
+	                return adapter.create(Profile, { email: 'foo@test.com' });
 
-	            case 2:
-	              profile1 = _context8.sent;
-	              _context8.next = 5;
-	              return adapter.create(User, { name: 'John', profileId: profile1.id });
+	              case 2:
+	                profile1 = _context8.sent;
+	                _context8.next = 5;
+	                return adapter.create(User, { name: 'John', profileId: profile1.id });
 
-	            case 5:
-	              user1 = _context8.sent;
-	              _context8.next = 8;
-	              return adapter.create(Post, { content: 'foo', userId: user1.id });
+	              case 5:
+	                user1 = _context8.sent;
+	                _context8.next = 8;
+	                return adapter.create(Post, { content: 'foo', userId: user1.id });
 
-	            case 8:
-	              post1 = _context8.sent;
-	              _context8.next = 11;
-	              return adapter.create(Comment, { content: 'test1', postId: post1.id, userId: post1.userId });
+	              case 8:
+	                post1 = _context8.sent;
+	                _context8.next = 11;
+	                return adapter.create(Comment, { content: 'test1', postId: post1.id, userId: post1.userId });
 
-	            case 11:
-	              _context8.next = 13;
-	              return adapter.create(User, { name: 'Sally' });
+	              case 11:
+	                _context8.next = 13;
+	                return adapter.create(User, { name: 'Sally' });
 
-	            case 13:
-	              user2 = _context8.sent;
-	              _context8.next = 16;
-	              return adapter.create(Post, { content: 'bar', userId: user2.id });
+	              case 13:
+	                user2 = _context8.sent;
+	                _context8.next = 16;
+	                return adapter.create(Post, { content: 'bar', userId: user2.id });
 
-	            case 16:
-	              post2 = _context8.sent;
-	              _context8.next = 19;
-	              return adapter.create(Comment, { content: 'test2', postId: post2.id, userId: post2.userId });
+	              case 16:
+	                post2 = _context8.sent;
+	                _context8.next = 19;
+	                return adapter.create(Comment, { content: 'test2', postId: post2.id, userId: post2.userId });
 
-	            case 19:
-	              _context8.next = 21;
-	              return adapter.findAll(User, { 'profile.email': 'foo@test.com' });
+	              case 19:
+	                _context8.next = 21;
+	                return adapter.findAll(User, { 'profile.email': 'foo@test.com' });
 
-	            case 21:
-	              users = _context8.sent;
+	              case 21:
+	                users = _context8.sent;
 
-	              assert.equal(users.length, 1);
-	              assert.equal(users[0].profileId, profile1.id);
-	              assert.equal(users[0].name, 'John');
+	                assert.equal(users.length, 1);
+	                assert.equal(users[0].profileId, profile1.id);
+	                assert.equal(users[0].name, 'John');
 
-	            case 25:
-	            case 'end':
-	              return _context8.stop();
+	              case 25:
+	              case 'end':
+	                return _context8.stop();
+	            }
 	          }
 	        }, _callee8, this);
 	      }));
@@ -14357,59 +14394,61 @@ return /******/ (function(modules) { // webpackBootstrap
 	      it('should filter through multiple hasOne/belongsTo relations', regeneratorRuntime.mark(function _callee9() {
 	        var profile1, user1, post1, profile2, user2, post2, comments;
 	        return regeneratorRuntime.wrap(function _callee9$(_context9) {
-	          while (1) switch (_context9.prev = _context9.next) {
-	            case 0:
-	              _context9.next = 2;
-	              return adapter.create(Profile, { email: 'foo@test.com' });
+	          while (1) {
+	            switch (_context9.prev = _context9.next) {
+	              case 0:
+	                _context9.next = 2;
+	                return adapter.create(Profile, { email: 'foo@test.com' });
 
-	            case 2:
-	              profile1 = _context9.sent;
-	              _context9.next = 5;
-	              return adapter.create(User, { name: 'John', profileId: profile1.id });
+	              case 2:
+	                profile1 = _context9.sent;
+	                _context9.next = 5;
+	                return adapter.create(User, { name: 'John', profileId: profile1.id });
 
-	            case 5:
-	              user1 = _context9.sent;
-	              _context9.next = 8;
-	              return adapter.create(Post, { content: 'foo', userId: user1.id });
+	              case 5:
+	                user1 = _context9.sent;
+	                _context9.next = 8;
+	                return adapter.create(Post, { content: 'foo', userId: user1.id });
 
-	            case 8:
-	              post1 = _context9.sent;
-	              _context9.next = 11;
-	              return adapter.create(Comment, { content: 'test1', postId: post1.id, userId: post1.userId });
+	              case 8:
+	                post1 = _context9.sent;
+	                _context9.next = 11;
+	                return adapter.create(Comment, { content: 'test1', postId: post1.id, userId: post1.userId });
 
-	            case 11:
-	              _context9.next = 13;
-	              return adapter.create(Profile, { email: 'bar@test.com' });
+	              case 11:
+	                _context9.next = 13;
+	                return adapter.create(Profile, { email: 'bar@test.com' });
 
-	            case 13:
-	              profile2 = _context9.sent;
-	              _context9.next = 16;
-	              return adapter.create(User, { name: 'Sally', profileId: profile2.id });
+	              case 13:
+	                profile2 = _context9.sent;
+	                _context9.next = 16;
+	                return adapter.create(User, { name: 'Sally', profileId: profile2.id });
 
-	            case 16:
-	              user2 = _context9.sent;
-	              _context9.next = 19;
-	              return adapter.create(Post, { content: 'bar', userId: user2.id });
+	              case 16:
+	                user2 = _context9.sent;
+	                _context9.next = 19;
+	                return adapter.create(Post, { content: 'bar', userId: user2.id });
 
-	            case 19:
-	              post2 = _context9.sent;
-	              _context9.next = 22;
-	              return adapter.create(Comment, { content: 'test2', postId: post2.id, userId: post2.userId });
+	              case 19:
+	                post2 = _context9.sent;
+	                _context9.next = 22;
+	                return adapter.create(Comment, { content: 'test2', postId: post2.id, userId: post2.userId });
 
-	            case 22:
-	              _context9.next = 24;
-	              return adapter.findAll(Comment, { 'user.profile.email': 'foo@test.com' });
+	              case 22:
+	                _context9.next = 24;
+	                return adapter.findAll(Comment, { 'user.profile.email': 'foo@test.com' });
 
-	            case 24:
-	              comments = _context9.sent;
+	              case 24:
+	                comments = _context9.sent;
 
-	              assert.equal(comments.length, 1);
-	              assert.equal(comments[0].userId, user1.id);
-	              assert.equal(comments[0].content, 'test1');
+	                assert.equal(comments.length, 1);
+	                assert.equal(comments[0].userId, user1.id);
+	                assert.equal(comments[0].content, 'test1');
 
-	            case 28:
-	            case 'end':
-	              return _context9.stop();
+	              case 28:
+	              case 'end':
+	                return _context9.stop();
+	            }
 	          }
 	        }, _callee9, this);
 	      }));
@@ -14417,59 +14456,61 @@ return /******/ (function(modules) { // webpackBootstrap
 	      it('should filter using multiple hasOne/belongsTo relations', regeneratorRuntime.mark(function _callee10() {
 	        var profile1, user1, post1, profile2, user2, post2, comments;
 	        return regeneratorRuntime.wrap(function _callee10$(_context10) {
-	          while (1) switch (_context10.prev = _context10.next) {
-	            case 0:
-	              _context10.next = 2;
-	              return adapter.create(Profile, { email: 'foo@test.com' });
+	          while (1) {
+	            switch (_context10.prev = _context10.next) {
+	              case 0:
+	                _context10.next = 2;
+	                return adapter.create(Profile, { email: 'foo@test.com' });
 
-	            case 2:
-	              profile1 = _context10.sent;
-	              _context10.next = 5;
-	              return adapter.create(User, { name: 'John', profileId: profile1.id });
+	              case 2:
+	                profile1 = _context10.sent;
+	                _context10.next = 5;
+	                return adapter.create(User, { name: 'John', profileId: profile1.id });
 
-	            case 5:
-	              user1 = _context10.sent;
-	              _context10.next = 8;
-	              return adapter.create(Post, { content: 'foo', userId: user1.id });
+	              case 5:
+	                user1 = _context10.sent;
+	                _context10.next = 8;
+	                return adapter.create(Post, { content: 'foo', userId: user1.id });
 
-	            case 8:
-	              post1 = _context10.sent;
-	              _context10.next = 11;
-	              return adapter.create(Comment, { content: 'test1', postId: post1.id, userId: post1.userId });
+	              case 8:
+	                post1 = _context10.sent;
+	                _context10.next = 11;
+	                return adapter.create(Comment, { content: 'test1', postId: post1.id, userId: post1.userId });
 
-	            case 11:
-	              _context10.next = 13;
-	              return adapter.create(Profile, { email: 'bar@test.com' });
+	              case 11:
+	                _context10.next = 13;
+	                return adapter.create(Profile, { email: 'bar@test.com' });
 
-	            case 13:
-	              profile2 = _context10.sent;
-	              _context10.next = 16;
-	              return adapter.create(User, { name: 'Sally', profileId: profile2.id });
+	              case 13:
+	                profile2 = _context10.sent;
+	                _context10.next = 16;
+	                return adapter.create(User, { name: 'Sally', profileId: profile2.id });
 
-	            case 16:
-	              user2 = _context10.sent;
-	              _context10.next = 19;
-	              return adapter.create(Post, { content: 'bar', userId: user2.id });
+	              case 16:
+	                user2 = _context10.sent;
+	                _context10.next = 19;
+	                return adapter.create(Post, { content: 'bar', userId: user2.id });
 
-	            case 19:
-	              post2 = _context10.sent;
-	              _context10.next = 22;
-	              return adapter.create(Comment, { content: 'test2', postId: post2.id, userId: post2.userId });
+	              case 19:
+	                post2 = _context10.sent;
+	                _context10.next = 22;
+	                return adapter.create(Comment, { content: 'test2', postId: post2.id, userId: post2.userId });
 
-	            case 22:
-	              _context10.next = 24;
-	              return adapter.findAll(Comment, { 'user.name': 'John', 'user.profile.email': 'foo@test.com' });
+	              case 22:
+	                _context10.next = 24;
+	                return adapter.findAll(Comment, { 'user.name': 'John', 'user.profile.email': 'foo@test.com' });
 
-	            case 24:
-	              comments = _context10.sent;
+	              case 24:
+	                comments = _context10.sent;
 
-	              assert.equal(comments.length, 1);
-	              assert.equal(comments[0].userId, user1.id);
-	              assert.equal(comments[0].content, 'test1');
+	                assert.equal(comments.length, 1);
+	                assert.equal(comments[0].userId, user1.id);
+	                assert.equal(comments[0].content, 'test1');
 
-	            case 28:
-	            case 'end':
-	              return _context10.stop();
+	              case 28:
+	              case 'end':
+	                return _context10.stop();
+	            }
 	          }
 	        }, _callee10, this);
 	      }));
@@ -14477,14 +14518,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    it('should allow passing limit and offset as strings', regeneratorRuntime.mark(function _callee11() {
 	      return regeneratorRuntime.wrap(function _callee11$(_context11) {
-	        while (1) switch (_context11.prev = _context11.next) {
-	          case 0:
-	            _context11.next = 2;
-	            return adapter.findAll(User, { limit: '10', offset: '20' });
+	        while (1) {
+	          switch (_context11.prev = _context11.next) {
+	            case 0:
+	              _context11.next = 2;
+	              return adapter.findAll(User, { limit: '10', offset: '20' });
 
-	          case 2:
-	          case 'end':
-	            return _context11.stop();
+	            case 2:
+	            case 'end':
+	              return _context11.stop();
+	          }
 	        }
 	      }, _callee11, this);
 	    }));
@@ -14503,53 +14546,57 @@ return /******/ (function(modules) { // webpackBootstrap
 	  describe('Adapter#destroy', function () {
 	    it('should exist', regeneratorRuntime.mark(function _callee() {
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
-	        while (1) switch (_context.prev = _context.next) {
-	          case 0:
-	            assert.equal(_typeof(this.$$adapter.destroy), 'function', 'adapter should have a "destroy" method');
+	        while (1) {
+	          switch (_context.prev = _context.next) {
+	            case 0:
+	              assert.equal(_typeof(this.$$adapter.destroy), 'function', 'adapter should have a "destroy" method');
 
-	          case 1:
-	          case 'end':
-	            return _context.stop();
+	            case 1:
+	            case 'end':
+	              return _context.stop();
+	          }
 	        }
 	      }, _callee, this);
 	    }));
 	    it('should destroy a user', regeneratorRuntime.mark(function _callee2() {
 	      var adapter, User, createUser, id, destroyUser;
 	      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	        while (1) switch (_context2.prev = _context2.next) {
-	          case 0:
-	            adapter = this.$$adapter;
-	            User = this.$$User;
-	            _context2.next = 4;
-	            return adapter.create(User, { name: 'John' });
+	        while (1) {
+	          switch (_context2.prev = _context2.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	              _context2.next = 4;
+	              return adapter.create(User, { name: 'John' });
 
-	          case 4:
-	            createUser = _context2.sent;
-	            id = createUser.id;
-	            _context2.next = 8;
-	            return adapter.destroy(User, createUser.id);
+	            case 4:
+	              createUser = _context2.sent;
+	              id = createUser.id;
+	              _context2.next = 8;
+	              return adapter.destroy(User, createUser.id);
 
-	          case 8:
-	            destroyUser = _context2.sent;
+	            case 8:
+	              destroyUser = _context2.sent;
 
-	            assert.isFalse(!!destroyUser);
+	              assert.isFalse(!!destroyUser);
 
-	            _context2.prev = 10;
-	            _context2.next = 13;
-	            return adapter.find(User, id);
+	              _context2.prev = 10;
+	              _context2.next = 13;
+	              return adapter.find(User, id);
 
-	          case 13:
-	            throw new Error('Should not have reached here!');
+	            case 13:
+	              throw new Error('Should not have reached here!');
 
-	          case 16:
-	            _context2.prev = 16;
-	            _context2.t0 = _context2['catch'](10);
+	            case 16:
+	              _context2.prev = 16;
+	              _context2.t0 = _context2['catch'](10);
 
-	            assert.equal(_context2.t0.message, 'Not Found!');
+	              assert.equal(_context2.t0.message, 'Not Found!');
 
-	          case 19:
-	          case 'end':
-	            return _context2.stop();
+	            case 19:
+	            case 'end':
+	              return _context2.stop();
+	          }
 	        }
 	      }, _callee2, this, [[10, 16]]);
 	    }));
@@ -14568,54 +14615,58 @@ return /******/ (function(modules) { // webpackBootstrap
 	  describe('Adapter#destroyAll', function () {
 	    it('should exist', regeneratorRuntime.mark(function _callee() {
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
-	        while (1) switch (_context.prev = _context.next) {
-	          case 0:
-	            assert.equal(_typeof(this.$$adapter.destroyAll), 'function', 'adapter should have a "destroyAll" method');
+	        while (1) {
+	          switch (_context.prev = _context.next) {
+	            case 0:
+	              assert.equal(_typeof(this.$$adapter.destroyAll), 'function', 'adapter should have a "destroyAll" method');
 
-	          case 1:
-	          case 'end':
-	            return _context.stop();
+	            case 1:
+	            case 'end':
+	              return _context.stop();
+	          }
 	        }
 	      }, _callee, this);
 	    }));
 	    it('should destroy all users', regeneratorRuntime.mark(function _callee2() {
 	      var adapter, User, createUser, id, findUsers, findUsers2;
 	      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	        while (1) switch (_context2.prev = _context2.next) {
-	          case 0:
-	            adapter = this.$$adapter;
-	            User = this.$$User;
-	            _context2.next = 4;
-	            return adapter.create(User, { name: 'John' });
+	        while (1) {
+	          switch (_context2.prev = _context2.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	              _context2.next = 4;
+	              return adapter.create(User, { name: 'John' });
 
-	          case 4:
-	            createUser = _context2.sent;
-	            id = createUser.id;
-	            _context2.next = 8;
-	            return adapter.findAll(User, { name: 'John' });
+	            case 4:
+	              createUser = _context2.sent;
+	              id = createUser.id;
+	              _context2.next = 8;
+	              return adapter.findAll(User, { name: 'John' });
 
-	          case 8:
-	            findUsers = _context2.sent;
+	            case 8:
+	              findUsers = _context2.sent;
 
-	            assert.equal(findUsers.length, 1);
-	            assert.equal(findUsers[0].id, id);
-	            assert.equal(findUsers[0].name, 'John');
+	              assert.equal(findUsers.length, 1);
+	              assert.equal(findUsers[0].id, id);
+	              assert.equal(findUsers[0].name, 'John');
 
-	            _context2.next = 14;
-	            return adapter.destroyAll(User, { name: 'John' });
+	              _context2.next = 14;
+	              return adapter.destroyAll(User, { name: 'John' });
 
-	          case 14:
-	            _context2.next = 16;
-	            return adapter.findAll(User, { name: 'John' });
+	            case 14:
+	              _context2.next = 16;
+	              return adapter.findAll(User, { name: 'John' });
 
-	          case 16:
-	            findUsers2 = _context2.sent;
+	            case 16:
+	              findUsers2 = _context2.sent;
 
-	            assert.equal(findUsers2.length, 0);
+	              assert.equal(findUsers2.length, 0);
 
-	          case 18:
-	          case 'end':
-	            return _context2.stop();
+	            case 18:
+	            case 'end':
+	              return _context2.stop();
+	          }
 	        }
 	      }, _callee2, this);
 	    }));
@@ -14634,90 +14685,94 @@ return /******/ (function(modules) { // webpackBootstrap
 	  describe('Adapter#update', function () {
 	    it('should exist', regeneratorRuntime.mark(function _callee() {
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
-	        while (1) switch (_context.prev = _context.next) {
-	          case 0:
-	            assert.equal(_typeof(this.$$adapter.update), 'function', 'adapter should have a "update" method');
+	        while (1) {
+	          switch (_context.prev = _context.next) {
+	            case 0:
+	              assert.equal(_typeof(this.$$adapter.update), 'function', 'adapter should have a "update" method');
 
-	          case 1:
-	          case 'end':
-	            return _context.stop();
+	            case 1:
+	            case 'end':
+	              return _context.stop();
+	          }
 	        }
 	      }, _callee, this);
 	    }));
 	    it('should update a user', regeneratorRuntime.mark(function _callee2() {
 	      var adapter, User, user, id, foundUser, updatedUser, foundUser2, destroyUser;
 	      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	        while (1) switch (_context2.prev = _context2.next) {
-	          case 0:
-	            adapter = this.$$adapter;
-	            User = this.$$User;
-	            _context2.next = 4;
-	            return adapter.create(User, { name: 'John' });
+	        while (1) {
+	          switch (_context2.prev = _context2.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	              _context2.next = 4;
+	              return adapter.create(User, { name: 'John' });
 
-	          case 4:
-	            user = _context2.sent;
-	            id = user.id;
+	            case 4:
+	              user = _context2.sent;
+	              id = user.id;
 
-	            assert.equal(user.name, 'John');
-	            assert.isDefined(user.id);
+	              assert.equal(user.name, 'John');
+	              assert.isDefined(user.id);
 
-	            _context2.next = 10;
-	            return adapter.find(User, user.id);
+	              _context2.next = 10;
+	              return adapter.find(User, user.id);
 
-	          case 10:
-	            foundUser = _context2.sent;
+	            case 10:
+	              foundUser = _context2.sent;
 
-	            assert.equal(foundUser.name, 'John');
-	            assert.isDefined(foundUser.id);
-	            assert.equal(foundUser.id, id);
-	            assert.equal(foundUser.name, 'John');
+	              assert.equal(foundUser.name, 'John');
+	              assert.isDefined(foundUser.id);
+	              assert.equal(foundUser.id, id);
+	              assert.equal(foundUser.name, 'John');
 
-	            _context2.next = 17;
-	            return adapter.update(User, foundUser.id, { name: 'Johnny' });
+	              _context2.next = 17;
+	              return adapter.update(User, foundUser.id, { name: 'Johnny' });
 
-	          case 17:
-	            updatedUser = _context2.sent;
+	            case 17:
+	              updatedUser = _context2.sent;
 
-	            assert.equal(updatedUser.name, 'Johnny');
-	            assert.isDefined(updatedUser.id);
-	            assert.equal(updatedUser.id, id);
-	            assert.equal(updatedUser.name, 'Johnny');
+	              assert.equal(updatedUser.name, 'Johnny');
+	              assert.isDefined(updatedUser.id);
+	              assert.equal(updatedUser.id, id);
+	              assert.equal(updatedUser.name, 'Johnny');
 
-	            _context2.next = 24;
-	            return adapter.find(User, updatedUser.id);
+	              _context2.next = 24;
+	              return adapter.find(User, updatedUser.id);
 
-	          case 24:
-	            foundUser2 = _context2.sent;
+	            case 24:
+	              foundUser2 = _context2.sent;
 
-	            assert.equal(foundUser2.name, 'Johnny');
-	            assert.isDefined(foundUser2.id);
-	            assert.equal(foundUser2.id, id);
-	            assert.equal(foundUser2.name, 'Johnny');
+	              assert.equal(foundUser2.name, 'Johnny');
+	              assert.isDefined(foundUser2.id);
+	              assert.equal(foundUser2.id, id);
+	              assert.equal(foundUser2.name, 'Johnny');
 
-	            _context2.next = 31;
-	            return adapter.destroy(User, foundUser2.id);
+	              _context2.next = 31;
+	              return adapter.destroy(User, foundUser2.id);
 
-	          case 31:
-	            destroyUser = _context2.sent;
+	            case 31:
+	              destroyUser = _context2.sent;
 
-	            assert.isFalse(!!destroyUser);
+	              assert.isFalse(!!destroyUser);
 
-	            _context2.prev = 33;
-	            _context2.next = 36;
-	            return adapter.find(User, id);
+	              _context2.prev = 33;
+	              _context2.next = 36;
+	              return adapter.find(User, id);
 
-	          case 36:
-	            throw new Error('Should not have reached here!');
+	            case 36:
+	              throw new Error('Should not have reached here!');
 
-	          case 39:
-	            _context2.prev = 39;
-	            _context2.t0 = _context2['catch'](33);
+	            case 39:
+	              _context2.prev = 39;
+	              _context2.t0 = _context2['catch'](33);
 
-	            assert.equal(_context2.t0.message, 'Not Found!');
+	              assert.equal(_context2.t0.message, 'Not Found!');
 
-	          case 42:
-	          case 'end':
-	            return _context2.stop();
+	            case 42:
+	            case 'end':
+	              return _context2.stop();
+	          }
 	        }
 	      }, _callee2, this, [[33, 39]]);
 	    }));
@@ -14736,119 +14791,123 @@ return /******/ (function(modules) { // webpackBootstrap
 	  describe('Adapter#updateAll', function () {
 	    it('should exist', regeneratorRuntime.mark(function _callee() {
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
-	        while (1) switch (_context.prev = _context.next) {
-	          case 0:
-	            assert.equal(_typeof(this.$$adapter.updateAll), 'function', 'adapter should have a "updateAll" method');
+	        while (1) {
+	          switch (_context.prev = _context.next) {
+	            case 0:
+	              assert.equal(_typeof(this.$$adapter.updateAll), 'function', 'adapter should have a "updateAll" method');
 
-	          case 1:
-	          case 'end':
-	            return _context.stop();
+	            case 1:
+	            case 'end':
+	              return _context.stop();
+	          }
 	        }
 	      }, _callee, this);
 	    }));
 	    it('should update multiple users', regeneratorRuntime.mark(function _callee2() {
 	      var adapter, User, user1, userId1, user2, userId2, users, users2, users3, users4;
 	      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	        while (1) switch (_context2.prev = _context2.next) {
-	          case 0:
-	            adapter = this.$$adapter;
-	            User = this.$$User;
-	            _context2.next = 4;
-	            return adapter.create(User, { name: 'John', age: 20 });
+	        while (1) {
+	          switch (_context2.prev = _context2.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	              _context2.next = 4;
+	              return adapter.create(User, { name: 'John', age: 20 });
 
-	          case 4:
-	            user1 = _context2.sent;
-	            userId1 = user1.id;
-	            _context2.next = 8;
-	            return adapter.create(User, { name: 'John', age: 30 });
+	            case 4:
+	              user1 = _context2.sent;
+	              userId1 = user1.id;
+	              _context2.next = 8;
+	              return adapter.create(User, { name: 'John', age: 30 });
 
-	          case 8:
-	            user2 = _context2.sent;
-	            userId2 = user2.id;
-	            _context2.next = 12;
-	            return adapter.findAll(User, { name: 'John' });
+	            case 8:
+	              user2 = _context2.sent;
+	              userId2 = user2.id;
+	              _context2.next = 12;
+	              return adapter.findAll(User, { name: 'John' });
 
-	          case 12:
-	            users = _context2.sent;
+	            case 12:
+	              users = _context2.sent;
 
-	            users.sort(function (a, b) {
-	              return a.age - b.age;
-	            });
-	            assert.equal(users[0].name, 'John');
-	            assert.equal(users[0].name, 'John');
-	            assert.equal(users.filter(function (x) {
-	              return x.id === userId1;
-	            }).length, 1);
-	            assert.equal(users.filter(function (x) {
-	              return x.id === userId2;
-	            }).length, 1);
-	            assert.equal(users.filter(function (x) {
-	              return x.age === 20;
-	            }).length, 1);
-	            assert.equal(users.filter(function (x) {
-	              return x.age === 30;
-	            }).length, 1);
+	              users.sort(function (a, b) {
+	                return a.age - b.age;
+	              });
+	              assert.equal(users[0].name, 'John');
+	              assert.equal(users[0].name, 'John');
+	              assert.equal(users.filter(function (x) {
+	                return x.id === userId1;
+	              }).length, 1);
+	              assert.equal(users.filter(function (x) {
+	                return x.id === userId2;
+	              }).length, 1);
+	              assert.equal(users.filter(function (x) {
+	                return x.age === 20;
+	              }).length, 1);
+	              assert.equal(users.filter(function (x) {
+	                return x.age === 30;
+	              }).length, 1);
 
-	            _context2.next = 22;
-	            return adapter.updateAll(User, { name: 'Johnny' }, { name: 'John' });
+	              _context2.next = 22;
+	              return adapter.updateAll(User, { name: 'Johnny' }, { name: 'John' });
 
-	          case 22:
-	            users2 = _context2.sent;
+	            case 22:
+	              users2 = _context2.sent;
 
-	            users2.sort(function (a, b) {
-	              return a.age - b.age;
-	            });
-	            assert.equal(users2[0].name, 'Johnny');
-	            assert.equal(users2[0].name, 'Johnny');
-	            assert.equal(users2.filter(function (x) {
-	              return x.id === userId1;
-	            }).length, 1);
-	            assert.equal(users2.filter(function (x) {
-	              return x.id === userId2;
-	            }).length, 1);
-	            assert.equal(users2.filter(function (x) {
-	              return x.age === 20;
-	            }).length, 1);
-	            assert.equal(users2.filter(function (x) {
-	              return x.age === 30;
-	            }).length, 1);
+	              users2.sort(function (a, b) {
+	                return a.age - b.age;
+	              });
+	              assert.equal(users2[0].name, 'Johnny');
+	              assert.equal(users2[0].name, 'Johnny');
+	              assert.equal(users2.filter(function (x) {
+	                return x.id === userId1;
+	              }).length, 1);
+	              assert.equal(users2.filter(function (x) {
+	                return x.id === userId2;
+	              }).length, 1);
+	              assert.equal(users2.filter(function (x) {
+	                return x.age === 20;
+	              }).length, 1);
+	              assert.equal(users2.filter(function (x) {
+	                return x.age === 30;
+	              }).length, 1);
 
-	            _context2.next = 32;
-	            return adapter.findAll(User, { name: 'John' });
+	              _context2.next = 32;
+	              return adapter.findAll(User, { name: 'John' });
 
-	          case 32:
-	            users3 = _context2.sent;
+	            case 32:
+	              users3 = _context2.sent;
 
-	            assert.equalObjects(users3, []);
-	            assert.equal(users3.length, 0);
+	              assert.equalObjects(users3, []);
+	              assert.equal(users3.length, 0);
 
-	            _context2.next = 37;
-	            return adapter.findAll(User, { name: 'Johnny' });
+	              _context2.next = 37;
+	              return adapter.findAll(User, { name: 'Johnny' });
 
-	          case 37:
-	            users4 = _context2.sent;
+	            case 37:
+	              users4 = _context2.sent;
 
-	            users4.sort(function (a, b) {
-	              return a.age - b.age;
-	            });
-	            assert.equal(users4[0].name, 'Johnny');
-	            assert.equal(users4[0].name, 'Johnny');
-	            assert.equal(users4.filter(function (x) {
-	              return x.id === userId1;
-	            }).length, 1);
-	            assert.equal(users4.filter(function (x) {
-	              return x.id === userId2;
-	            }).length, 1);
-	            assert.equal(users4.filter(function (x) {
-	              return x.age === 20;
-	            }).length, 1);
-	            assert.equal(users4.filter(function (x) {
-	              return x.age === 30;
-	            }).length, 1);
+	              users4.sort(function (a, b) {
+	                return a.age - b.age;
+	              });
+	              assert.equal(users4[0].name, 'Johnny');
+	              assert.equal(users4[0].name, 'Johnny');
+	              assert.equal(users4.filter(function (x) {
+	                return x.id === userId1;
+	              }).length, 1);
+	              assert.equal(users4.filter(function (x) {
+	                return x.id === userId2;
+	              }).length, 1);
+	              assert.equal(users4.filter(function (x) {
+	                return x.age === 20;
+	              }).length, 1);
+	              assert.equal(users4.filter(function (x) {
+	                return x.age === 30;
+	              }).length, 1);
 
-	          case 45:
-	          case 'end':
-	            return _context2.stop();
+	            case 45:
+	            case 'end':
+	              return _context2.stop();
+	          }
 	        }
 	      }, _callee2, this);
 	    }));
