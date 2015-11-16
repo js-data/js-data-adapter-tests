@@ -121,6 +121,7 @@ module.exports = {
       yield this.$$adapter.destroyAll(this.$$Post)
       yield this.$$adapter.destroyAll(this.$$User)
       yield this.$$adapter.destroyAll(this.$$Profile)
+      yield this.$$adapter.destroyAll(this.$$Address)
     })
   },
   assert: assert,
