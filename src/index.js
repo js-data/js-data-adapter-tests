@@ -27,11 +27,11 @@ module.exports = {
     }
     beforeEach(function () {
       this.$$adapter = new options.Adapter(options.adapterConfig)
-      this.$$store = new options.DS({
+      this.$$store = new options.DS(options.storeConfig || {
         log: false,
         debug: false
       })
-      this.$$User = this.$$store.defineResource({
+      this.$$User = this.$$store.defineResource(options.userConfig || {
         name: 'user',
         relations: {
           hasMany: {
@@ -51,14 +51,14 @@ module.exports = {
             }
           }
         }
-      } || options.userConfig)
-      this.$$Profile = this.$$store.defineResource({
+      })
+      this.$$Profile = this.$$store.defineResource(options.profileConfig || {
         name: 'profile'
-      } || options.profileConfig)
-      this.$$Address = this.$$store.defineResource({
+      })
+      this.$$Address = this.$$store.defineResource(options.addressConfig || {
         name: 'address'
-      } || options.addressConfig)
-      this.$$Post = this.$$store.defineResource({
+      })
+      this.$$Post = this.$$store.defineResource(options.postConfig || {
         name: 'post',
         relations: {
           belongsTo: {
@@ -74,8 +74,8 @@ module.exports = {
             }
           }
         }
-      } || options.postConfig)
-      this.$$Comment = this.$$store.defineResource({
+      })
+      this.$$Comment = this.$$store.defineResource(options.commentConfig || {
         name: 'comment',
         relations: {
           belongsTo: {
@@ -89,7 +89,7 @@ module.exports = {
             }
           }
         }
-      } || options.commentConfig)
+      })
     })
 
     describe('js-data-adapter-tests', function () {
