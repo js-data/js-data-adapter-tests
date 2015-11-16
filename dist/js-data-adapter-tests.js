@@ -195,6 +195,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	              return this.$$adapter.destroyAll(this.$$Profile);
 
 	            case 8:
+	              _context.next = 10;
+	              return this.$$adapter.destroyAll(this.$$Address);
+
+	            case 10:
 	            case 'end':
 	              return _context.stop();
 	          }
