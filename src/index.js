@@ -37,7 +37,7 @@ module.exports = {
           hasMany: {
             post: {
               localField: 'posts',
-              foreignKey: 'post'
+              foreignKey: 'userId'
             }
           },
           hasOne: {
