@@ -1,3 +1,4 @@
+/* global assert:true */
 module.exports = function (options) {
   describe('Adapter#create', function () {
     it('should exist', function () {

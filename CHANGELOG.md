@@ -2,6 +2,10 @@
 
 - Some improvements
 
+##### 2.0.0-alpha.1 - 13 February 2016
+
+- Upgrades to work with 3.x js-data and adapters
+
 ##### 1.3.0 - 10 November 2015
 
 - Fixed coMocha and some assertions

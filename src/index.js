@@ -22,19 +22,24 @@ module.exports = {
     debug = !!options.debug
     options.methods = options.methods || 'all'
     options.features = options.features || 'all'
-    if (!options.DS || typeof options.DS !== 'function') {
-      throw new Error(prefix + '.DS: Expected function, Actual: ' + typeof options.DS)
-    }
     if (!options.Adapter || typeof options.Adapter !== 'function') {
       throw new Error(prefix + '.Adapter: Expected function, Actual: ' + typeof options.Adapter)
     }
     beforeEach(function () {
-      this.$$adapter = new options.Adapter(options.adapterConfig)
-      this.$$store = new options.DS(options.storeConfig || {
-        log: false,
-        debug: false
+       this.$$adapter = new options.Adapter(options.adapterConfig)
+      this.$$container = new options.JSData.Container(options.containerConfig || {
+        mapperDefaults: {
+          debug: false
+        }
       })
-      this.$$User = this.$$store.defineResource(options.userConfig || {
+      this.$$store = new options.JSData.DataStore(options.storeConfig || {
+        mapperDefaults: {
+          debug: false
+        }
+      })
+      this.$$container.registerAdapter('adapter', this.$$adapter, { 'default': true })
+      this.$$store.registerAdapter('adapter', this.$$adapter, { 'default': true })
+      var userOptions = {
         name: 'user',
         relations: {
           hasMany: {
@@ -52,38 +57,33 @@ module.exports = {
               localField: 'address',
               foreignKey: 'userId'
             }
-          }
-        }
-      })
-      this.$$Profile = this.$$store.defineResource(options.profileConfig || {
-        name: 'profile',
-        relations: {
+          },
           belongsTo: {
-            user: {
-              localField: 'user',
-              localkey: 'userId'
+            organization: {
+              localField: 'organization',
+              foreignKey: 'organizationId'
             }
           }
         }
-      })
-      this.$$Address = this.$$store.defineResource(options.addressConfig || {
-        name: 'address',
+      }
+      var organizationOptions = {
+        name: 'organization',
         relations: {
-          belongsTo: {
+          hasMany: {
             user: {
-              localField: 'user',
-              localkey: 'userId'
+              localField: 'users',
+              foreignKey: 'organizationId'
             }
           }
         }
-      })
-      this.$$Post = this.$$store.defineResource(options.postConfig || {
+      }
+      var postOptions = {
         name: 'post',
         relations: {
           belongsTo: {
             user: {
               localField: 'user',
-              localKey: 'userId'
+              foreignKey: 'userId'
             }
           },
           hasMany: {
@@ -93,27 +93,42 @@ module.exports = {
             }
           }
         }
-      })
-      this.$$Comment = this.$$store.defineResource(options.commentConfig || {
+      }
+      var commentOptions = {
         name: 'comment',
         relations: {
           belongsTo: {
             post: {
               localField: 'post',
-              localKey: 'postId'
+              foreignKey: 'postId'
             },
             user: {
               localField: 'user',
-              localKey: 'userId'
+              foreignKey: 'userId'
             }
           }
         }
-      })
+      }
+      this.$$User = this.$$container.defineMapper('user', options.userConfig || options.JSData.utils.copy(userOptions))
+      this.$$store.defineMapper('user', options.userConfig || options.JSData.utils.copy(userOptions))
+      this.$$Organization = this.$$container.defineMapper('organization', options.organizationConfig || options.JSData.utils.copy(organizationOptions))
+      this.$$store.defineMapper('organization', options.organizationConfig || options.JSData.utils.copy(organizationOptions))
+      this.$$Profile = this.$$container.defineMapper('profile', options.profileConfig || {})
+      this.$$store.defineMapper('profile', options.profileConfig || {})
+      this.$$Address = this.$$container.defineMapper('address', options.addressConfig || {})
+      this.$$store.defineMapper('address', options.addressConfig || {})
+      this.$$Post = this.$$container.defineMapper('post', options.postConfig || options.JSData.utils.copy(postOptions))
+      this.$$store.defineMapper('post', options.postConfig || options.JSData.utils.copy(postOptions))
+      this.$$Comment = this.$$container.defineMapper('comment', options.commentConfig || options.JSData.utils.copy(commentOptions))
+      this.$$store.defineMapper('comment', options.commentConfig || options.JSData.utils.copy(commentOptions))
     })
 
     describe('js-data-adapter-tests', function () {
       if (options.methods === 'all' || options.methods.indexOf('create') !== -1) {
         require('./create.test')(options)
+      }
+      if (options.methods === 'all' || options.methods.indexOf('createMany') !== -1) {
+        require('./createMany.test')(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('find') !== -1) {
         require('./find.test')(options)
@@ -133,6 +148,9 @@ module.exports = {
       if (options.methods === 'all' || options.methods.indexOf('updateAll') !== -1) {
         require('./updateAll.test')(options)
       }
+      if (options.methods === 'all' || options.methods.indexOf('updateMany') !== -1) {
+        require('./updateMany.test')(options)
+      }
     })
 
     afterEach(async function () {
@@ -141,6 +159,7 @@ module.exports = {
       await this.$$adapter.destroyAll(this.$$User)
       await this.$$adapter.destroyAll(this.$$Profile)
       await this.$$adapter.destroyAll(this.$$Address)
+      await this.$$adapter.destroyAll(this.$$Organization)
     })
   },
   assert: assert,

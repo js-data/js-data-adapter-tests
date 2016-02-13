@@ -1,3 +1,4 @@
+/* global assert:true */
 module.exports = function (options) {
   describe('Adapter#updateAll', function () {
     it('should exist', function () {
@@ -55,6 +56,7 @@ module.exports = function (options) {
       assert.debug('findAll', { name: 'Johnny' })
       const users4 = await adapter.findAll(User, { name: 'Johnny' })
       assert.debug('found', JSON.stringify(users4, null, 2))
+
       users4.sort(function (a, b) {
         return a.age - b.age
       })

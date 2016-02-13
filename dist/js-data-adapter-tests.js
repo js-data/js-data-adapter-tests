@@ -86,19 +86,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    debug = !!options.debug;
 	    options.methods = options.methods || 'all';
 	    options.features = options.features || 'all';
-	    if (!options.DS || typeof options.DS !== 'function') {
-	      throw new Error(prefix + '.DS: Expected function, Actual: ' + _typeof(options.DS));
-	    }
 	    if (!options.Adapter || typeof options.Adapter !== 'function') {
 	      throw new Error(prefix + '.Adapter: Expected function, Actual: ' + _typeof(options.Adapter));
 	    }
 	    beforeEach(function () {
 	      this.$$adapter = new options.Adapter(options.adapterConfig);
-	      this.$$store = new options.DS(options.storeConfig || {
-	        log: false,
-	        debug: false
+	      this.$$container = new options.JSData.Container(options.containerConfig || {
+	        mapperDefaults: {
+	          debug: false
+	        }
 	      });
-	      this.$$User = this.$$store.defineResource(options.userConfig || {
+	      this.$$store = new options.JSData.DataStore(options.storeConfig || {
+	        mapperDefaults: {
+	          debug: false
+	        }
+	      });
+	      this.$$container.registerAdapter('adapter', this.$$adapter, { 'default': true });
+	      this.$$store.registerAdapter('adapter', this.$$adapter, { 'default': true });
+	      var userOptions = {
 	        name: 'user',
 	        relations: {
 	          hasMany: {
@@ -116,38 +121,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	              localField: 'address',
 	              foreignKey: 'userId'
 	            }
-	          }
-	        }
-	      });
-	      this.$$Profile = this.$$store.defineResource(options.profileConfig || {
-	        name: 'profile',
-	        relations: {
+	          },
 	          belongsTo: {
-	            user: {
-	              localField: 'user',
-	              localkey: 'userId'
+	            organization: {
+	              localField: 'organization',
+	              foreignKey: 'organizationId'
 	            }
 	          }
 	        }
-	      });
-	      this.$$Address = this.$$store.defineResource(options.addressConfig || {
-	        name: 'address',
+	      };
+	      var organizationOptions = {
+	        name: 'organization',
 	        relations: {
-	          belongsTo: {
+	          hasMany: {
 	            user: {
-	              localField: 'user',
-	              localkey: 'userId'
+	              localField: 'users',
+	              foreignKey: 'organizationId'
 	            }
 	          }
 	        }
-	      });
-	      this.$$Post = this.$$store.defineResource(options.postConfig || {
+	      };
+	      var postOptions = {
 	        name: 'post',
 	        relations: {
 	          belongsTo: {
 	            user: {
 	              localField: 'user',
-	              localKey: 'userId'
+	              foreignKey: 'userId'
 	            }
 	          },
 	          hasMany: {
@@ -157,45 +157,63 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	          }
 	        }
-	      });
-	      this.$$Comment = this.$$store.defineResource(options.commentConfig || {
+	      };
+	      var commentOptions = {
 	        name: 'comment',
 	        relations: {
 	          belongsTo: {
 	            post: {
 	              localField: 'post',
-	              localKey: 'postId'
+	              foreignKey: 'postId'
 	            },
 	            user: {
 	              localField: 'user',
-	              localKey: 'userId'
+	              foreignKey: 'userId'
 	            }
 	          }
 	        }
-	      });
+	      };
+	      this.$$User = this.$$container.defineMapper('user', options.userConfig || options.JSData.utils.copy(userOptions));
+	      this.$$store.defineMapper('user', options.userConfig || options.JSData.utils.copy(userOptions));
+	      this.$$Organization = this.$$container.defineMapper('organization', options.organizationConfig || options.JSData.utils.copy(organizationOptions));
+	      this.$$store.defineMapper('organization', options.organizationConfig || options.JSData.utils.copy(organizationOptions));
+	      this.$$Profile = this.$$container.defineMapper('profile', options.profileConfig || {});
+	      this.$$store.defineMapper('profile', options.profileConfig || {});
+	      this.$$Address = this.$$container.defineMapper('address', options.addressConfig || {});
+	      this.$$store.defineMapper('address', options.addressConfig || {});
+	      this.$$Post = this.$$container.defineMapper('post', options.postConfig || options.JSData.utils.copy(postOptions));
+	      this.$$store.defineMapper('post', options.postConfig || options.JSData.utils.copy(postOptions));
+	      this.$$Comment = this.$$container.defineMapper('comment', options.commentConfig || options.JSData.utils.copy(commentOptions));
+	      this.$$store.defineMapper('comment', options.commentConfig || options.JSData.utils.copy(commentOptions));
 	    });
 	
 	    describe('js-data-adapter-tests', function () {
 	      if (options.methods === 'all' || options.methods.indexOf('create') !== -1) {
 	        __webpack_require__(1)(options);
 	      }
-	      if (options.methods === 'all' || options.methods.indexOf('find') !== -1) {
+	      if (options.methods === 'all' || options.methods.indexOf('createMany') !== -1) {
 	        __webpack_require__(2)(options);
 	      }
-	      if (options.methods === 'all' || options.methods.indexOf('findAll') !== -1) {
+	      if (options.methods === 'all' || options.methods.indexOf('find') !== -1) {
 	        __webpack_require__(3)(options);
 	      }
-	      if (options.methods === 'all' || options.methods.indexOf('destroy') !== -1) {
+	      if (options.methods === 'all' || options.methods.indexOf('findAll') !== -1) {
 	        __webpack_require__(4)(options);
 	      }
-	      if (options.methods === 'all' || options.methods.indexOf('destroyAll') !== -1) {
+	      if (options.methods === 'all' || options.methods.indexOf('destroy') !== -1) {
 	        __webpack_require__(5)(options);
 	      }
-	      if (options.methods === 'all' || options.methods.indexOf('update') !== -1) {
+	      if (options.methods === 'all' || options.methods.indexOf('destroyAll') !== -1) {
 	        __webpack_require__(6)(options);
 	      }
-	      if (options.methods === 'all' || options.methods.indexOf('updateAll') !== -1) {
+	      if (options.methods === 'all' || options.methods.indexOf('update') !== -1) {
 	        __webpack_require__(7)(options);
+	      }
+	      if (options.methods === 'all' || options.methods.indexOf('updateAll') !== -1) {
+	        __webpack_require__(8)(options);
+	      }
+	      if (options.methods === 'all' || options.methods.indexOf('updateMany') !== -1) {
+	        __webpack_require__(9)(options);
 	      }
 	    });
 	
@@ -224,6 +242,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	              return this.$$adapter.destroyAll(this.$$Address);
 	
 	            case 10:
+	              _context.next = 12;
+	              return this.$$adapter.destroyAll(this.$$Organization);
+	
+	            case 12:
 	            case 'end':
 	              return _context.stop();
 	          }
@@ -257,6 +279,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 	
+	/* global assert:true */
 	module.exports = function (options) {
 	  describe('Adapter#create', function () {
 	    it('should exist', function () {
@@ -318,6 +341,69 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 	
+	/* global assert:true */
+	module.exports = function (options) {
+	  describe('Adapter#createMany', function () {
+	    it('should exist', function () {
+	      assert.equal(_typeof(this.$$adapter.createMany), 'function', 'adapter should have a "createMany" method');
+	    });
+	    it('should create multiple users', _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+	      var adapter, User, user1, user2, users, users3;
+	      return regeneratorRuntime.wrap(function _callee$(_context) {
+	        while (1) {
+	          switch (_context.prev = _context.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	              user1 = { name: 'John', age: 20 };
+	              user2 = { name: 'John', age: 30 };
+	              _context.next = 6;
+	              return adapter.createMany(User, [user1, user2]);
+	
+	            case 6:
+	              users = _context.sent;
+	
+	              users.sort(function (a, b) {
+	                return a.age - b.age;
+	              });
+	              assert.isDefined(users[0].id);
+	              assert.isDefined(users[1].id);
+	              assert.equal(users.filter(function (x) {
+	                return x.age === 20;
+	              }).length, 1);
+	              assert.equal(users.filter(function (x) {
+	                return x.age === 30;
+	              }).length, 1);
+	
+	              _context.next = 14;
+	              return adapter.findAll(User, { age: 20 });
+	
+	            case 14:
+	              users3 = _context.sent;
+	
+	              assert.equal(users3.length, 1);
+	
+	            case 16:
+	            case 'end':
+	              return _context.stop();
+	          }
+	        }
+	      }, _callee, this);
+	    })));
+	  });
+	};
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+	
+	/* global assert:true */
 	module.exports = function (options) {
 	      describe('Adapter#find', function () {
 	            var adapter, User, Profile, Post, Comment;
@@ -378,6 +464,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                                          assert.debug('created', JSON.stringify(post, null, 2));
 	                                          postId = post[Post.idAttribute];
+	
 	
 	                                          assert.equal(post.content, 'test');
 	                                          assert.isDefined(post[Post.idAttribute]);
@@ -480,6 +567,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                          comment = _context2.sent;
 	
 	                                          assert.debug('found', JSON.stringify(comment, null, 2));
+	
 	                                          assert.isDefined(comment);
 	                                          assert.isDefined(comment.post);
 	                                          assert.isDefined(comment.post.user);
@@ -566,7 +654,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -575,6 +663,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 	
+	/* global assert:true */
 	module.exports = function (options) {
 	  describe('Adapter#findAll', function () {
 	    var adapter, User, Profile, Post, Comment;
@@ -628,6 +717,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              users2 = _context.sent;
 	
 	              assert.debug('found', JSON.stringify(users2, null, 2));
+	
 	              assert.equal(users2.length, 1);
 	              assert.equal(users2[0][User.idAttribute], userId);
 	              assert.equal(users2[0].name, 'John');
@@ -864,6 +954,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              comments = _context5.sent;
 	
 	              assert.debug('found', JSON.stringify(comments, null, 2));
+	
 	              assert.isDefined(comments[0].post);
 	              assert.isDefined(comments[0].post.user);
 	              assert.isDefined(comments[0].user);
@@ -965,6 +1056,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              posts = _context6.sent;
 	
 	              assert.debug('found', JSON.stringify(posts, null, 2));
+	
 	              assert.isDefined(posts[0].comments);
 	              assert.isDefined(posts[0].comments[0].user);
 	              assert.isDefined(posts[0].comments[0].user.profile || posts[1].comments[0].user.profile);
@@ -1183,7 +1275,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1192,6 +1284,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 	
+	/* global assert:true */
 	module.exports = function (options) {
 	  describe('Adapter#destroy', function () {
 	    it('should exist', function () {
@@ -1225,33 +1318,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	              destroyedUser = _context.sent;
 	
 	              assert.debug('destroyed', JSON.stringify(destroyedUser, null, 2));
-	              assert.isFalse(!!destroyedUser);
+	              assert.equal(destroyedUser, createUser.id);
 	
-	              _context.prev = 14;
-	              _context.next = 17;
+	              _context.next = 16;
 	              return adapter.find(User, user[User.idAttribute]);
 	
-	            case 17:
-	              throw new Error('Should not have reached here!');
+	            case 16:
+	              user = _context.sent;
 	
-	            case 20:
-	              _context.prev = 20;
-	              _context.t0 = _context['catch'](14);
+	              assert.isTrue(!user);
 	
-	              assert.equal(_context.t0.message, 'Not Found!');
-	
-	            case 23:
+	            case 18:
 	            case 'end':
 	              return _context.stop();
 	          }
 	        }
-	      }, _callee, this, [[14, 20]]);
+	      }, _callee, this);
 	    })));
 	  });
 	};
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1260,6 +1348,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 	
+	/* global assert:true */
 	module.exports = function (options) {
 	  describe('Adapter#destroyAll', function () {
 	    it('should exist', function () {
@@ -1304,19 +1393,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 19:
 	              destroyedUsers = _context.sent;
 	
+	              assert.equal(destroyedUsers.length, 2);
 	              assert.debug('destroyed', JSON.stringify(destroyedUsers, null, 2));
 	
 	              assert.debug('findAll', props);
-	              _context.next = 24;
+	              _context.next = 25;
 	              return adapter.findAll(User, props);
 	
-	            case 24:
+	            case 25:
 	              foundUsers = _context.sent;
 	
 	              assert.debug('found', JSON.stringify(foundUsers, null, 2));
 	              assert.equal(foundUsers.length, 0);
 	
-	            case 27:
+	            case 28:
 	            case 'end':
 	              return _context.stop();
 	          }
@@ -1327,7 +1417,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1336,6 +1426,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 	
+	/* global assert:true */
 	module.exports = function (options) {
 	      describe('Adapter#update', function () {
 	            it('should exist', function () {
@@ -1410,7 +1501,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1419,64 +1510,199 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 	
+	/* global assert:true */
 	module.exports = function (options) {
-	  describe('Adapter#updateAll', function () {
+	      describe('Adapter#updateAll', function () {
+	            it('should exist', function () {
+	                  assert.equal(_typeof(this.$$adapter.updateAll), 'function', 'adapter should have a "updateAll" method');
+	            });
+	            it('should update multiple users', _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+	                  var adapter, User, props, user1, userId1, user2, userId2, users, users2, users3, users4;
+	                  return regeneratorRuntime.wrap(function _callee$(_context) {
+	                        while (1) {
+	                              switch (_context.prev = _context.next) {
+	                                    case 0:
+	                                          adapter = this.$$adapter;
+	                                          User = this.$$User;
+	                                          props = { name: 'John', age: 20 };
+	
+	
+	                                          assert.debug('create', props);
+	                                          _context.next = 6;
+	                                          return adapter.create(User, props);
+	
+	                                    case 6:
+	                                          user1 = _context.sent;
+	
+	                                          assert.debug('created', JSON.stringify(user1, null, 2));
+	                                          userId1 = user1[User.idAttribute];
+	
+	
+	                                          props = { name: 'John', age: 30 };
+	
+	                                          assert.debug('create', props);
+	                                          _context.next = 13;
+	                                          return adapter.create(User, props);
+	
+	                                    case 13:
+	                                          user2 = _context.sent;
+	
+	                                          assert.debug('created', JSON.stringify(user2, null, 2));
+	                                          userId2 = user2[User.idAttribute];
+	
+	
+	                                          assert.debug('findAll', { name: 'John' });
+	                                          _context.next = 19;
+	                                          return adapter.findAll(User, { name: 'John' });
+	
+	                                    case 19:
+	                                          users = _context.sent;
+	
+	                                          assert.debug('found', JSON.stringify(users, null, 2));
+	                                          users.sort(function (a, b) {
+	                                                return a.age - b.age;
+	                                          });
+	                                          assert.equal(users[0].name, 'John');
+	                                          assert.equal(users[0].name, 'John');
+	                                          assert.equal(users.filter(function (x) {
+	                                                return x[User.idAttribute] === userId1;
+	                                          }).length, 1);
+	                                          assert.equal(users.filter(function (x) {
+	                                                return x[User.idAttribute] === userId2;
+	                                          }).length, 1);
+	                                          assert.equal(users.filter(function (x) {
+	                                                return x.age === 20;
+	                                          }).length, 1);
+	                                          assert.equal(users.filter(function (x) {
+	                                                return x.age === 30;
+	                                          }).length, 1);
+	
+	                                          assert.debug('updateAll', { name: 'Johnny' }, { name: 'John' });
+	                                          _context.next = 31;
+	                                          return adapter.updateAll(User, { name: 'Johnny' }, { name: 'John' });
+	
+	                                    case 31:
+	                                          users2 = _context.sent;
+	
+	                                          assert.debug('updated', JSON.stringify(users2, null, 2));
+	                                          users2.sort(function (a, b) {
+	                                                return a.age - b.age;
+	                                          });
+	                                          assert.equal(users2[0].name, 'Johnny');
+	                                          assert.equal(users2[0].name, 'Johnny');
+	                                          assert.equal(users2.filter(function (x) {
+	                                                return x[User.idAttribute] === userId1;
+	                                          }).length, 1);
+	                                          assert.equal(users2.filter(function (x) {
+	                                                return x[User.idAttribute] === userId2;
+	                                          }).length, 1);
+	                                          assert.equal(users2.filter(function (x) {
+	                                                return x.age === 20;
+	                                          }).length, 1);
+	                                          assert.equal(users2.filter(function (x) {
+	                                                return x.age === 30;
+	                                          }).length, 1);
+	
+	                                          assert.debug('findAll', { name: 'John' });
+	                                          _context.next = 43;
+	                                          return adapter.findAll(User, { name: 'John' });
+	
+	                                    case 43:
+	                                          users3 = _context.sent;
+	
+	                                          assert.debug('found', JSON.stringify(users3, null, 2));
+	                                          assert.equalObjects(users3, []);
+	                                          assert.equal(users3.length, 0);
+	
+	                                          assert.debug('findAll', { name: 'Johnny' });
+	                                          _context.next = 50;
+	                                          return adapter.findAll(User, { name: 'Johnny' });
+	
+	                                    case 50:
+	                                          users4 = _context.sent;
+	
+	                                          assert.debug('found', JSON.stringify(users4, null, 2));
+	
+	                                          users4.sort(function (a, b) {
+	                                                return a.age - b.age;
+	                                          });
+	                                          assert.equal(users4[0].name, 'Johnny');
+	                                          assert.equal(users4[0].name, 'Johnny');
+	                                          assert.equal(users4.filter(function (x) {
+	                                                return x[User.idAttribute] === userId1;
+	                                          }).length, 1);
+	                                          assert.equal(users4.filter(function (x) {
+	                                                return x[User.idAttribute] === userId2;
+	                                          }).length, 1);
+	                                          assert.equal(users4.filter(function (x) {
+	                                                return x.age === 20;
+	                                          }).length, 1);
+	                                          assert.equal(users4.filter(function (x) {
+	                                                return x.age === 30;
+	                                          }).length, 1);
+	
+	                                    case 59:
+	                                    case 'end':
+	                                          return _context.stop();
+	                              }
+	                        }
+	                  }, _callee, this);
+	            })));
+	      });
+	};
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+	
+	/* global assert:true */
+	module.exports = function (options) {
+	  describe('Adapter#updateMany', function () {
 	    it('should exist', function () {
-	      assert.equal(_typeof(this.$$adapter.updateAll), 'function', 'adapter should have a "updateAll" method');
+	      assert.equal(_typeof(this.$$adapter.updateMany), 'function', 'adapter should have a "updateMany" method');
 	    });
 	    it('should update multiple users', _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	      var adapter, User, props, user1, userId1, user2, userId2, users, users2, users3, users4;
+	      var adapter, User, user1, userId1, user2, userId2, users, users2, users3, users4;
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
 	        while (1) {
 	          switch (_context.prev = _context.next) {
 	            case 0:
 	              adapter = this.$$adapter;
 	              User = this.$$User;
-	              props = { name: 'John', age: 20 };
+	              _context.next = 4;
+	              return adapter.create(User, { name: 'John', age: 20 });
 	
-	
-	              assert.debug('create', props);
-	              _context.next = 6;
-	              return adapter.create(User, props);
-	
-	            case 6:
+	            case 4:
 	              user1 = _context.sent;
+	              userId1 = user1.id;
+	              _context.next = 8;
+	              return adapter.create(User, { name: 'John', age: 30 });
 	
-	              assert.debug('created', JSON.stringify(user1, null, 2));
-	              userId1 = user1[User.idAttribute];
-	
-	
-	              props = { name: 'John', age: 30 };
-	
-	              assert.debug('create', props);
-	              _context.next = 13;
-	              return adapter.create(User, props);
-	
-	            case 13:
+	            case 8:
 	              user2 = _context.sent;
-	
-	              assert.debug('created', JSON.stringify(user2, null, 2));
-	              userId2 = user2[User.idAttribute];
-	
-	
-	              assert.debug('findAll', { name: 'John' });
-	              _context.next = 19;
+	              userId2 = user2.id;
+	              _context.next = 12;
 	              return adapter.findAll(User, { name: 'John' });
 	
-	            case 19:
+	            case 12:
 	              users = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(users, null, 2));
 	              users.sort(function (a, b) {
 	                return a.age - b.age;
 	              });
 	              assert.equal(users[0].name, 'John');
 	              assert.equal(users[0].name, 'John');
 	              assert.equal(users.filter(function (x) {
-	                return x[User.idAttribute] === userId1;
+	                return x.id === userId1;
 	              }).length, 1);
 	              assert.equal(users.filter(function (x) {
-	                return x[User.idAttribute] === userId2;
+	                return x.id === userId2;
 	              }).length, 1);
 	              assert.equal(users.filter(function (x) {
 	                return x.age === 20;
@@ -1485,70 +1711,62 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return x.age === 30;
 	              }).length, 1);
 	
-	              assert.debug('updateAll', { name: 'Johnny' }, { name: 'John' });
-	              _context.next = 31;
-	              return adapter.updateAll(User, { name: 'Johnny' }, { name: 'John' });
+	              user1.age = 101;
+	              user2.age = 202;
+	              _context.next = 24;
+	              return adapter.updateMany(User, [user1, user2]);
 	
-	            case 31:
+	            case 24:
 	              users2 = _context.sent;
 	
-	              assert.debug('updated', JSON.stringify(users2, null, 2));
 	              users2.sort(function (a, b) {
 	                return a.age - b.age;
 	              });
-	              assert.equal(users2[0].name, 'Johnny');
-	              assert.equal(users2[0].name, 'Johnny');
 	              assert.equal(users2.filter(function (x) {
-	                return x[User.idAttribute] === userId1;
+	                return x.id === userId1;
 	              }).length, 1);
 	              assert.equal(users2.filter(function (x) {
-	                return x[User.idAttribute] === userId2;
+	                return x.id === userId2;
 	              }).length, 1);
 	              assert.equal(users2.filter(function (x) {
-	                return x.age === 20;
+	                return x.age === 101;
 	              }).length, 1);
 	              assert.equal(users2.filter(function (x) {
-	                return x.age === 30;
+	                return x.age === 202;
 	              }).length, 1);
 	
-	              assert.debug('findAll', { name: 'John' });
-	              _context.next = 43;
-	              return adapter.findAll(User, { name: 'John' });
+	              _context.next = 32;
+	              return adapter.findAll(User, { age: 20 });
 	
-	            case 43:
+	            case 32:
 	              users3 = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(users3, null, 2));
-	              assert.equalObjects(users3, []);
+	              assert.objectsEqual(users3, []);
 	              assert.equal(users3.length, 0);
 	
-	              assert.debug('findAll', { name: 'Johnny' });
-	              _context.next = 50;
-	              return adapter.findAll(User, { name: 'Johnny' });
+	              _context.next = 37;
+	              return adapter.findAll(User, { age: 101 });
 	
-	            case 50:
+	            case 37:
 	              users4 = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(users4, null, 2));
 	              users4.sort(function (a, b) {
 	                return a.age - b.age;
 	              });
-	              assert.equal(users4[0].name, 'Johnny');
-	              assert.equal(users4[0].name, 'Johnny');
 	              assert.equal(users4.filter(function (x) {
-	                return x[User.idAttribute] === userId1;
+	                return x.id === userId1;
 	              }).length, 1);
 	              assert.equal(users4.filter(function (x) {
-	                return x[User.idAttribute] === userId2;
+	                return x.id === userId2;
+	              }).length, 0);
+	              assert.equal(users4.filter(function (x) {
+	                return x.age === 101;
 	              }).length, 1);
 	              assert.equal(users4.filter(function (x) {
-	                return x.age === 20;
-	              }).length, 1);
-	              assert.equal(users4.filter(function (x) {
-	                return x.age === 30;
-	              }).length, 1);
+	                return x.age === 202;
+	              }).length, 0);
 	
-	            case 59:
+	            case 43:
 	            case 'end':
 	              return _context.stop();
 	          }

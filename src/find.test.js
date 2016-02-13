@@ -1,3 +1,4 @@
+/* global assert:true */
 module.exports = function (options) {
   describe('Adapter#find', function () {
     var adapter, User, Profile, Post, Comment
@@ -36,6 +37,7 @@ module.exports = function (options) {
       const post = await adapter.create(Post, props)
       assert.debug('created', JSON.stringify(post, null, 2))
       const postId = post[Post.idAttribute]
+
       assert.equal(post.content, 'test')
       assert.isDefined(post[Post.idAttribute])
       assert.equal(post.userId, userId)
@@ -95,6 +97,7 @@ module.exports = function (options) {
       assert.debug('find', comment[Comment.idAttribute])
       comment = await adapter.find(Comment, comment[Comment.idAttribute], {'with': ['user', 'user.profile', 'post', 'post.user']})
       assert.debug('found', JSON.stringify(comment, null, 2))
+
       assert.isDefined(comment)
       assert.isDefined(comment.post)
       assert.isDefined(comment.post.user)
