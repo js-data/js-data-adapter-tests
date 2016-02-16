@@ -2,6 +2,14 @@
 
 - Some improvements
 
+##### 2.0.0-alpha.3 - 16 February 2016
+
+- Added source map
+
+##### 2.0.0-alpha.2 - 16 February 2016
+
+- Soem fixes
+
 ##### 2.0.0-alpha.1 - 13 February 2016
 
 - Upgrades to work with 3.x js-data and adapters
