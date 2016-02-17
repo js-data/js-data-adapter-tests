@@ -54,9 +54,6 @@ module.exports = function (options) {
         assert.equal(users2.length, 1)
         assert.equal(users2[0].id, id)
         assert.equal(users2[0].name, 'John')
-
-        var destroyedUser = await adapter.destroy(User, id)
-        assert.isFalse(!!destroyedUser)
       })
     }
 
@@ -84,9 +81,6 @@ module.exports = function (options) {
         assert.equal(users2.length, 1)
         assert.equal(users2[0].id, id)
         assert.equal(users2[0].name, 'John')
-
-        var destroyedUser = await adapter.destroy(User, id)
-        assert.isFalse(!!destroyedUser)
       })
     }
 

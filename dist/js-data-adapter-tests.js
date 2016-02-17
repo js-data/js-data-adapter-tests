@@ -732,7 +732,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    if (options.features === 'all' || options.features.indexOf('inOp') !== -1) {
 	      it('should filter users using the "in" operator', _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-	        var users, user, id, users2, destroyedUser;
+	        var users, user, id, users2;
 	        return regeneratorRuntime.wrap(function _callee2$(_context2) {
 	          while (1) {
 	            switch (_context2.prev = _context2.next) {
@@ -767,15 +767,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                assert.equal(users2[0].id, id);
 	                assert.equal(users2[0].name, 'John');
 	
-	                _context2.next = 16;
-	                return adapter.destroy(User, id);
-	
-	              case 16:
-	                destroyedUser = _context2.sent;
-	
-	                assert.isFalse(!!destroyedUser);
-	
-	              case 18:
+	              case 14:
 	              case 'end':
 	                return _context2.stop();
 	            }
@@ -786,7 +778,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    if (options.features === 'all' || options.features.indexOf('likeOp') !== -1) {
 	      it('should filter users using the "like" operator', _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
-	        var users, user, id, users2, destroyedUser;
+	        var users, user, id, users2;
 	        return regeneratorRuntime.wrap(function _callee3$(_context3) {
 	          while (1) {
 	            switch (_context3.prev = _context3.next) {
@@ -827,15 +819,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                assert.equal(users2[0].id, id);
 	                assert.equal(users2[0].name, 'John');
 	
-	                _context3.next = 16;
-	                return adapter.destroy(User, id);
-	
-	              case 16:
-	                destroyedUser = _context3.sent;
-	
-	                assert.isFalse(!!destroyedUser);
-	
-	              case 18:
+	              case 14:
 	              case 'end':
 	                return _context3.stop();
 	            }

@@ -2,6 +2,10 @@
 
 - Some improvements
 
+##### 2.0.0-alpha.4 - 16 February 2016
+
+- Better configurability
+
 ##### 2.0.0-alpha.3 - 16 February 2016
 
 - Added source map
