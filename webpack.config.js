@@ -1,4 +1,5 @@
 module.exports = {
+  devtool: 'source-map',
   entry: './src/index.js',
   output: {
     filename: './dist/js-data-adapter-tests.js',
@@ -10,10 +11,7 @@ module.exports = {
       {
         test: /(src)(.+)\.js$/,
         exclude: /(node_modules|bower_components)/,
-        loader: 'babel',
-        query: {
-          presets: ['es2015']
-        }
+        loader: 'babel'
       }
     ]
   }

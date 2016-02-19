@@ -1,31 +1,27 @@
 module.exports = function (options) {
   describe('Adapter#create', function () {
-    it('should exist', function * () {
+    it('should exist', function () {
       assert.equal(typeof this.$$adapter.create, 'function', 'adapter should have a "create" method')
     })
-    it('should create a user', function * () {
-      var adapter = this.$$adapter
-      var User = this.$$User
-      var createUser = yield adapter.create(User, {name: 'John'})
-      var id = createUser.id
-      assert.equal(createUser.name, 'John')
-      assert.isDefined(createUser.id)
+    it('should create a user', async function () {
+      const adapter = this.$$adapter
+      const User = this.$$User
+      const props = { name: 'John' }
 
-      var findUser = yield adapter.find(User, createUser.id)
-      assert.equal(findUser.name, 'John')
-      assert.isDefined(findUser.id)
-      assert.equal(findUser.id, id)
-      assert.equal(findUser.name, 'John')
+      assert.debug('create', props)
+      const user = await adapter.create(User, props)
+      assert.debug('created', JSON.stringify(user, null, 2))
 
-      var destoryUser = yield adapter.destroy(User, findUser.id)
-      assert.isFalse(!!destoryUser)
+      assert.equal(user.name, props.name, `name of user should be "${props.name}"`)
+      assert.isDefined(user[User.idAttribute], 'new user should have an id')
 
-      try {
-        yield adapter.find(User, id)
-        throw new Error('Should not have reached here!')
-      } catch (err) {
-        assert.equal(err.message, 'Not Found!')
-      }
+      assert.debug('find', user[User.idAttribute])
+      const foundUser = await adapter.find(User, user[User.idAttribute])
+      assert.debug('found', JSON.stringify(foundUser, null, 2))
+
+      assert.equal(foundUser.name, props.name, `name of user should be "${props.name}"`)
+      assert.isDefined(foundUser[User.idAttribute], 'new user should have an id')
+      assert.equal(foundUser[User.idAttribute], user[User.idAttribute])
     })
   })
 }

@@ -1,22 +1,32 @@
 module.exports = function (options) {
   describe('Adapter#destroyAll', function () {
-    it('should exist', function * () {
+    it('should exist', function () {
       assert.equal(typeof this.$$adapter.destroyAll, 'function', 'adapter should have a "destroyAll" method')
     })
-    it('should destroy all users', function * () {
-      var adapter = this.$$adapter
-      var User = this.$$User
-      var createUser = yield adapter.create(User, {name: 'John'})
-      var id = createUser.id
+    it('should destroy all users', async function () {
+      const adapter = this.$$adapter
+      const User = this.$$User
+      const props = { name: 'John' }
 
-      var findUsers = yield adapter.findAll(User, { name: 'John' })
-      assert.equal(findUsers.length, 1)
-      assert.equal(findUsers[0].id, id)
-      assert.equal(findUsers[0].name, 'John')
+      assert.debug('create', props)
+      const user = await adapter.create(User, props)
+      assert.debug('created', JSON.stringify(user, null, 2))
 
-      yield adapter.destroyAll(User, { name: 'John' })
-      var findUsers2 = yield adapter.findAll(User, { name: 'John' })
-      assert.equal(findUsers2.length, 0)
+      assert.debug('findAll', props)
+      let foundUsers = await adapter.findAll(User, props)
+      assert.debug('found', JSON.stringify(foundUsers, null, 2))
+      assert.equal(foundUsers.length, 1)
+      assert.equal(foundUsers[0][User.idAttribute], user[User.idAttribute])
+      assert.equal(foundUsers[0].name, 'John')
+
+      assert.debug('destroyAll', props)
+      const destroyedUsers = await adapter.destroyAll(User, props)
+      assert.debug('destroyed', JSON.stringify(destroyedUsers, null, 2))
+
+      assert.debug('findAll', props)
+      foundUsers = await adapter.findAll(User, props)
+      assert.debug('found', JSON.stringify(foundUsers, null, 2))
+      assert.equal(foundUsers.length, 0)
     })
   })
 }

@@ -1,3 +1,7 @@
+##### 1.5.0 - 18 February 2016
+
+- Some improvements
+
 ##### 1.3.0 - 10 November 2015
 
 - Fixed coMocha and some assertions

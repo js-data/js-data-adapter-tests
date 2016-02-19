@@ -1,15 +1,17 @@
-require('babel-polyfill')
-
-try {
-  require('co-mocha')(Mocha)
-} catch (err) {
-
-}
-
-var assert = require('chai').assert
-
 assert.equalObjects = function (a, b, m) {
   assert.deepEqual(JSON.parse(JSON.stringify(a)), JSON.parse(JSON.stringify(b)), m || (JSON.stringify(a) + ' should be equal to ' + JSON.stringify(b)))
+}
+
+assert.objectsEqual = function (a, b, m) {
+  assert.deepEqual(JSON.parse(JSON.stringify(a)), JSON.parse(JSON.stringify(b)), m || (JSON.stringify(a) + ' should be equal to ' + JSON.stringify(b)))
+}
+
+let debug = false
+
+assert.debug = function (...args) {
+  if (debug) {
+    console.log(...args)
+  }
 }
 
 var prefix = 'TestRunner.init(options): options'
@@ -17,6 +19,7 @@ var prefix = 'TestRunner.init(options): options'
 module.exports = {
   init: function (options) {
     options = options || {}
+    debug = !!options.debug
     options.methods = options.methods || 'all'
     options.features = options.features || 'all'
     if (!options.DS || typeof options.DS !== 'function') {
@@ -43,20 +46,36 @@ module.exports = {
           hasOne: {
             profile: {
               localField: 'profile',
-              localKey: 'profileId'
+              foreignKey: 'userId'
             },
             address: {
               localField: 'address',
-              localKey: 'addressId'
+              foreignKey: 'userId'
             }
           }
         }
       })
       this.$$Profile = this.$$store.defineResource(options.profileConfig || {
-        name: 'profile'
+        name: 'profile',
+        relations: {
+          belongsTo: {
+            user: {
+              localField: 'user',
+              localkey: 'userId'
+            }
+          }
+        }
       })
       this.$$Address = this.$$store.defineResource(options.addressConfig || {
-        name: 'address'
+        name: 'address',
+        relations: {
+          belongsTo: {
+            user: {
+              localField: 'user',
+              localkey: 'userId'
+            }
+          }
+        }
       })
       this.$$Post = this.$$store.defineResource(options.postConfig || {
         name: 'post',
@@ -116,12 +135,12 @@ module.exports = {
       }
     })
 
-    afterEach(function * () {
-      yield this.$$adapter.destroyAll(this.$$Comment)
-      yield this.$$adapter.destroyAll(this.$$Post)
-      yield this.$$adapter.destroyAll(this.$$User)
-      yield this.$$adapter.destroyAll(this.$$Profile)
-      yield this.$$adapter.destroyAll(this.$$Address)
+    afterEach(async function () {
+      await this.$$adapter.destroyAll(this.$$Comment)
+      await this.$$adapter.destroyAll(this.$$Post)
+      await this.$$adapter.destroyAll(this.$$User)
+      await this.$$adapter.destroyAll(this.$$Profile)
+      await this.$$adapter.destroyAll(this.$$Address)
     })
   },
   assert: assert,

@@ -10,72 +10,91 @@ module.exports = function (options) {
       Comment = this.$$Comment
     })
 
-    it('should exist', function * () {
+    it('should exist', function () {
       assert.equal(typeof adapter.find, 'function', 'adapter should have a "find" method')
     })
 
-    it('should find a user', function * () {
-      var user = yield adapter.create(User, {name: 'John'})
-      var userId = user.id
-      assert.equal(user.name, 'John')
-      assert.isDefined(user.id)
+    it('should find a user', async function () {
+      let props = { name: 'John' }
+      assert.debug('create', props)
+      const user = await adapter.create(User, props)
+      assert.debug('created', JSON.stringify(user, null, 2))
+      const userId = user[User.idAttribute]
+      assert.equal(user.name, 'John', 'name of created user should be "John"')
+      assert.isDefined(user[User.idAttribute])
 
-      var user2 = yield adapter.find(User, user.id)
-      assert.equal(user2.name, 'John')
-      assert.isDefined(user2.id)
-      assert.equal(user2.id, userId)
-      assert.equal(user2.name, 'John')
+      assert.debug('find', user[User.idAttribute])
+      const foundUser = await adapter.find(User, user[User.idAttribute])
+      assert.debug('found', JSON.stringify(foundUser, null, 2))
+      assert.equal(foundUser.name, 'John')
+      assert.isDefined(foundUser[User.idAttribute])
+      assert.equal(foundUser[User.idAttribute], userId)
+      assert.equal(foundUser.name, 'John')
 
-      var post = yield adapter.create(Post, { content: 'test', userId: userId })
-      var postId = post.id
+      props = { content: 'test', userId: userId }
+      assert.debug('create', props)
+      const post = await adapter.create(Post, props)
+      assert.debug('created', JSON.stringify(post, null, 2))
+      const postId = post[Post.idAttribute]
       assert.equal(post.content, 'test')
-      assert.isDefined(post.id)
-      assert.isDefined(post.userId)
+      assert.isDefined(post[Post.idAttribute])
+      assert.equal(post.userId, userId)
 
-      var comments = yield [
-        adapter.create(Comment, {
+      props = [
+        {
           content: 'test2',
-          postId: post.id,
-          userId: user.id
-        }),
-        adapter.create(Comment, {
+          postId: post[Post.idAttribute],
+          userId: user[User.idAttribute]
+        },
+        {
           content: 'test3',
-          postId: post.id,
-          userId: user.id
-        })
+          postId: post[Post.idAttribute],
+          userId: user[User.idAttribute]
+        }
       ]
+      assert.debug('create', props)
+      const comments = await Promise.all([
+        adapter.create(Comment, props[0]),
+        adapter.create(Comment, props[1])
+      ])
+      assert.debug('created', JSON.stringify(comments, null, 2))
 
       comments.sort(function (a, b) {
         return a.content > b.content
       })
 
-      var findPost = yield adapter.find(Post, postId, {with: ['user', 'comment']})
+      const findPost = await adapter.find(Post, postId, {with: ['user', 'comment']})
       findPost.comments.sort(function (a, b) {
         return a.content > b.content
       })
       assert.equalObjects(findPost.user, user)
       assert.equalObjects(findPost.comments, comments)
-
-      yield adapter.destroyAll(Comment)
-      yield adapter.destroy(Post, postId)
-      var destroyUser = yield adapter.destroy(User, userId)
-      assert.isFalse(!!destroyUser)
-
-      try {
-        yield adapter.find(User, userId)
-        throw new Error('Should not have reached here!')
-      } catch (err) {
-        assert.equal(err.message, 'Not Found!')
-      }
     })
 
-    it('should load belongsTo relations', function * () {
-      var profile = yield adapter.create(Profile, { email: 'foo@test.com' })
-      var user = yield adapter.create(User, {name: 'John', profileId: profile.id})
-      var post = yield adapter.create(Post, {content: 'foo', userId: user.id})
-      var comment = yield adapter.create(Comment, { content: 'test2', postId: post.id, userId: post.userId })
+    it('should load belongsTo relations', async function () {
+      let props = { name: 'John' }
+      assert.debug('create', props)
+      const user = await adapter.create(User, props)
+      assert.debug('created', JSON.stringify(user, null, 2))
 
-      comment = yield adapter.find(Comment, comment.id, {'with': ['user', 'user.profile', 'post', 'post.user']})
+      props = { email: 'foo@test.com', userId: user[User.idAttribute] }
+      assert.debug('create', props)
+      const profile = await adapter.create(Profile, props)
+      assert.debug('created', JSON.stringify(profile, null, 2))
+
+      props = { content: 'foo', userId: user[User.idAttribute] }
+      assert.debug('create', props)
+      const post = await adapter.create(Post, props)
+      assert.debug('created', JSON.stringify(post, null, 2))
+
+      props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId }
+      assert.debug('create', props)
+      let comment = await adapter.create(Comment, props)
+      assert.debug('created', JSON.stringify(comment, null, 2))
+
+      assert.debug('find', comment[Comment.idAttribute])
+      comment = await adapter.find(Comment, comment[Comment.idAttribute], {'with': ['user', 'user.profile', 'post', 'post.user']})
+      assert.debug('found', JSON.stringify(comment, null, 2))
       assert.isDefined(comment)
       assert.isDefined(comment.post)
       assert.isDefined(comment.post.user)
@@ -83,17 +102,35 @@ module.exports = function (options) {
       assert.isDefined(comment.user.profile)
     })
 
-    it('should load hasMany and belongsTo relations', function * () {
-      var profile = yield adapter.create(Profile, { email: 'foo@test.com' })
-      var user = yield adapter.create(User, {name: 'John', profileId: profile.id})
-      var post = yield adapter.create(Post, {content: 'foo', userId: user.id})
-      yield adapter.create(Comment, { content: 'test2', postId: post.id, userId: post.userId })
+    it('should load hasMany and belongsTo relations', async function () {
+      let props = { name: 'John' }
+      assert.debug('create', props)
+      const user = await adapter.create(User, props)
+      assert.debug('created', JSON.stringify(user, null, 2))
 
-      var foundPost = yield adapter.find(Post, post.id, {'with': ['user', 'comment', 'comment.user', 'comment.user.profile']})
-      assert.isDefined(foundPost.comments)
-      assert.isDefined(foundPost.comments[0].user)
-      assert.isDefined(foundPost.comments[0].user.profile)
-      assert.isDefined(foundPost.user)
+      props = { email: 'foo@test.com', userId: user[User.idAttribute] }
+      assert.debug('create', props)
+      const profile = await adapter.create(Profile, props)
+      assert.debug('created', JSON.stringify(profile, null, 2))
+
+      props = { content: 'foo', userId: user[User.idAttribute] }
+      assert.debug('create', props)
+      let post = await adapter.create(Post, props)
+      assert.debug('created', JSON.stringify(post, null, 2))
+
+      props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId }
+      assert.debug('create', props)
+      const comment = await adapter.create(Comment, props)
+      assert.debug('created', JSON.stringify(comment, null, 2))
+
+      assert.debug('find', props, comment[Comment.idAttribute])
+      post = await adapter.find(Post, post[Post.idAttribute], {'with': ['user', 'comment', 'comment.user', 'comment.user.profile']})
+      assert.debug('found', JSON.stringify(post, null, 2))
+
+      assert.isDefined(post.comments)
+      assert.isDefined(post.comments[0].user)
+      assert.isDefined(post.comments[0].user.profile)
+      assert.isDefined(post.user)
     })
   })
 }
