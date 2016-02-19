@@ -22,7 +22,7 @@ module.exports = function (options) {
 
       assert.debug('destroyAll', props)
       const destroyedUsers = await adapter.destroyAll(User, props)
-      assert.equal(destroyedUsers.length, 2)
+      assert.equal(destroyedUsers.length, 1)
       assert.debug('destroyed', JSON.stringify(destroyedUsers, null, 2))
 
       assert.debug('findAll', props)

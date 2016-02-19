@@ -1302,7 +1302,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              destroyedUser = _context.sent;
 	
 	              assert.debug('destroyed', JSON.stringify(destroyedUser, null, 2));
-	              assert.equal(destroyedUser, createUser.id);
+	              assert.equal(destroyedUser, user[User.idAttribute]);
 	
 	              _context.next = 16;
 	              return adapter.find(User, user[User.idAttribute]);
@@ -1377,7 +1377,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 19:
 	              destroyedUsers = _context.sent;
 	
-	              assert.equal(destroyedUsers.length, 2);
+	              assert.equal(destroyedUsers.length, 1);
 	              assert.debug('destroyed', JSON.stringify(destroyedUsers, null, 2));
 	
 	              assert.debug('findAll', props);

@@ -16,7 +16,7 @@ module.exports = function (options) {
       assert.debug('destroy', user[User.idAttribute])
       const destroyedUser = await adapter.destroy(User, user[User.idAttribute])
       assert.debug('destroyed', JSON.stringify(destroyedUser, null, 2))
-      assert.equal(destroyedUser, createUser.id)
+      assert.equal(destroyedUser, user[User.idAttribute])
 
       user = await adapter.find(User, user[User.idAttribute])
       assert.isTrue(!user)
