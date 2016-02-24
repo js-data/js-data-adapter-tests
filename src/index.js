@@ -26,7 +26,7 @@ module.exports = {
       throw new Error(prefix + '.Adapter: Expected function, Actual: ' + typeof options.Adapter)
     }
     beforeEach(function () {
-       this.$$adapter = new options.Adapter(options.adapterConfig)
+      this.$$adapter = new options.Adapter(options.adapterConfig)
       this.$$container = new options.JSData.Container(options.containerConfig || {
         mapperDefaults: {
           debug: false
@@ -90,6 +90,10 @@ module.exports = {
             comment: {
               localField: 'comments',
               foreignKey: 'postId'
+            },
+            tag: {
+              localField: 'tags',
+              localKeys: 'tagIds'
             }
           }
         }
@@ -109,6 +113,17 @@ module.exports = {
           }
         }
       }
+      var tagOptions = {
+        name: 'tag',
+        relations: {
+          hasMany: {
+            post: {
+              localField: 'posts',
+              foreignKeys: 'tagIds'
+            }
+          }
+        }
+      }
       this.$$User = this.$$container.defineMapper('user', options.userConfig || options.JSData.utils.copy(userOptions))
       this.$$store.defineMapper('user', options.userConfig || options.JSData.utils.copy(userOptions))
       this.$$Organization = this.$$container.defineMapper('organization', options.organizationConfig || options.JSData.utils.copy(organizationOptions))
@@ -121,6 +136,8 @@ module.exports = {
       this.$$store.defineMapper('post', options.postConfig || options.JSData.utils.copy(postOptions))
       this.$$Comment = this.$$container.defineMapper('comment', options.commentConfig || options.JSData.utils.copy(commentOptions))
       this.$$store.defineMapper('comment', options.commentConfig || options.JSData.utils.copy(commentOptions))
+      this.$$Tag = this.$$container.defineMapper('tag', options.tagConfig || options.JSData.utils.copy(tagOptions))
+      this.$$store.defineMapper('tag', options.tagConfig || options.JSData.utils.copy(tagOptions))
     })
 
     describe('js-data-adapter-tests', function () {

@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.6 - 23 February 2016
+
+- Improved testing of find, destroy, and update features
+
 ##### 2.0.0-alpha.5 - 18 February 2016
 
 - rebased 1.5.0 changes
