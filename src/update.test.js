@@ -9,24 +9,24 @@ module.exports = function (options) {
       const User = this.$$User
       const props = { name: 'John' }
 
-      assert.debug('create', props)
+      assert.debug('create', User.name, props)
       const user = await adapter.create(User, props)
-      assert.debug('created', JSON.stringify(user, null, 2))
+      assert.debug('created', User.name, user)
 
       assert.equal(user.name, props.name, `name of user should be "${props.name}"`)
       assert.isDefined(user[User.idAttribute], 'new user should have an id')
 
-      assert.debug('find', user[User.idAttribute])
+      assert.debug('find', User.name, user[User.idAttribute])
       let foundUser = await adapter.find(User, user[User.idAttribute])
-      assert.debug('found', JSON.stringify(foundUser, null, 2))
+      assert.debug('found', User.name, foundUser)
 
       assert.equal(foundUser.name, props.name, `name of user should be "${props.name}"`)
       assert.isDefined(foundUser[User.idAttribute], 'new user should have an id')
       assert.equal(foundUser[User.idAttribute], user[User.idAttribute])
 
-      assert.debug('update', user[User.idAttribute], { name: 'Johnny' })
+      assert.debug('update', User.name, user[User.idAttribute], { name: 'Johnny' })
       let updatedUser = await adapter.update(User, user[User.idAttribute], { name: 'Johnny' })
-      assert.debug('updated', JSON.stringify(updatedUser, null, 2))
+      assert.debug('updated', User.name, updatedUser)
       assert.equal(updatedUser.name, 'Johnny')
       assert.equal(updatedUser[User.idAttribute], user[User.idAttribute])
 
@@ -53,17 +53,17 @@ module.exports = function (options) {
         // Test re-assignment
         return Promise.resolve({ [User.idAttribute]: user[User.idAttribute], name: record.name + 'baz' })
       }
-      assert.debug('update', user[User.idAttribute], { name: 'foo' })
+      assert.debug('update', User.name, user[User.idAttribute], { name: 'foo' })
       updatedUser = await adapter.update(User, user[User.idAttribute], { name: 'foo' })
-      assert.debug('updated', JSON.stringify(updatedUser, null, 2))
+      assert.debug('updated', User.name, updatedUser)
       assert.equal(updatedUser.name, 'barbaz')
       assert.equal(updatedUser[User.idAttribute], user[User.idAttribute])
       assert.isTrue(beforeUpdateCalled, 'beforeUpdate should have been called')
       assert.isTrue(afterUpdateCalled, 'afterUpdate should have been called')
 
-      assert.debug('find', user[User.idAttribute])
+      assert.debug('find', User.name, user[User.idAttribute])
       foundUser = await adapter.find(User, user[User.idAttribute])
-      assert.debug('found', JSON.stringify(foundUser, null, 2))
+      assert.debug('found', User.name, foundUser)
       assert.equal(foundUser.name, 'bar')
       assert.equal(foundUser[User.idAttribute], user[User.idAttribute])
     })

@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.7 - 26 February 2016
+
+- Improved testing
+
 ##### 2.0.0-alpha.6 - 23 February 2016
 
 - Improved testing of find, destroy, and update features

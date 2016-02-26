@@ -10,7 +10,10 @@ let debug = false
 
 assert.debug = function (...args) {
   if (debug) {
-    console.log(...args)
+    args.forEach(function (arg, i) {
+      args[i] = JSON.stringify(arg, null, 2)
+    })
+    console.log('DEBUG (TEST):', ...args)
   }
 }
 
@@ -177,6 +180,7 @@ module.exports = {
       await this.$$adapter.destroyAll(this.$$Profile)
       await this.$$adapter.destroyAll(this.$$Address)
       await this.$$adapter.destroyAll(this.$$Organization)
+      await this.$$adapter.destroyAll(this.$$Tag)
     })
   },
   assert: assert,

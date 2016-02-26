@@ -71,10 +71,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var debug = false;
 	
 	assert.debug = function () {
+	  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	    args[_key] = arguments[_key];
+	  }
+	
 	  if (debug) {
 	    var _console;
 	
-	    (_console = console).log.apply(_console, arguments);
+	    args.forEach(function (arg, i) {
+	      args[i] = JSON.stringify(arg, null, 2);
+	    });
+	    (_console = console).log.apply(_console, ['DEBUG (TEST):'].concat(args));
 	  }
 	};
 	
@@ -263,6 +270,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	              return this.$$adapter.destroyAll(this.$$Organization);
 	
 	            case 12:
+	              _context.next = 14;
+	              return this.$$adapter.destroyAll(this.$$Tag);
+	
+	            case 14:
 	            case 'end':
 	              return _context.stop();
 	          }
@@ -303,7 +314,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      assert.equal(_typeof(this.$$adapter.create), 'function', 'adapter should have a "create" method');
 	    });
 	    it('should create a user', _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	      var adapter, User, props, user, foundUser;
+	      var adapter, User, props, user, userId, foundUser;
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
 	        while (1) {
 	          switch (_context.prev = _context.next) {
@@ -313,32 +324,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	              props = { name: 'John' };
 	
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context.next = 6;
 	              return adapter.create(User, props);
 	
 	            case 6:
 	              user = _context.sent;
+	              userId = user[User.idAttribute];
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	
-	              assert.equal(user.name, props.name, 'name of user should be "' + props.name + '"');
-	              assert.isDefined(user[User.idAttribute], 'new user should have an id');
+	              assert.equal(user.name, props.name, 'user.name');
+	              assert.isDefined(user[User.idAttribute], 'user[User.idAttribute]');
 	
-	              assert.debug('find', user[User.idAttribute]);
-	              _context.next = 13;
-	              return adapter.find(User, user[User.idAttribute]);
+	              assert.debug('find', User.name, userId);
+	              _context.next = 14;
+	              return adapter.find(User, userId);
 	
-	            case 13:
+	            case 14:
 	              foundUser = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(foundUser, null, 2));
+	              assert.debug('found', User.name, foundUser);
 	
-	              assert.equal(foundUser.name, props.name, 'name of user should be "' + props.name + '"');
-	              assert.isDefined(foundUser[User.idAttribute], 'new user should have an id');
-	              assert.equal(foundUser[User.idAttribute], user[User.idAttribute]);
+	              assert.equal(foundUser.name, props.name, 'foundUser.name');
+	              assert.isDefined(foundUser[User.idAttribute], 'foundUser[User.idAttribute]');
+	              assert.equal(foundUser[User.idAttribute], userId, 'foundUser[User.idAttribute]');
 	
-	            case 18:
+	            case 19:
 	            case 'end':
 	              return _context.stop();
 	          }
@@ -441,130 +453,146 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	
 	    it('should find a user', _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	      var props, user, userId, foundUser, post, postId, comments, findPost;
+	      var props, user, userId, beforeFindCalled, afterFindCalled, foundUser, post, postId, comments, foundPost;
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
 	        while (1) {
 	          switch (_context.prev = _context.next) {
 	            case 0:
 	              props = { name: 'John' };
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context.next = 4;
 	              return adapter.create(User, props);
 	
 	            case 4:
 	              user = _context.sent;
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	              userId = user[User.idAttribute];
 	
-	              assert.equal(user.name, 'John', 'name of created user should be "John"');
-	              assert.isDefined(user[User.idAttribute], 'created user should have an id');
+	              assert.equal(user.name, 'John', 'user.name');
+	              assert.isDefined(user[User.idAttribute], 'user[User.idAttribute]');
 	
 	              // Test beforeFind and afterFind
+	              beforeFindCalled = false;
+	              afterFindCalled = false;
+	
 	              adapter.beforeFind = function (mapper, id, opts) {
+	                beforeFindCalled = true;
 	                assert.isObject(mapper, 'beforeFind should have received mapper argument');
 	                assert.isDefined(id, 'beforeFind should have received id argument');
+	                assert.equal(id, userId, 'beforeFind should have received correct id argument');
 	                assert.isObject(opts, 'beforeFind should have received opts argument');
 	                // Optionally return a promise for async
 	                return Promise.resolve();
 	              };
 	              adapter.afterFind = function (mapper, id, opts, record) {
+	                afterFindCalled = true;
 	                assert.isObject(mapper, 'afterFind should have received mapper argument');
 	                assert.isDefined(id, 'afterFind should have received id argument');
+	                assert.equal(id, userId, 'afterFind should have received correct id argument');
 	                assert.isObject(opts, 'afterFind should have received opts argument');
 	                assert.isObject(record, 'afterFind should have received record argument');
 	                // Optionally return a promise for async
 	                return Promise.resolve();
 	              };
 	
-	              assert.debug('find', user[User.idAttribute]);
-	              _context.next = 14;
-	              return adapter.find(User, user[User.idAttribute]);
+	              assert.debug('find', User.name, userId);
+	              _context.next = 16;
+	              return adapter.find(User, userId);
 	
-	            case 14:
+	            case 16:
 	              foundUser = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(foundUser, null, 2));
+	              assert.debug('found', User.name, foundUser);
 	              assert.equal(foundUser.name, 'John', 'name of found user should be "John"');
 	              assert.equal(foundUser[User.idAttribute], userId, 'found user should have correct id');
+	              assert.isTrue(beforeFindCalled, 'beforeFind should have been called');
+	              assert.isTrue(afterFindCalled, 'afterFind should have been called');
 	
 	              // should allow re-assignment
+	              beforeFindCalled = false;
+	              afterFindCalled = false;
 	              adapter.afterFind = function (mapper, id, opts, record) {
+	                afterFindCalled = true;
 	                assert.isObject(mapper, 'afterFind should have received mapper argument');
 	                assert.isDefined(id, 'afterFind should have received id argument');
+	                assert.equal(id, userId, 'afterFind should have received correct id argument');
 	                assert.isObject(opts, 'afterFind should have received opts argument');
 	                assert.isObject(record, 'afterFind should have received record argument');
 	                // Test re-assignment
-	                return Promise.resolve(_defineProperty({ name: 'Sally' }, User.idAttribute, user[User.idAttribute]));
+	                return Promise.resolve(_defineProperty({ name: 'Sally' }, User.idAttribute, userId));
 	              };
 	
-	              assert.debug('find', user[User.idAttribute]);
-	              _context.next = 22;
-	              return adapter.find(User, user[User.idAttribute]);
+	              assert.debug('find', User.name, userId);
+	              _context.next = 28;
+	              return adapter.find(User, userId);
 	
-	            case 22:
+	            case 28:
 	              foundUser = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(foundUser, null, 2));
-	              assert.equal(foundUser.name, 'Sally', 'name of found user should be "Sally"');
-	              assert.equal(foundUser[User.idAttribute], userId, 'found user should have correct id');
-	              // clear hook
+	              assert.debug('found', User.name, foundUser);
+	              assert.equal(foundUser.name, 'Sally', 'foundUser.name');
+	              assert.equal(foundUser[User.idAttribute], userId, 'foundUser[User.idAttribute]');
+	              assert.isTrue(beforeFindCalled, 'beforeFind should have been called');
+	              assert.isTrue(afterFindCalled, 'afterFind should have been called');
+	              // clear hooks
+	              delete adapter.beforeFind;
 	              delete adapter.afterFind;
 	
 	              props = { content: 'test', userId: userId };
-	              assert.debug('create', props);
-	              _context.next = 31;
+	              assert.debug('create', Post.name, props);
+	              _context.next = 40;
 	              return adapter.create(Post, props);
 	
-	            case 31:
+	            case 40:
 	              post = _context.sent;
 	
-	              assert.debug('created', JSON.stringify(post, null, 2));
+	              assert.debug('created', Post.name, post);
 	              postId = post[Post.idAttribute];
 	
 	
-	              assert.equal(post.content, 'test');
-	              assert.isDefined(post[Post.idAttribute], 'created post should have an id');
-	              assert.equal(post.userId, userId, 'created post should have user foreign key');
+	              assert.equal(post.content, 'test', 'post.content');
+	              assert.isDefined(post[Post.idAttribute], 'post[Post.idAttribute]');
+	              assert.equal(post.userId, userId, 'post.userId');
 	
 	              props = [{
 	                content: 'test2',
-	                postId: post[Post.idAttribute],
-	                userId: user[User.idAttribute]
+	                postId: postId,
+	                userId: userId
 	              }, {
 	                content: 'test3',
-	                postId: post[Post.idAttribute],
-	                userId: user[User.idAttribute]
+	                postId: postId,
+	                userId: userId
 	              }];
-	              assert.debug('create', props);
-	              _context.next = 41;
+	              assert.debug('create', Comment.name, props);
+	              _context.next = 50;
 	              return Promise.all([adapter.create(Comment, props[0]), adapter.create(Comment, props[1])]);
 	
-	            case 41:
+	            case 50:
 	              comments = _context.sent;
 	
-	              assert.debug('created', JSON.stringify(comments, null, 2));
+	              assert.debug('created', Comment.name, comments);
 	
 	              comments.sort(function (a, b) {
 	                return a.content > b.content;
 	              });
 	
-	              assert.debug('find', postId);
-	              _context.next = 47;
+	              assert.debug('find', Post.name, postId);
+	              _context.next = 56;
 	              return adapter.find(Post, postId, { with: ['user', 'comment'] });
 	
-	            case 47:
-	              findPost = _context.sent;
+	            case 56:
+	              foundPost = _context.sent;
 	
-	              assert.debug('found', findPost);
-	              findPost.comments.sort(function (a, b) {
+	              assert.debug('found', Post.name, foundPost);
+	              foundPost.comments.sort(function (a, b) {
 	                return a.content > b.content;
 	              });
-	              assert.equalObjects(findPost.user, user, 'found post should have attached user');
-	              assert.equalObjects(findPost.comments, comments, 'found post should have attached comments');
+	              assert.equalObjects(foundPost.user, user, 'foundPost.user');
+	              assert.equalObjects(foundPost.comments, comments, 'foundPost.comments');
 	
-	            case 52:
+	            case 61:
 	            case 'end':
 	              return _context.stop();
 	          }
@@ -580,32 +608,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 0:
 	              props = { name: 'John' };
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context2.next = 4;
 	              return adapter.create(User, props);
 	
 	            case 4:
 	              user = _context2.sent;
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	              userId = user[User.idAttribute];
 	
-	              assert.equal(user.name, 'John', 'name of created user should be "John"');
-	              assert.isDefined(user[User.idAttribute], 'created user should have an id');
+	              assert.equal(user.name, 'John', 'user.name');
+	              assert.isDefined(user[User.idAttribute], 'user[User.idAttribute]');
 	
-	              assert.debug('find', user[User.idAttribute]);
+	              assert.debug('find', User.name, userId);
 	              _context2.next = 12;
-	              return adapter.find(User, user[User.idAttribute], { raw: true });
+	              return adapter.find(User, userId, { raw: true });
 	
 	            case 12:
 	              result = _context2.sent;
 	
-	              assert.debug('found', JSON.stringify(result, null, 2));
-	              assert.isDefined(result.data, 'result.data is defined');
-	              assert.isDefined(result.found, 'result.found is defined');
-	              assert.equal(result.data.name, 'John', 'result.data.name should be "John"');
-	              assert.equal(result.data[User.idAttribute], userId, 'result.data.' + User.idAttribute + ' should be ' + userId);
-	              assert.equal(result.found, 1, 'result.found should be 1');
+	              assert.debug('found', User.name, result);
+	              assert.isDefined(result.data, 'result.data');
+	              assert.isDefined(result.found, 'result.found');
+	              assert.equal(result.data.name, 'John', 'result.data.name');
+	              assert.equal(result.data[User.idAttribute], userId, 'result.data.' + User.idAttribute);
+	              assert.equal(result.found, 1, 'result.found');
 	
 	            case 19:
 	            case 'end':
@@ -621,15 +649,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        while (1) {
 	          switch (_context3.prev = _context3.next) {
 	            case 0:
-	              assert.debug('find', 'non-existent-id');
+	              assert.debug('find', User.name, 'non-existent-id');
 	              _context3.next = 3;
 	              return adapter.find(User, 'non-existent-id');
 	
 	            case 3:
 	              result = _context3.sent;
 	
-	              assert.debug('found', JSON.stringify(result, null, 2));
-	              assert.isUndefined(result, 'result should be undefined');
+	              assert.debug('found', User.name, result);
+	              assert.isUndefined(result, 'result');
 	
 	            case 6:
 	            case 'end':
@@ -645,17 +673,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        while (1) {
 	          switch (_context4.prev = _context4.next) {
 	            case 0:
-	              assert.debug('find', 'non-existent-id');
+	              assert.debug('find', User.name, 'non-existent-id');
 	              _context4.next = 3;
 	              return adapter.find(User, 'non-existent-id', { raw: true });
 	
 	            case 3:
 	              result = _context4.sent;
 	
-	              assert.debug('found', JSON.stringify(result, null, 2));
-	              assert.isUndefined(result.data, 'result.data should be undefined');
-	              assert.isDefined(result.found, 'result.found is defined');
-	              assert.equal(result.found, 0, 'result.found should be 0');
+	              assert.debug('found', User.name, result);
+	              assert.isUndefined(result.data, 'result.data');
+	              assert.isDefined(result.found, 'result.found');
+	              assert.equal(result.found, 0, 'result.found');
 	
 	            case 8:
 	            case 'end':
@@ -673,59 +701,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 0:
 	              props = { name: 'John' };
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context5.next = 4;
 	              return adapter.create(User, props);
 	
 	            case 4:
 	              user = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	
 	              props = { email: 'foo@test.com', userId: user[User.idAttribute] };
-	              assert.debug('create', props);
+	              assert.debug('create', Profile.name, props);
 	              _context5.next = 10;
 	              return adapter.create(Profile, props);
 	
 	            case 10:
 	              profile = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(profile, null, 2));
+	              assert.debug('created', Profile.name, profile);
 	
 	              props = { content: 'foo', userId: user[User.idAttribute] };
-	              assert.debug('create', props);
+	              assert.debug('create', Post.name, props);
 	              _context5.next = 16;
 	              return adapter.create(Post, props);
 	
 	            case 16:
 	              post = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(post, null, 2));
+	              assert.debug('created', Post.name, post);
 	
 	              props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId };
-	              assert.debug('create', props);
+	              assert.debug('create', Comment.name, props);
 	              _context5.next = 22;
 	              return adapter.create(Comment, props);
 	
 	            case 22:
 	              comment = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(comment, null, 2));
+	              assert.debug('created', Comment.name, comment);
 	
-	              assert.debug('find', comment[Comment.idAttribute]);
+	              assert.debug('find', Comment.name, comment[Comment.idAttribute]);
 	              _context5.next = 27;
 	              return adapter.find(Comment, comment[Comment.idAttribute], { 'with': ['user', 'user.profile', 'post', 'post.user'] });
 	
 	            case 27:
 	              comment = _context5.sent;
 	
-	              assert.debug('found', JSON.stringify(comment, null, 2));
+	              assert.debug('found', Comment.name, comment);
 	
-	              assert.isDefined(comment);
-	              assert.isDefined(comment.post);
-	              assert.isDefined(comment.post.user);
-	              assert.isDefined(comment.user);
-	              assert.isDefined(comment.user.profile);
+	              assert.isDefined(comment, 'comment');
+	              assert.isDefined(comment.post, 'comment.post');
+	              assert.isDefined(comment.post.user, 'comment.post.user');
+	              assert.isDefined(comment.user, 'comment.user');
+	              assert.isDefined(comment.user.profile, 'comment.user.profile');
 	
 	            case 34:
 	            case 'end':
@@ -736,67 +764,68 @@ return /******/ (function(modules) { // webpackBootstrap
 	    })));
 	
 	    it('should load hasMany and belongsTo relations', _asyncToGenerator(regeneratorRuntime.mark(function _callee6() {
-	      var props, user, profile, post, comment;
+	      var props, user, profile, post, postId, comment;
 	      return regeneratorRuntime.wrap(function _callee6$(_context6) {
 	        while (1) {
 	          switch (_context6.prev = _context6.next) {
 	            case 0:
 	              props = { name: 'John' };
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context6.next = 4;
 	              return adapter.create(User, props);
 	
 	            case 4:
 	              user = _context6.sent;
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	
 	              props = { email: 'foo@test.com', userId: user[User.idAttribute] };
-	              assert.debug('create', props);
+	              assert.debug('create', Profile.name, props);
 	              _context6.next = 10;
 	              return adapter.create(Profile, props);
 	
 	            case 10:
 	              profile = _context6.sent;
 	
-	              assert.debug('created', JSON.stringify(profile, null, 2));
+	              assert.debug('created', Profile.name, profile);
 	
 	              props = { content: 'foo', userId: user[User.idAttribute] };
-	              assert.debug('create', props);
+	              assert.debug('create', Post.name, props);
 	              _context6.next = 16;
 	              return adapter.create(Post, props);
 	
 	            case 16:
 	              post = _context6.sent;
+	              postId = post[Post.idAttribute];
 	
-	              assert.debug('created', JSON.stringify(post, null, 2));
+	              assert.debug('created', Post.name, post);
 	
-	              props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId };
-	              assert.debug('create', props);
-	              _context6.next = 22;
+	              props = { content: 'test2', postId: postId, userId: post.userId };
+	              assert.debug('create', Comment.name, props);
+	              _context6.next = 23;
 	              return adapter.create(Comment, props);
 	
-	            case 22:
+	            case 23:
 	              comment = _context6.sent;
 	
-	              assert.debug('created', JSON.stringify(comment, null, 2));
+	              assert.debug('created', Comment.name, comment);
 	
-	              assert.debug('find', props, comment[Comment.idAttribute]);
-	              _context6.next = 27;
-	              return adapter.find(Post, post[Post.idAttribute], { 'with': ['user', 'comment', 'comment.user', 'comment.user.profile'] });
+	              assert.debug('find', Post.name, postId);
+	              _context6.next = 28;
+	              return adapter.find(Post, postId, { 'with': ['user', 'comment', 'comment.user', 'comment.user.profile'] });
 	
-	            case 27:
+	            case 28:
 	              post = _context6.sent;
 	
-	              assert.debug('found', JSON.stringify(post, null, 2));
+	              assert.debug('found', Post.name, post);
 	
-	              assert.isDefined(post.comments);
-	              assert.isDefined(post.comments[0].user);
-	              assert.isDefined(post.comments[0].user.profile);
-	              assert.isDefined(post.user);
+	              assert.isDefined(post.comments, 'post.comments');
+	              assert.isDefined(post.comments[0].user, 'post.comments[0].user');
+	              assert.isDefined(post.comments[0].user.profile, 'post.comments[0].user.profile');
+	              assert.isDefined(post.user, 'post.user');
 	
-	            case 33:
+	            case 34:
 	            case 'end':
 	              return _context6.stop();
 	          }
@@ -808,57 +837,58 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _tagIds;
 	
 	      it('should load hasMany localKeys (array) relations', _asyncToGenerator(regeneratorRuntime.mark(function _callee7() {
-	        var props, tag, tag2, post;
+	        var props, tag, tag2, post, postId;
 	        return regeneratorRuntime.wrap(function _callee7$(_context7) {
 	          while (1) {
 	            switch (_context7.prev = _context7.next) {
 	              case 0:
 	                props = { value: 'big data' };
 	
-	                assert.debug('create', props);
+	                assert.debug('create', Tag.name, props);
 	                _context7.next = 4;
 	                return adapter.create(Tag, props);
 	
 	              case 4:
 	                tag = _context7.sent;
 	
-	                assert.debug('created', JSON.stringify(tag, null, 2));
+	                assert.debug('created', Tag.name, tag);
 	
 	                props = { value: 'servers' };
-	                assert.debug('create', props);
+	                assert.debug('create', Tag.name, props);
 	                _context7.next = 10;
 	                return adapter.create(Tag, props);
 	
 	              case 10:
 	                tag2 = _context7.sent;
 	
-	                assert.debug('created', JSON.stringify(tag2, null, 2));
+	                assert.debug('created', Tag.name, tag2);
 	
 	                props = { content: 'test', tagIds: [tag[Tag.idAttribute], tag2[Tag.idAttribute]] };
-	                assert.debug('create', props);
+	                assert.debug('create', Post.name, props);
 	                _context7.next = 16;
 	                return adapter.create(Post, props);
 	
 	              case 16:
 	                post = _context7.sent;
+	                postId = post[Post.idAttribute];
 	
-	                assert.debug('created', JSON.stringify(post, null, 2));
+	                assert.debug('created', Post.name, post);
 	
-	                assert.debug('find', props, post[Post.idAttribute]);
-	                _context7.next = 21;
-	                return adapter.find(Post, post[Post.idAttribute], { 'with': ['tag'] });
+	                assert.debug('find', Post.name, postId);
+	                _context7.next = 22;
+	                return adapter.find(Post, postId, { 'with': ['tag'] });
 	
-	              case 21:
+	              case 22:
 	                post = _context7.sent;
 	
-	                assert.debug('found', JSON.stringify(post, null, 2));
+	                assert.debug('found', Post.name, post);
 	
-	                assert.isDefined(post.tags);
-	                assert.equal(post.content, 'test');
-	                assert.isDefined(post.tags[0][Tag.idAttribute]);
-	                assert.isDefined(post.tags[1][Tag.idAttribute]);
+	                assert.isDefined(post.tags, 'post.tags');
+	                assert.equal(post.content, 'test', 'post.content');
+	                assert.isDefined(post.tags[0][Tag.idAttribute], 'post.tags[0][Tag.idAttribute]');
+	                assert.isDefined(post.tags[1][Tag.idAttribute], 'post.tags[1][Tag.idAttribute]');
 	
-	              case 27:
+	              case 28:
 	              case 'end':
 	                return _context7.stop();
 	            }
@@ -866,36 +896,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, _callee7, this);
 	      })));
 	      it('should load hasMany localKeys (empty array) relations', _asyncToGenerator(regeneratorRuntime.mark(function _callee8() {
-	        var props, post;
+	        var props, post, postId;
 	        return regeneratorRuntime.wrap(function _callee8$(_context8) {
 	          while (1) {
 	            switch (_context8.prev = _context8.next) {
 	              case 0:
 	                props = { content: 'test' };
 	
-	                assert.debug('create', props);
+	                assert.debug('create', Post.name, props);
 	                _context8.next = 4;
 	                return adapter.create(Post, props);
 	
 	              case 4:
 	                post = _context8.sent;
+	                postId = post[Post.idAttribute];
 	
-	                assert.debug('created', JSON.stringify(post, null, 2));
+	                assert.debug('created', Post.name, post);
 	
-	                assert.debug('find', props, post[Post.idAttribute]);
-	                _context8.next = 9;
-	                return adapter.find(Post, post[Post.idAttribute], { 'with': ['tag'] });
+	                assert.debug('find', Post.name, postId);
+	                _context8.next = 10;
+	                return adapter.find(Post, postId, { 'with': ['tag'] });
 	
-	              case 9:
+	              case 10:
 	                post = _context8.sent;
 	
-	                assert.debug('found', JSON.stringify(post, null, 2));
+	                assert.debug('found', Post.name, post);
 	
-	                assert.isDefined(post.tags);
-	                assert.equal(post.content, 'test');
-	                assert.deepEqual(post.tags, []);
+	                assert.isDefined(post.tags, 'post.tags');
+	                assert.equal(post.content, 'test', 'post.content');
+	                assert.deepEqual(post.tags, [], 'post.tags');
 	
-	              case 14:
+	              case 15:
 	              case 'end':
 	                return _context8.stop();
 	            }
@@ -903,57 +934,58 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, _callee8, this);
 	      })));
 	      it('should load hasMany localKeys (object) relations', _asyncToGenerator(regeneratorRuntime.mark(function _callee9() {
-	        var props, tag, tag2, post;
+	        var props, tag, tag2, post, postId;
 	        return regeneratorRuntime.wrap(function _callee9$(_context9) {
 	          while (1) {
 	            switch (_context9.prev = _context9.next) {
 	              case 0:
 	                props = { value: 'big data' };
 	
-	                assert.debug('create', props);
+	                assert.debug('create', Tag.name, props);
 	                _context9.next = 4;
 	                return adapter.create(Tag, props);
 	
 	              case 4:
 	                tag = _context9.sent;
 	
-	                assert.debug('created', JSON.stringify(tag, null, 2));
+	                assert.debug('created', Tag.name, tag);
 	
 	                props = { value: 'servers' };
-	                assert.debug('create', props);
+	                assert.debug('create', Tag.name, props);
 	                _context9.next = 10;
 	                return adapter.create(Tag, props);
 	
 	              case 10:
 	                tag2 = _context9.sent;
 	
-	                assert.debug('created', JSON.stringify(tag2, null, 2));
+	                assert.debug('created', Tag.name, tag2);
 	
 	                props = { content: 'test', tagIds: (_tagIds = {}, _defineProperty(_tagIds, tag[Tag.idAttribute], true), _defineProperty(_tagIds, tag2[Tag.idAttribute], true), _tagIds) };
-	                assert.debug('create', props);
+	                assert.debug('create', Post.name, props);
 	                _context9.next = 16;
 	                return adapter.create(Post, props);
 	
 	              case 16:
 	                post = _context9.sent;
+	                postId = post[Post.idAttribute];
 	
-	                assert.debug('created', JSON.stringify(post, null, 2));
+	                assert.debug('created', Post.name, post);
 	
-	                assert.debug('find', props, post[Post.idAttribute]);
-	                _context9.next = 21;
-	                return adapter.find(Post, post[Post.idAttribute], { 'with': ['tag'] });
+	                assert.debug('find', Post.name, postId);
+	                _context9.next = 22;
+	                return adapter.find(Post, postId, { 'with': ['tag'] });
 	
-	              case 21:
+	              case 22:
 	                post = _context9.sent;
 	
-	                assert.debug('found', JSON.stringify(post, null, 2));
+	                assert.debug('found', Post.name);
 	
-	                assert.isDefined(post.tags);
-	                assert.equal(post.content, 'test');
-	                assert.isDefined(post.tags[0][Tag.idAttribute]);
-	                assert.isDefined(post.tags[1][Tag.idAttribute]);
+	                assert.isDefined(post.tags, 'post.tags');
+	                assert.equal(post.content, 'test', 'post.content');
+	                assert.isDefined(post.tags[0][Tag.idAttribute], 'post.tags[0][Tag.idAttribute]');
+	                assert.isDefined(post.tags[1][Tag.idAttribute], 'post.tags[1][Tag.idAttribute]');
 	
-	              case 27:
+	              case 28:
 	              case 'end':
 	                return _context9.stop();
 	            }
@@ -964,80 +996,82 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    if (options.features === 'all' || options.features.indexOf('findHasManyForeignKeys') !== -1) {
 	      it('should load hasMany foreignKeys (array) relations', _asyncToGenerator(regeneratorRuntime.mark(function _callee10() {
-	        var props, tag, tag2, post, post2;
+	        var props, tag, tagId, tag2, tag2Id, post, post2;
 	        return regeneratorRuntime.wrap(function _callee10$(_context10) {
 	          while (1) {
 	            switch (_context10.prev = _context10.next) {
 	              case 0:
 	                props = { value: 'big data' };
 	
-	                assert.debug('create', props);
+	                assert.debug('create', Tag.name, props);
 	                _context10.next = 4;
 	                return adapter.create(Tag, props);
 	
 	              case 4:
 	                tag = _context10.sent;
+	                tagId = tag[Tag.idAttribute];
 	
-	                assert.debug('created', JSON.stringify(tag, null, 2));
+	                assert.debug('created', Tag.name, tag);
 	
 	                props = { value: 'servers' };
-	                assert.debug('create', props);
-	                _context10.next = 10;
+	                assert.debug('create', Tag.name, props);
+	                _context10.next = 11;
 	                return adapter.create(Tag, props);
 	
-	              case 10:
+	              case 11:
 	                tag2 = _context10.sent;
+	                tag2Id = tag2[Tag.idAttribute];
 	
-	                assert.debug('created', JSON.stringify(tag2, null, 2));
+	                assert.debug('created', Tag.name, tag2);
 	
-	                props = { content: 'test', tagIds: [tag[Tag.idAttribute]] };
-	                assert.debug('create', props);
-	                _context10.next = 16;
+	                props = { content: 'test', tagIds: [tagId] };
+	                assert.debug('create', Post.name, props);
+	                _context10.next = 18;
 	                return adapter.create(Post, props);
 	
-	              case 16:
+	              case 18:
 	                post = _context10.sent;
 	
-	                assert.debug('created', JSON.stringify(post, null, 2));
+	                assert.debug('created', Post.name, post);
 	
-	                props = { content: 'test2', tagIds: [tag[Tag.idAttribute], tag2[Tag.idAttribute]] };
-	                assert.debug('create', props);
-	                _context10.next = 22;
+	                props = { content: 'test2', tagIds: [tagId, tag2Id] };
+	                assert.debug('create', Post.name, props);
+	                _context10.next = 24;
 	                return adapter.create(Post, props);
 	
-	              case 22:
+	              case 24:
 	                post2 = _context10.sent;
 	
-	                assert.debug('created', JSON.stringify(post2, null, 2));
+	                assert.debug('created', Post.name, post2);
 	
-	                assert.debug('find', props, tag[Tag.idAttribute]);
-	                _context10.next = 27;
-	                return adapter.find(Tag, tag[Tag.idAttribute], { 'with': ['post'] });
+	                assert.debug('find', Tag.name, tagId);
+	                _context10.next = 29;
+	                return adapter.find(Tag, tagId, { 'with': ['post'] });
 	
-	              case 27:
+	              case 29:
 	                tag = _context10.sent;
 	
-	                assert.debug('found', JSON.stringify(tag, null, 2));
+	                assert.debug('found', Tag.name, tag);
 	
-	                assert.isDefined(tag.posts);
-	                assert.equal(tag.value, 'big data');
-	                assert.equal(tag.posts.length, 2, 'tag should have two posts');
+	                assert.isDefined(tag.posts, 'tag.posts');
+	                assert.equal(tag.value, 'big data', 'tag.value');
+	                assert.equal(tag.posts.length, 2, 'tag.posts.length');
 	
-	                assert.debug('find', props, tag2[Tag.idAttribute]);
-	                _context10.next = 35;
-	                return adapter.find(Tag, tag2[Tag.idAttribute], { 'with': ['post'] });
+	                assert.debug('find', Tag.name, tag2Id);
+	                _context10.next = 37;
+	                return adapter.find(Tag, tag2Id, { 'with': ['post'] });
 	
-	              case 35:
+	              case 37:
 	                tag2 = _context10.sent;
 	
-	                assert.debug('found', JSON.stringify(tag2, null, 2));
+	                assert.debug('found', Tag.name, tag2);
 	
-	                assert.isDefined(tag2.posts);
-	                assert.equal(tag2.value, 'servers');
-	                assert.equal(tag2.posts.length, 1, 'tag2 should have one post');
-	                assert.objectsEqual(tag2.posts, [post2]);
+	                assert.isDefined(tag2.posts, 'tag2.posts');
+	                assert.equal(tag2.value, 'servers', 'tag2.value');
+	                assert.equal(tag2.posts.length, 1, 'tag2.posts.length');
+	                assert.objectsEqual(tag2.posts, [post2], 'tag2.posts');
 	
-	              case 41:
+	              case 43:
 	              case 'end':
 	                return _context10.stop();
 	            }
@@ -1083,39 +1117,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 0:
 	              props = { name: 'John' };
 	
-	              assert.debug('findAll', { age: 30 });
+	              assert.debug('findAll', User.name, { age: 30 });
 	              _context.next = 4;
 	              return adapter.findAll(User, { age: 30 });
 	
 	            case 4:
 	              users = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(users, null, 2));
-	              assert.equal(users.length, 0);
+	              assert.debug('found', User.name, users);
+	              assert.equal(users.length, 0, 'users.length');
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context.next = 10;
 	              return adapter.create(User, props);
 	
 	            case 10:
 	              user = _context.sent;
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	              userId = user[User.idAttribute];
 	
 	
-	              assert.debug('findAll', { name: 'John' });
+	              assert.debug('findAll', User.name, { name: 'John' });
 	              _context.next = 16;
 	              return adapter.findAll(User, { name: 'John' });
 	
 	            case 16:
 	              users2 = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(users2, null, 2));
+	              assert.debug('found', User.name, users2);
 	
-	              assert.equal(users2.length, 1);
-	              assert.equal(users2[0][User.idAttribute], userId);
-	              assert.equal(users2[0].name, 'John');
+	              assert.equal(users2.length, 1, 'users2.length');
+	              assert.equal(users2[0][User.idAttribute], userId, 'users2[0][User.idAttribute]');
+	              assert.equal(users2[0].name, 'John', users2[0].name);
 	
 	            case 21:
 	            case 'end':
@@ -1144,23 +1178,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	              case 2:
 	                users = _context2.sent;
 	
-	                assert.equal(users.length, 0);
+	                assert.equal(users.length, 0, 'users.length');
 	
 	                _context2.next = 6;
 	                return adapter.create(User, { name: 'John' });
 	
 	              case 6:
 	                user = _context2.sent;
-	                id = user.id;
+	                id = user[User.idAttribute];
 	                _context2.next = 10;
 	                return adapter.findAll(User, { name: 'John' });
 	
 	              case 10:
 	                users2 = _context2.sent;
 	
-	                assert.equal(users2.length, 1);
-	                assert.equal(users2[0].id, id);
-	                assert.equal(users2[0].name, 'John');
+	                assert.equal(users2.length, 1, 'users2.length');
+	                assert.equal(users2[0][User.idAttribute], id, 'users2[0][User.idAttribute]');
+	                assert.equal(users2[0].name, 'John', 'users2[0].name');
 	
 	              case 14:
 	              case 'end':
@@ -1256,91 +1290,91 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 0:
 	              props = { name: 'John' };
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context5.next = 4;
 	              return adapter.create(User, props);
 	
 	            case 4:
 	              user = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	
 	              props = { email: 'foo@test.com', userId: user[User.idAttribute] };
-	              assert.debug('create', props);
+	              assert.debug('create', Profile.name, props);
 	              _context5.next = 10;
 	              return adapter.create(Profile, props);
 	
 	            case 10:
 	              profile = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(profile, null, 2));
+	              assert.debug('created', Profile.name, profile);
 	
 	              props = { content: 'foo', userId: user[User.idAttribute] };
-	              assert.debug('create', props);
+	              assert.debug('create', Post.name, props);
 	              _context5.next = 16;
 	              return adapter.create(Post, props);
 	
 	            case 16:
 	              post = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(post, null, 2));
+	              assert.debug('created', Post.name, post);
 	
 	              props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId };
-	              assert.debug('create', props);
+	              assert.debug('create', Comment.name, props);
 	              _context5.next = 22;
 	              return adapter.create(Comment, props);
 	
 	            case 22:
 	              comment = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(comment, null, 2));
+	              assert.debug('created', Comment.name, comment);
 	
 	              props = { name: 'Sally' };
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context5.next = 28;
 	              return adapter.create(User, props);
 	
 	            case 28:
 	              user2 = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(user2, null, 2));
+	              assert.debug('created', User.name, user2);
 	
 	              props = { content: 'bar', userId: user2[User.idAttribute] };
-	              assert.debug('create', props);
+	              assert.debug('create', Post.name, props);
 	              _context5.next = 34;
 	              return adapter.create(Post, props);
 	
 	            case 34:
 	              post2 = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(post2, null, 2));
+	              assert.debug('created', Post.name, post2);
 	
 	              props = { content: 'test67', postId: post2[Post.idAttribute], userId: post2.userId };
-	              assert.debug('create', props);
+	              assert.debug('create', Comment.name, props);
 	              _context5.next = 40;
 	              return adapter.create(Comment, props);
 	
 	            case 40:
 	              comment2 = _context5.sent;
 	
-	              assert.debug('created', JSON.stringify(comment2, null, 2));
+	              assert.debug('created', Comment.name, comment2);
 	
-	              assert.debug('findAll');
+	              assert.debug('findAll', Comment.name, {});
 	              _context5.next = 45;
 	              return adapter.findAll(Comment, {}, { 'with': ['user', 'user.profile', 'post', 'post.user'] });
 	
 	            case 45:
 	              comments = _context5.sent;
 	
-	              assert.debug('found', JSON.stringify(comments, null, 2));
+	              assert.debug('found', Comment.name, comments);
 	
-	              assert.isDefined(comments[0].post);
-	              assert.isDefined(comments[0].post.user);
-	              assert.isDefined(comments[0].user);
-	              assert.isDefined(comments[0].user.profile || comments[1].user.profile);
-	              assert.isDefined(comments[1].post);
-	              assert.isDefined(comments[1].post.user);
-	              assert.isDefined(comments[1].user);
+	              assert.isDefined(comments[0].post, 'comments[0].post');
+	              assert.isDefined(comments[0].post.user, 'comments[0].post.user');
+	              assert.isDefined(comments[0].user, 'comments[0].user');
+	              assert.isDefined(comments[0].user.profile || comments[1].user.profile, 'comments[0].user.profile || comments[1].user.profile');
+	              assert.isDefined(comments[1].post, 'comments[1].post');
+	              assert.isDefined(comments[1].post.user, 'comments[1].post.user');
+	              assert.isDefined(comments[1].user, 'comments[1].user');
 	
 	            case 54:
 	            case 'end':
@@ -1358,91 +1392,91 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 0:
 	              props = { name: 'John' };
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context6.next = 4;
 	              return adapter.create(User, props);
 	
 	            case 4:
 	              user = _context6.sent;
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	
 	              props = { email: 'foo@test.com', userId: user[User.idAttribute] };
-	              assert.debug('create', props);
+	              assert.debug('create', Profile.name, props);
 	              _context6.next = 10;
 	              return adapter.create(Profile, props);
 	
 	            case 10:
 	              profile = _context6.sent;
 	
-	              assert.debug('created', JSON.stringify(profile, null, 2));
+	              assert.debug('created', Profile.name, profile);
 	
 	              props = { content: 'foo', userId: user[User.idAttribute] };
-	              assert.debug('create', props);
+	              assert.debug('create', Post.name, props);
 	              _context6.next = 16;
 	              return adapter.create(Post, props);
 	
 	            case 16:
 	              post = _context6.sent;
 	
-	              assert.debug('created', JSON.stringify(post, null, 2));
+	              assert.debug('created', Post.name, post);
 	
 	              props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId };
-	              assert.debug('create', props);
+	              assert.debug('create', Comment.name, props);
 	              _context6.next = 22;
 	              return adapter.create(Comment, props);
 	
 	            case 22:
 	              comment = _context6.sent;
 	
-	              assert.debug('created', JSON.stringify(comment, null, 2));
+	              assert.debug('created', Comment.name, comment);
 	
 	              props = { name: 'Sally' };
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context6.next = 28;
 	              return adapter.create(User, props);
 	
 	            case 28:
 	              user2 = _context6.sent;
 	
-	              assert.debug('created', JSON.stringify(user2, null, 2));
+	              assert.debug('created', User.name, user2);
 	
 	              props = { content: 'bar', userId: user2[User.idAttribute] };
-	              assert.debug('create', props);
+	              assert.debug('create', Post.name, props);
 	              _context6.next = 34;
 	              return adapter.create(Post, props);
 	
 	            case 34:
 	              post2 = _context6.sent;
 	
-	              assert.debug('created', JSON.stringify(post2, null, 2));
+	              assert.debug('created', Post.name, post2);
 	
 	              props = { content: 'test67', postId: post2[Post.idAttribute], userId: post2.userId };
-	              assert.debug('create', props);
+	              assert.debug('create', Comment.name, props);
 	              _context6.next = 40;
 	              return adapter.create(Comment, props);
 	
 	            case 40:
 	              comment2 = _context6.sent;
 	
-	              assert.debug('created', JSON.stringify(comment2, null, 2));
+	              assert.debug('created', Comment.name, comment2);
 	
-	              assert.debug('find');
+	              assert.debug('find', Post.name, {});
 	              _context6.next = 45;
 	              return adapter.findAll(Post, {}, { 'with': ['user', 'comment', 'comment.user', 'comment.user.profile'] });
 	
 	            case 45:
 	              posts = _context6.sent;
 	
-	              assert.debug('found', JSON.stringify(posts, null, 2));
+	              assert.debug('found', Post.name, posts);
 	
-	              assert.isDefined(posts[0].comments);
-	              assert.isDefined(posts[0].comments[0].user);
-	              assert.isDefined(posts[0].comments[0].user.profile || posts[1].comments[0].user.profile);
-	              assert.isDefined(posts[0].user);
-	              assert.isDefined(posts[1].comments);
-	              assert.isDefined(posts[1].comments[0].user);
-	              assert.isDefined(posts[1].user);
+	              assert.isDefined(posts[0].comments, 'posts[0].comments');
+	              assert.isDefined(posts[0].comments[0].user, 'posts[0].comments[0].user');
+	              assert.isDefined(posts[0].comments[0].user.profile || posts[1].comments[0].user.profile, 'posts[0].comments[0].user.profile || posts[1].comments[0].user.profile');
+	              assert.isDefined(posts[0].user, 'posts[0].user');
+	              assert.isDefined(posts[1].comments, 'posts[1].comments');
+	              assert.isDefined(posts[1].comments[0].user, 'posts[1].comments[0].user');
+	              assert.isDefined(posts[1].user, 'posts[1].user');
 	
 	            case 54:
 	            case 'end':
@@ -1670,7 +1704,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      assert.equal(_typeof(this.$$adapter.destroy), 'function', 'adapter should have a "destroy" method');
 	    });
 	    it('should destroy a user', _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	      var adapter, User, props, user, beforeDestroyCalled, afterDestroyCalled, destroyedUser;
+	      var adapter, User, props, user, userId, beforeDestroyCalled, afterDestroyCalled, destroyedUser;
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
 	        while (1) {
 	          switch (_context.prev = _context.next) {
@@ -1680,14 +1714,77 @@ return /******/ (function(modules) { // webpackBootstrap
 	              props = { name: 'John' };
 	
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context.next = 6;
 	              return adapter.create(User, props);
 	
 	            case 6:
 	              user = _context.sent;
+	              userId = user[User.idAttribute];
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
+	
+	              beforeDestroyCalled = false;
+	              afterDestroyCalled = false;
+	
+	              // Test beforeDestroy and afterDestroy
+	
+	              adapter.beforeDestroy = function (mapper, id, opts) {
+	                beforeDestroyCalled = true;
+	                assert.isObject(mapper, 'beforeDestroy should have received mapper argument');
+	                assert.isDefined(id, 'beforeDestroy should have received id argument');
+	                assert.isObject(opts, 'beforeDestroy should have received opts argument');
+	                // Test re-assignment
+	                return Promise.resolve();
+	              };
+	              adapter.afterDestroy = function (mapper, id, opts) {
+	                afterDestroyCalled = true;
+	                assert.isObject(mapper, 'afterDestroy should have received mapper argument');
+	                assert.isDefined(id, 'afterDestroy should have received id argument');
+	                assert.isObject(opts, 'afterDestroy should have received opts argument');
+	                // Test re-assignment
+	                return Promise.resolve();
+	              };
+	
+	              assert.debug('destroy', User.name, userId);
+	              _context.next = 16;
+	              return adapter.destroy(User, userId);
+	
+	            case 16:
+	              destroyedUser = _context.sent;
+	
+	              assert.debug('destroyed', User.name, destroyedUser);
+	              assert.isUndefined(destroyedUser, 'destroyedUser');
+	              assert.isTrue(beforeDestroyCalled, 'beforeDestroy should have been called');
+	              assert.isTrue(afterDestroyCalled, 'afterDestroy should have been called');
+	
+	            case 21:
+	            case 'end':
+	              return _context.stop();
+	          }
+	        }
+	      }, _callee, this);
+	    })));
+	    it('should destroy a user and allow afterDestroy re-assignment', _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+	      var adapter, User, props, user, userId, beforeDestroyCalled, afterDestroyCalled, destroyedUser;
+	      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	        while (1) {
+	          switch (_context2.prev = _context2.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	              props = { name: 'John' };
+	
+	
+	              assert.debug('create', User.name, props);
+	              _context2.next = 6;
+	              return adapter.create(User, props);
+	
+	            case 6:
+	              user = _context2.sent;
+	              userId = user[User.idAttribute];
+	
+	              assert.debug('created', User.name, user);
 	
 	              beforeDestroyCalled = false;
 	              afterDestroyCalled = false;
@@ -1711,93 +1808,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return Promise.resolve(1234);
 	              };
 	
-	              assert.debug('destroy', user[User.idAttribute]);
-	              _context.next = 15;
-	              return adapter.destroy(User, user[User.idAttribute]);
+	              assert.debug('destroy', User.name, userId);
+	              _context2.next = 16;
+	              return adapter.destroy(User, userId);
 	
-	            case 15:
-	              destroyedUser = _context.sent;
+	            case 16:
+	              destroyedUser = _context2.sent;
 	
-	              assert.debug('destroyed', JSON.stringify(destroyedUser, null, 2));
-	              assert.equal(destroyedUser, 1234);
+	              assert.debug('destroyed', User.name, destroyedUser);
+	              assert.equal(destroyedUser, 1234, 'destroyedUser');
 	              assert.isTrue(beforeDestroyCalled, 'beforeDestroy should have been called');
 	              assert.isTrue(afterDestroyCalled, 'afterDestroy should have been called');
 	
-	            case 20:
-	            case 'end':
-	              return _context.stop();
-	          }
-	        }
-	      }, _callee, this);
-	    })));
-	    it('should destroy a user and return raw', _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-	      var adapter, User, props, user, result;
-	      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-	        while (1) {
-	          switch (_context2.prev = _context2.next) {
-	            case 0:
-	              adapter = this.$$adapter;
-	              User = this.$$User;
-	              props = { name: 'John' };
-	
-	
-	              assert.debug('create', props);
-	              _context2.next = 6;
-	              return adapter.create(User, props);
-	
-	            case 6:
-	              user = _context2.sent;
-	
-	              assert.debug('created', JSON.stringify(user, null, 2));
-	
-	              assert.debug('destroy', user[User.idAttribute]);
-	              _context2.next = 11;
-	              return adapter.destroy(User, user[User.idAttribute], { raw: true });
-	
-	            case 11:
-	              result = _context2.sent;
-	
-	              assert.debug('destroyed', JSON.stringify(result, null, 2));
-	              assert.isDefined(result.data, 'result.data is defined');
-	              assert.isDefined(result.deleted, 'result.deleted is defined');
-	              assert.equal(result.data, user[User.idAttribute], 'result.data should be ' + user[User.idAttribute]);
-	              assert.equal(result.deleted, 1, 'result.deleted should be 1');
-	
-	            case 17:
+	            case 21:
 	            case 'end':
 	              return _context2.stop();
 	          }
 	        }
 	      }, _callee2, this);
 	    })));
-	    it('should destroy nothing', _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
-	      var adapter, User, result;
+	    it('should destroy a user and return raw', _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
+	      var adapter, User, props, user, userId, result;
 	      return regeneratorRuntime.wrap(function _callee3$(_context3) {
 	        while (1) {
 	          switch (_context3.prev = _context3.next) {
 	            case 0:
 	              adapter = this.$$adapter;
 	              User = this.$$User;
+	              props = { name: 'John' };
 	
 	
-	              assert.debug('destroy', 'non-existent-id');
-	              _context3.next = 5;
-	              return adapter.destroy(User, 'non-existent-id');
+	              assert.debug('create', User.name, props);
+	              _context3.next = 6;
+	              return adapter.create(User, props);
 	
-	            case 5:
+	            case 6:
+	              user = _context3.sent;
+	              userId = user[User.idAttribute];
+	
+	              assert.debug('created', User.name, user);
+	
+	              assert.debug('destroy', User.name, userId);
+	              _context3.next = 12;
+	              return adapter.destroy(User, userId, { raw: true });
+	
+	            case 12:
 	              result = _context3.sent;
 	
-	              assert.debug('destroyed', JSON.stringify(result, null, 2));
-	              assert.isUndefined(result, 'result should be undefined');
+	              assert.debug('destroyed', User.name, result);
+	              assert.isUndefined(result.data, 'result.data');
+	              assert.isDefined(result.deleted, 'result.deleted');
+	              assert.equal(result.deleted, 1, 'result.deleted');
 	
-	            case 8:
+	            case 17:
 	            case 'end':
 	              return _context3.stop();
 	          }
 	        }
 	      }, _callee3, this);
 	    })));
-	    it('should destroy nothing and return raw', _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+	    it('should destroy nothing', _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
 	      var adapter, User, result;
 	      return regeneratorRuntime.wrap(function _callee4$(_context4) {
 	        while (1) {
@@ -1807,24 +1877,89 @@ return /******/ (function(modules) { // webpackBootstrap
 	              User = this.$$User;
 	
 	
-	              assert.debug('destroy', 'non-existent-id');
+	              assert.debug('destroy', User.name, 'non-existent-id');
 	              _context4.next = 5;
-	              return adapter.destroy(User, 'non-existent-id', { raw: true });
+	              return adapter.destroy(User, 'non-existent-id');
 	
 	            case 5:
 	              result = _context4.sent;
 	
-	              assert.debug('destroyed', JSON.stringify(result, null, 2));
-	              assert.isUndefined(result.data, 'result.data should be undefined');
-	              assert.isDefined(result.deleted, 'result.deleted is defined');
-	              assert.equal(result.deleted, 0, 'result.deleted should be 0');
+	              assert.debug('destroyed', User.name, result);
+	              assert.isUndefined(result, 'result');
 	
-	            case 10:
+	            case 8:
 	            case 'end':
 	              return _context4.stop();
 	          }
 	        }
 	      }, _callee4, this);
+	    })));
+	    it('should destroy nothing and return raw', _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
+	      var adapter, User, result;
+	      return regeneratorRuntime.wrap(function _callee5$(_context5) {
+	        while (1) {
+	          switch (_context5.prev = _context5.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	
+	
+	              assert.debug('destroy', User.name, 'non-existent-id');
+	              _context5.next = 5;
+	              return adapter.destroy(User, 'non-existent-id', { raw: true });
+	
+	            case 5:
+	              result = _context5.sent;
+	
+	              assert.debug('destroyed', User.name, result);
+	              assert.isUndefined(result.data, 'result.data');
+	              assert.isDefined(result.deleted, 'result.deleted');
+	              assert.equal(result.deleted, 0, 'result.deleted');
+	
+	            case 10:
+	            case 'end':
+	              return _context5.stop();
+	          }
+	        }
+	      }, _callee5, this);
+	    })));
+	    it('should destroy a user and return deleted id', _asyncToGenerator(regeneratorRuntime.mark(function _callee6() {
+	      var adapter, User, props, user, userId, destroyedUser;
+	      return regeneratorRuntime.wrap(function _callee6$(_context6) {
+	        while (1) {
+	          switch (_context6.prev = _context6.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	              props = { name: 'John' };
+	
+	
+	              assert.debug('create', User.name, props);
+	              _context6.next = 6;
+	              return adapter.create(User, props);
+	
+	            case 6:
+	              user = _context6.sent;
+	              userId = user[User.idAttribute];
+	
+	              assert.debug('created', User.name, user);
+	
+	              assert.debug('destroy', User.name, userId);
+	              _context6.next = 12;
+	              return adapter.destroy(User, userId, { returnDeletedIds: true });
+	
+	            case 12:
+	              destroyedUser = _context6.sent;
+	
+	              assert.debug('destroyed', User.name, destroyedUser);
+	              assert.equal(destroyedUser, userId, 'destroyedUser');
+	
+	            case 15:
+	            case 'end':
+	              return _context6.stop();
+	          }
+	        }
+	      }, _callee6, this);
 	    })));
 	  });
 	};
@@ -1846,7 +1981,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      assert.equal(_typeof(this.$$adapter.destroyAll), 'function', 'adapter should have a "destroyAll" method');
 	    });
 	    it('should destroy all users', _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	      var adapter, User, props, user, foundUsers, destroyedUsers;
+	      var adapter, User, props, user, userId, user2, foundUsers, destroyedUsers;
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
 	        while (1) {
 	          switch (_context.prev = _context.next) {
@@ -1856,53 +1991,248 @@ return /******/ (function(modules) { // webpackBootstrap
 	              props = { name: 'John' };
 	
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context.next = 6;
 	              return adapter.create(User, props);
 	
 	            case 6:
 	              user = _context.sent;
+	              userId = user[User.idAttribute];
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	
-	              assert.debug('findAll', props);
-	              _context.next = 11;
+	              assert.debug('create', User.name, { name: 'Sally' });
+	              _context.next = 12;
+	              return adapter.create(User, { name: 'Sally' });
+	
+	            case 12:
+	              user2 = _context.sent;
+	
+	              assert.debug('created', User.name, user2);
+	
+	              assert.debug('findAll', User.name, props);
+	              _context.next = 17;
 	              return adapter.findAll(User, props);
 	
-	            case 11:
+	            case 17:
 	              foundUsers = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(foundUsers, null, 2));
-	              assert.equal(foundUsers.length, 1);
-	              assert.equal(foundUsers[0][User.idAttribute], user[User.idAttribute]);
-	              assert.equal(foundUsers[0].name, 'John');
+	              assert.debug('found', User.name, foundUsers);
+	              assert.equal(foundUsers.length, 1, 'foundUsers.length');
+	              assert.equal(foundUsers[0][User.idAttribute], userId, 'foundUsers[0][User.idAttribute]');
+	              assert.equal(foundUsers[0].name, 'John', 'foundUsers[0].name');
 	
-	              assert.debug('destroyAll', props);
-	              _context.next = 19;
+	              assert.debug('destroyAll', User.name, props);
+	              _context.next = 25;
 	              return adapter.destroyAll(User, props);
 	
-	            case 19:
+	            case 25:
 	              destroyedUsers = _context.sent;
 	
-	              assert.equal(destroyedUsers.length, 1);
-	              assert.debug('destroyed', JSON.stringify(destroyedUsers, null, 2));
+	              assert.debug('destroyed', User.name, destroyedUsers);
+	              assert.isUndefined(destroyedUsers, 'destroyedUsers');
 	
-	              assert.debug('findAll', props);
-	              _context.next = 25;
+	              assert.debug('findAll', User.name, props);
+	              _context.next = 31;
 	              return adapter.findAll(User, props);
 	
-	            case 25:
+	            case 31:
 	              foundUsers = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(foundUsers, null, 2));
+	              assert.debug('found', User.name, foundUsers);
 	              assert.equal(foundUsers.length, 0);
 	
-	            case 28:
+	              assert.debug('findAll', User.name, {});
+	              _context.next = 37;
+	              return adapter.findAll(User, {});
+	
+	            case 37:
+	              foundUsers = _context.sent;
+	
+	              assert.debug('found', User.name, foundUsers);
+	              assert.equal(foundUsers.length, 1);
+	
+	            case 40:
 	            case 'end':
 	              return _context.stop();
 	          }
 	        }
 	      }, _callee, this);
+	    })));
+	    it('should destroy users and return raw', _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+	      var adapter, User, props, user, result;
+	      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	        while (1) {
+	          switch (_context2.prev = _context2.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	              props = { name: 'John' };
+	
+	
+	              assert.debug('create', User.name, props);
+	              _context2.next = 6;
+	              return adapter.create(User, props);
+	
+	            case 6:
+	              user = _context2.sent;
+	
+	              assert.debug('created', User.name, user);
+	
+	              assert.debug('destroyAll', User.name, props);
+	              _context2.next = 11;
+	              return adapter.destroyAll(User, props, { raw: true });
+	
+	            case 11:
+	              result = _context2.sent;
+	
+	              assert.debug('destroyed', User.name, result);
+	              assert.isUndefined(result.data, 'result.data');
+	              assert.isDefined(result.deleted, 'result.deleted');
+	              assert.equal(result.deleted, 1, 'result.deleted');
+	
+	            case 16:
+	            case 'end':
+	              return _context2.stop();
+	          }
+	        }
+	      }, _callee2, this);
+	    })));
+	    it('should destroy nothing', _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
+	      var adapter, User, result;
+	      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+	        while (1) {
+	          switch (_context3.prev = _context3.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	
+	
+	              assert.debug('destroyAll', User.name, {});
+	              _context3.next = 5;
+	              return adapter.destroyAll(User, {});
+	
+	            case 5:
+	              result = _context3.sent;
+	
+	              assert.debug('destroyed', User.name, result);
+	              assert.isUndefined(result, 'result');
+	
+	            case 8:
+	            case 'end':
+	              return _context3.stop();
+	          }
+	        }
+	      }, _callee3, this);
+	    })));
+	    it('should destroy nothing and return raw', _asyncToGenerator(regeneratorRuntime.mark(function _callee4() {
+	      var adapter, User, result;
+	      return regeneratorRuntime.wrap(function _callee4$(_context4) {
+	        while (1) {
+	          switch (_context4.prev = _context4.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	
+	
+	              assert.debug('destroyAll', User.name, {});
+	              _context4.next = 5;
+	              return adapter.destroyAll(User, {}, { raw: true });
+	
+	            case 5:
+	              result = _context4.sent;
+	
+	              assert.debug('destroyed', User.name, result);
+	              assert.isUndefined(result.data, 'result.data');
+	              assert.isDefined(result.deleted, 'result.deleted');
+	              assert.equal(result.deleted, 0, 'result.deleted');
+	
+	            case 10:
+	            case 'end':
+	              return _context4.stop();
+	          }
+	        }
+	      }, _callee4, this);
+	    })));
+	    it('should optionally return ids', _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
+	      var adapter, User, props, user, userId, user2, foundUsers, destroyedUsers;
+	      return regeneratorRuntime.wrap(function _callee5$(_context5) {
+	        while (1) {
+	          switch (_context5.prev = _context5.next) {
+	            case 0:
+	              adapter = this.$$adapter;
+	              User = this.$$User;
+	              props = { name: 'John' };
+	
+	
+	              assert.debug('create', User.name, props);
+	              _context5.next = 6;
+	              return adapter.create(User, props);
+	
+	            case 6:
+	              user = _context5.sent;
+	              userId = user[User.idAttribute];
+	
+	              assert.debug('created', User.name, user);
+	
+	              assert.debug('create', User.name, { name: 'Sally' });
+	              _context5.next = 12;
+	              return adapter.create(User, { name: 'Sally' });
+	
+	            case 12:
+	              user2 = _context5.sent;
+	
+	              assert.debug('created', User.name, user2);
+	
+	              assert.debug('findAll', User.name, props);
+	              _context5.next = 17;
+	              return adapter.findAll(User, props);
+	
+	            case 17:
+	              foundUsers = _context5.sent;
+	
+	              assert.debug('found', User.name, foundUsers);
+	              assert.equal(foundUsers.length, 1, 'foundUsers.length');
+	              assert.equal(foundUsers[0][User.idAttribute], userId, 'foundUsers[0][User.idAttribute]');
+	              assert.equal(foundUsers[0].name, 'John', 'foundUsers[0].name');
+	
+	              assert.debug('destroyAll', User.name, props);
+	              _context5.next = 25;
+	              return adapter.destroyAll(User, props, { returnDeletedIds: true });
+	
+	            case 25:
+	              destroyedUsers = _context5.sent;
+	
+	              assert.debug('destroyed', User.name, destroyedUsers);
+	              assert.equal(destroyedUsers.length, 1, 'destroyedUsers.length');
+	              assert.deepEqual(destroyedUsers, [userId], 'destroyedUsers');
+	
+	              assert.debug('findAll', User.name, props);
+	              _context5.next = 32;
+	              return adapter.findAll(User, props);
+	
+	            case 32:
+	              foundUsers = _context5.sent;
+	
+	              assert.debug('found', User.name, foundUsers);
+	              assert.equal(foundUsers.length, 0);
+	
+	              assert.debug('findAll', User.name, {});
+	              _context5.next = 38;
+	              return adapter.findAll(User, {});
+	
+	            case 38:
+	              foundUsers = _context5.sent;
+	
+	              assert.debug('found', User.name, foundUsers);
+	              assert.equal(foundUsers.length, 1);
+	
+	            case 41:
+	            case 'end':
+	              return _context5.stop();
+	          }
+	        }
+	      }, _callee5, this);
 	    })));
 	  });
 	};
@@ -1936,39 +2266,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	              props = { name: 'John' };
 	
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context.next = 6;
 	              return adapter.create(User, props);
 	
 	            case 6:
 	              user = _context.sent;
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	
 	              assert.equal(user.name, props.name, 'name of user should be "' + props.name + '"');
 	              assert.isDefined(user[User.idAttribute], 'new user should have an id');
 	
-	              assert.debug('find', user[User.idAttribute]);
+	              assert.debug('find', User.name, user[User.idAttribute]);
 	              _context.next = 13;
 	              return adapter.find(User, user[User.idAttribute]);
 	
 	            case 13:
 	              foundUser = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(foundUser, null, 2));
+	              assert.debug('found', User.name, foundUser);
 	
 	              assert.equal(foundUser.name, props.name, 'name of user should be "' + props.name + '"');
 	              assert.isDefined(foundUser[User.idAttribute], 'new user should have an id');
 	              assert.equal(foundUser[User.idAttribute], user[User.idAttribute]);
 	
-	              assert.debug('update', user[User.idAttribute], { name: 'Johnny' });
+	              assert.debug('update', User.name, user[User.idAttribute], { name: 'Johnny' });
 	              _context.next = 21;
 	              return adapter.update(User, user[User.idAttribute], { name: 'Johnny' });
 	
 	            case 21:
 	              updatedUser = _context.sent;
 	
-	              assert.debug('updated', JSON.stringify(updatedUser, null, 2));
+	              assert.debug('updated', User.name, updatedUser);
 	              assert.equal(updatedUser.name, 'Johnny');
 	              assert.equal(updatedUser[User.idAttribute], user[User.idAttribute]);
 	
@@ -2000,27 +2330,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // Test re-assignment
 	                return Promise.resolve((_Promise$resolve2 = {}, _defineProperty(_Promise$resolve2, User.idAttribute, user[User.idAttribute]), _defineProperty(_Promise$resolve2, 'name', record.name + 'baz'), _Promise$resolve2));
 	              };
-	              assert.debug('update', user[User.idAttribute], { name: 'foo' });
+	              assert.debug('update', User.name, user[User.idAttribute], { name: 'foo' });
 	              _context.next = 32;
 	              return adapter.update(User, user[User.idAttribute], { name: 'foo' });
 	
 	            case 32:
 	              updatedUser = _context.sent;
 	
-	              assert.debug('updated', JSON.stringify(updatedUser, null, 2));
+	              assert.debug('updated', User.name, updatedUser);
 	              assert.equal(updatedUser.name, 'barbaz');
 	              assert.equal(updatedUser[User.idAttribute], user[User.idAttribute]);
 	              assert.isTrue(beforeUpdateCalled, 'beforeUpdate should have been called');
 	              assert.isTrue(afterUpdateCalled, 'afterUpdate should have been called');
 	
-	              assert.debug('find', user[User.idAttribute]);
+	              assert.debug('find', User.name, user[User.idAttribute]);
 	              _context.next = 41;
 	              return adapter.find(User, user[User.idAttribute]);
 	
 	            case 41:
 	              foundUser = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(foundUser, null, 2));
+	              assert.debug('found', User.name, foundUser);
 	              assert.equal(foundUser.name, 'bar');
 	              assert.equal(foundUser[User.idAttribute], user[User.idAttribute]);
 	
@@ -2138,38 +2468,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	              props = { name: 'John', age: 20 };
 	
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context.next = 6;
 	              return adapter.create(User, props);
 	
 	            case 6:
 	              user1 = _context.sent;
 	
-	              assert.debug('created', JSON.stringify(user1, null, 2));
+	              assert.debug('created', User.name, user1);
 	              userId1 = user1[User.idAttribute];
 	
 	
 	              props = { name: 'John', age: 30 };
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context.next = 13;
 	              return adapter.create(User, props);
 	
 	            case 13:
 	              user2 = _context.sent;
 	
-	              assert.debug('created', JSON.stringify(user2, null, 2));
+	              assert.debug('created', User.name, user2);
 	              userId2 = user2[User.idAttribute];
 	
 	
-	              assert.debug('findAll', { name: 'John' });
+	              assert.debug('findAll', User.name, { name: 'John' });
 	              _context.next = 19;
 	              return adapter.findAll(User, { name: 'John' });
 	
 	            case 19:
 	              users = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(users, null, 2));
+	              assert.debug('found', User.name, users);
 	              users.sort(function (a, b) {
 	                return a.age - b.age;
 	              });
@@ -2188,14 +2518,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return x.age === 30;
 	              }).length, 1);
 	
-	              assert.debug('updateAll', { name: 'Johnny' }, { name: 'John' });
+	              assert.debug('updateAll', User.name, { name: 'Johnny' }, { name: 'John' });
 	              _context.next = 31;
 	              return adapter.updateAll(User, { name: 'Johnny' }, { name: 'John' });
 	
 	            case 31:
 	              users2 = _context.sent;
 	
-	              assert.debug('updated', JSON.stringify(users2, null, 2));
+	              assert.debug('updated', User.name, users2);
 	              users2.sort(function (a, b) {
 	                return a.age - b.age;
 	              });
@@ -2214,25 +2544,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return x.age === 30;
 	              }).length, 1);
 	
-	              assert.debug('findAll', { name: 'John' });
+	              assert.debug('findAll', User.name, { name: 'John' });
 	              _context.next = 43;
 	              return adapter.findAll(User, { name: 'John' });
 	
 	            case 43:
 	              users3 = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(users3, null, 2));
+	              assert.debug('found', User.name, users3);
 	              assert.equalObjects(users3, []);
 	              assert.equal(users3.length, 0);
 	
-	              assert.debug('findAll', { name: 'Johnny' });
+	              assert.debug('findAll', User.name, { name: 'Johnny' });
 	              _context.next = 50;
 	              return adapter.findAll(User, { name: 'Johnny' });
 	
 	            case 50:
 	              users4 = _context.sent;
 	
-	              assert.debug('found', JSON.stringify(users4, null, 2));
+	              assert.debug('found', User.name, users4);
 	
 	              users4.sort(function (a, b) {
 	                return a.age - b.age;

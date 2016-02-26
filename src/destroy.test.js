@@ -9,9 +9,48 @@ module.exports = function (options) {
       const User = this.$$User
       const props = { name: 'John' }
 
-      assert.debug('create', props)
+      assert.debug('create', User.name, props)
       let user = await adapter.create(User, props)
-      assert.debug('created', JSON.stringify(user, null, 2))
+      let userId = user[User.idAttribute]
+      assert.debug('created', User.name, user)
+
+      let beforeDestroyCalled = false
+      let afterDestroyCalled = false
+
+      // Test beforeDestroy and afterDestroy
+      adapter.beforeDestroy = function (mapper, id, opts) {
+        beforeDestroyCalled = true
+        assert.isObject(mapper, 'beforeDestroy should have received mapper argument')
+        assert.isDefined(id, 'beforeDestroy should have received id argument')
+        assert.isObject(opts, 'beforeDestroy should have received opts argument')
+        // Test re-assignment
+        return Promise.resolve()
+      }
+      adapter.afterDestroy = function (mapper, id, opts) {
+        afterDestroyCalled = true
+        assert.isObject(mapper, 'afterDestroy should have received mapper argument')
+        assert.isDefined(id, 'afterDestroy should have received id argument')
+        assert.isObject(opts, 'afterDestroy should have received opts argument')
+        // Test re-assignment
+        return Promise.resolve()
+      }
+
+      assert.debug('destroy', User.name, userId)
+      const destroyedUser = await adapter.destroy(User, userId)
+      assert.debug('destroyed', User.name, destroyedUser)
+      assert.isUndefined(destroyedUser, 'destroyedUser')
+      assert.isTrue(beforeDestroyCalled, 'beforeDestroy should have been called')
+      assert.isTrue(afterDestroyCalled, 'afterDestroy should have been called')
+    })
+    it('should destroy a user and allow afterDestroy re-assignment', async function () {
+      const adapter = this.$$adapter
+      const User = this.$$User
+      const props = { name: 'John' }
+
+      assert.debug('create', User.name, props)
+      let user = await adapter.create(User, props)
+      let userId = user[User.idAttribute]
+      assert.debug('created', User.name, user)
 
       let beforeDestroyCalled = false
       let afterDestroyCalled = false
@@ -34,10 +73,10 @@ module.exports = function (options) {
         return Promise.resolve(1234)
       }
 
-      assert.debug('destroy', user[User.idAttribute])
-      const destroyedUser = await adapter.destroy(User, user[User.idAttribute])
-      assert.debug('destroyed', JSON.stringify(destroyedUser, null, 2))
-      assert.equal(destroyedUser, 1234)
+      assert.debug('destroy', User.name, userId)
+      const destroyedUser = await adapter.destroy(User, userId)
+      assert.debug('destroyed', User.name, destroyedUser)
+      assert.equal(destroyedUser, 1234, 'destroyedUser')
       assert.isTrue(beforeDestroyCalled, 'beforeDestroy should have been called')
       assert.isTrue(afterDestroyCalled, 'afterDestroy should have been called')
     })
@@ -46,37 +85,52 @@ module.exports = function (options) {
       const User = this.$$User
       const props = { name: 'John' }
 
-      assert.debug('create', props)
+      assert.debug('create', User.name, props)
       let user = await adapter.create(User, props)
-      assert.debug('created', JSON.stringify(user, null, 2))
+      let userId = user[User.idAttribute]
+      assert.debug('created', User.name, user)
 
-      assert.debug('destroy', user[User.idAttribute])
-      const result = await adapter.destroy(User, user[User.idAttribute], { raw: true })
-      assert.debug('destroyed', JSON.stringify(result, null, 2))
-      assert.isDefined(result.data, 'result.data is defined')
-      assert.isDefined(result.deleted, 'result.deleted is defined')
-      assert.equal(result.data, user[User.idAttribute], `result.data should be ${user[User.idAttribute]}`)
-      assert.equal(result.deleted, 1, 'result.deleted should be 1')
+      assert.debug('destroy', User.name, userId)
+      const result = await adapter.destroy(User, userId, { raw: true })
+      assert.debug('destroyed', User.name, result)
+      assert.isUndefined(result.data, 'result.data')
+      assert.isDefined(result.deleted, 'result.deleted')
+      assert.equal(result.deleted, 1, 'result.deleted')
     })
     it('should destroy nothing', async function () {
       const adapter = this.$$adapter
       const User = this.$$User
 
-      assert.debug('destroy', 'non-existent-id')
+      assert.debug('destroy', User.name, 'non-existent-id')
       const result = await adapter.destroy(User, 'non-existent-id')
-      assert.debug('destroyed', JSON.stringify(result, null, 2))
-      assert.isUndefined(result, 'result should be undefined')
+      assert.debug('destroyed', User.name, result)
+      assert.isUndefined(result, 'result')
     })
     it('should destroy nothing and return raw', async function () {
       const adapter = this.$$adapter
       const User = this.$$User
 
-      assert.debug('destroy', 'non-existent-id')
+      assert.debug('destroy', User.name, 'non-existent-id')
       const result = await adapter.destroy(User, 'non-existent-id', { raw: true })
-      assert.debug('destroyed', JSON.stringify(result, null, 2))
-      assert.isUndefined(result.data, 'result.data should be undefined')
-      assert.isDefined(result.deleted, 'result.deleted is defined')
-      assert.equal(result.deleted, 0, 'result.deleted should be 0')
+      assert.debug('destroyed', User.name, result)
+      assert.isUndefined(result.data, 'result.data')
+      assert.isDefined(result.deleted, 'result.deleted')
+      assert.equal(result.deleted, 0, 'result.deleted')
+    })
+    it('should destroy a user and return deleted id', async function () {
+      const adapter = this.$$adapter
+      const User = this.$$User
+      const props = { name: 'John' }
+
+      assert.debug('create', User.name, props)
+      let user = await adapter.create(User, props)
+      let userId = user[User.idAttribute]
+      assert.debug('created', User.name, user)
+
+      assert.debug('destroy', User.name, userId)
+      const destroyedUser = await adapter.destroy(User, userId, { returnDeletedIds: true })
+      assert.debug('destroyed', User.name, destroyedUser)
+      assert.equal(destroyedUser, userId, 'destroyedUser')
     })
   })
 }
