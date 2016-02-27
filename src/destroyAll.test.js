@@ -18,20 +18,20 @@ module.exports = function (options) {
       const user2 = await adapter.create(User, { name: 'Sally' })
       assert.debug('created', User.name, user2)
 
-      assert.debug('findAll', User.name, props)
-      let foundUsers = await adapter.findAll(User, props)
+      assert.debug('findAll', User.name, { name: 'John' })
+      let foundUsers = await adapter.findAll(User, { name: 'John' })
       assert.debug('found', User.name, foundUsers)
       assert.equal(foundUsers.length, 1, 'foundUsers.length')
       assert.equal(foundUsers[0][User.idAttribute], userId, 'foundUsers[0][User.idAttribute]')
       assert.equal(foundUsers[0].name, 'John', 'foundUsers[0].name')
 
-      assert.debug('destroyAll', User.name, props)
-      const destroyedUsers = await adapter.destroyAll(User, props)
+      assert.debug('destroyAll', User.name, { name: 'John' })
+      const destroyedUsers = await adapter.destroyAll(User, { name: 'John' })
       assert.debug('destroyed', User.name, destroyedUsers)
       assert.isUndefined(destroyedUsers, 'destroyedUsers')
 
-      assert.debug('findAll', User.name, props)
-      foundUsers = await adapter.findAll(User, props)
+      assert.debug('findAll', User.name, { name: 'John' })
+      foundUsers = await adapter.findAll(User, { name: 'John' })
       assert.debug('found', User.name, foundUsers)
       assert.equal(foundUsers.length, 0)
 

@@ -41,7 +41,7 @@ module.exports = function (options) {
         assert.isObject(props, 'beforeUpdate should have received props argument')
         assert.isObject(opts, 'beforeUpdate should have received opts argument')
         // Test re-assignment
-        return Promise.resolve({ [User.idAttribute]: user[User.idAttribute], name: 'bar' })
+        return Promise.resolve({ name: 'bar' })
       }
       adapter.afterUpdate = function (mapper, id, props, opts, record) {
         afterUpdateCalled = true
@@ -72,16 +72,16 @@ module.exports = function (options) {
       const User = this.$$User
       const props = { name: 'John' }
 
-      assert.debug('create', props)
+      assert.debug('create', User.name, props)
       const user = await adapter.create(User, props)
-      assert.debug('created', JSON.stringify(user, null, 2))
+      assert.debug('created', User.name, user)
 
       assert.equal(user.name, props.name, `name of user should be "${props.name}"`)
       assert.isDefined(user[User.idAttribute], 'new user should have an id')
 
-      assert.debug('update', user[User.idAttribute], { name: 'Johnny' })
+      assert.debug('update', User.name, user[User.idAttribute], { name: 'Johnny' })
       const result = await adapter.update(User, user[User.idAttribute], { name: 'Johnny' }, { raw: true })
-      assert.debug('updated', JSON.stringify(result, null, 2))
+      assert.debug('updated', User.name, result)
       assert.isDefined(result.data, 'result.data is defined')
       assert.isDefined(result.updated, 'result.updated is defined')
       assert.equal(result.data.name, 'Johnny', 'result.data.name should be "Johnny"')

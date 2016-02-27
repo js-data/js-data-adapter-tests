@@ -15,8 +15,8 @@ module.exports = function (options) {
       users.sort(function (a, b) {
         return a.age - b.age
       })
-      assert.isDefined(users[0].id)
-      assert.isDefined(users[1].id)
+      assert.isDefined(users[0][User.idAttribute])
+      assert.isDefined(users[1][User.idAttribute])
       assert.equal(users.filter(function (x) { return x.age === 20 }).length, 1)
       assert.equal(users.filter(function (x) { return x.age === 30 }).length, 1)
 

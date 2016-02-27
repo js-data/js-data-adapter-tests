@@ -395,8 +395,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	              users.sort(function (a, b) {
 	                return a.age - b.age;
 	              });
-	              assert.isDefined(users[0].id);
-	              assert.isDefined(users[1].id);
+	              assert.isDefined(users[0][User.idAttribute]);
+	              assert.isDefined(users[1][User.idAttribute]);
 	              assert.equal(users.filter(function (x) {
 	                return x.age === 20;
 	              }).length, 1);
@@ -1976,9 +1976,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	              assert.debug('created', User.name, user2);
 	
-	              assert.debug('findAll', User.name, props);
+	              assert.debug('findAll', User.name, { name: 'John' });
 	              _context.next = 17;
-	              return adapter.findAll(User, props);
+	              return adapter.findAll(User, { name: 'John' });
 	
 	            case 17:
 	              foundUsers = _context.sent;
@@ -1988,9 +1988,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	              assert.equal(foundUsers[0][User.idAttribute], userId, 'foundUsers[0][User.idAttribute]');
 	              assert.equal(foundUsers[0].name, 'John', 'foundUsers[0].name');
 	
-	              assert.debug('destroyAll', User.name, props);
+	              assert.debug('destroyAll', User.name, { name: 'John' });
 	              _context.next = 25;
-	              return adapter.destroyAll(User, props);
+	              return adapter.destroyAll(User, { name: 'John' });
 	
 	            case 25:
 	              destroyedUsers = _context.sent;
@@ -1998,9 +1998,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	              assert.debug('destroyed', User.name, destroyedUsers);
 	              assert.isUndefined(destroyedUsers, 'destroyedUsers');
 	
-	              assert.debug('findAll', User.name, props);
+	              assert.debug('findAll', User.name, { name: 'John' });
 	              _context.next = 31;
-	              return adapter.findAll(User, props);
+	              return adapter.findAll(User, { name: 'John' });
 	
 	            case 31:
 	              foundUsers = _context.sent;
@@ -2198,18 +2198,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	              // Test beforeUpdate and afterUpdate
 	
 	              adapter.beforeUpdate = function (mapper, id, props, opts) {
-	                var _Promise$resolve;
-	
 	                beforeUpdateCalled = true;
 	                assert.isObject(mapper, 'beforeUpdate should have received mapper argument');
 	                assert.isDefined(id, 'beforeUpdate should have received id argument');
 	                assert.isObject(props, 'beforeUpdate should have received props argument');
 	                assert.isObject(opts, 'beforeUpdate should have received opts argument');
 	                // Test re-assignment
-	                return Promise.resolve((_Promise$resolve = {}, _defineProperty(_Promise$resolve, User.idAttribute, user[User.idAttribute]), _defineProperty(_Promise$resolve, 'name', 'bar'), _Promise$resolve));
+	                return Promise.resolve({ name: 'bar' });
 	              };
 	              adapter.afterUpdate = function (mapper, id, props, opts, record) {
-	                var _Promise$resolve2;
+	                var _Promise$resolve;
 	
 	                afterUpdateCalled = true;
 	                assert.isObject(mapper, 'afterUpdate should have received mapper argument');
@@ -2218,7 +2216,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                assert.isObject(opts, 'afterUpdate should have received opts argument');
 	                assert.isObject(record, 'afterUpdate should have received record argument');
 	                // Test re-assignment
-	                return Promise.resolve((_Promise$resolve2 = {}, _defineProperty(_Promise$resolve2, User.idAttribute, user[User.idAttribute]), _defineProperty(_Promise$resolve2, 'name', record.name + 'baz'), _Promise$resolve2));
+	                return Promise.resolve((_Promise$resolve = {}, _defineProperty(_Promise$resolve, User.idAttribute, user[User.idAttribute]), _defineProperty(_Promise$resolve, 'name', record.name + 'baz'), _Promise$resolve));
 	              };
 	              assert.debug('update', User.name, user[User.idAttribute], { name: 'foo' });
 	              _context.next = 32;
@@ -2262,26 +2260,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	              props = { name: 'John' };
 	
 	
-	              assert.debug('create', props);
+	              assert.debug('create', User.name, props);
 	              _context2.next = 6;
 	              return adapter.create(User, props);
 	
 	            case 6:
 	              user = _context2.sent;
 	
-	              assert.debug('created', JSON.stringify(user, null, 2));
+	              assert.debug('created', User.name, user);
 	
 	              assert.equal(user.name, props.name, 'name of user should be "' + props.name + '"');
 	              assert.isDefined(user[User.idAttribute], 'new user should have an id');
 	
-	              assert.debug('update', user[User.idAttribute], { name: 'Johnny' });
+	              assert.debug('update', User.name, user[User.idAttribute], { name: 'Johnny' });
 	              _context2.next = 13;
 	              return adapter.update(User, user[User.idAttribute], { name: 'Johnny' }, { raw: true });
 	
 	            case 13:
 	              result = _context2.sent;
 	
-	              assert.debug('updated', JSON.stringify(result, null, 2));
+	              assert.debug('updated', User.name, result);
 	              assert.isDefined(result.data, 'result.data is defined');
 	              assert.isDefined(result.updated, 'result.updated is defined');
 	              assert.equal(result.data.name, 'Johnny', 'result.data.name should be "Johnny"');
