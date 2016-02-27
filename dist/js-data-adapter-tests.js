@@ -1805,18 +1805,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	                assert.isDefined(id, 'afterDestroy should have received id argument');
 	                assert.isObject(opts, 'afterDestroy should have received opts argument');
 	                // Test re-assignment
-	                return Promise.resolve(1234);
+	                return Promise.resolve('foo');
 	              };
 	
 	              assert.debug('destroy', User.name, userId);
 	              _context2.next = 16;
-	              return adapter.destroy(User, userId);
+	              return adapter.destroy(User, userId, { raw: true });
 	
 	            case 16:
 	              destroyedUser = _context2.sent;
 	
 	              assert.debug('destroyed', User.name, destroyedUser);
-	              assert.equal(destroyedUser, 1234, 'destroyedUser');
+	              assert.equal(destroyedUser, 'foo', 'destroyedUser');
 	              assert.isTrue(beforeDestroyCalled, 'beforeDestroy should have been called');
 	              assert.isTrue(afterDestroyCalled, 'afterDestroy should have been called');
 	
@@ -1922,44 +1922,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }
 	      }, _callee5, this);
-	    })));
-	    it('should destroy a user and return deleted id', _asyncToGenerator(regeneratorRuntime.mark(function _callee6() {
-	      var adapter, User, props, user, userId, destroyedUser;
-	      return regeneratorRuntime.wrap(function _callee6$(_context6) {
-	        while (1) {
-	          switch (_context6.prev = _context6.next) {
-	            case 0:
-	              adapter = this.$$adapter;
-	              User = this.$$User;
-	              props = { name: 'John' };
-	
-	
-	              assert.debug('create', User.name, props);
-	              _context6.next = 6;
-	              return adapter.create(User, props);
-	
-	            case 6:
-	              user = _context6.sent;
-	              userId = user[User.idAttribute];
-	
-	              assert.debug('created', User.name, user);
-	
-	              assert.debug('destroy', User.name, userId);
-	              _context6.next = 12;
-	              return adapter.destroy(User, userId, { returnDeletedIds: true });
-	
-	            case 12:
-	              destroyedUser = _context6.sent;
-	
-	              assert.debug('destroyed', User.name, destroyedUser);
-	              assert.equal(destroyedUser, userId, 'destroyedUser');
-	
-	            case 15:
-	            case 'end':
-	              return _context6.stop();
-	          }
-	        }
-	      }, _callee6, this);
 	    })));
 	  });
 	};
@@ -2153,86 +2115,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }
 	      }, _callee4, this);
-	    })));
-	    it('should optionally return ids', _asyncToGenerator(regeneratorRuntime.mark(function _callee5() {
-	      var adapter, User, props, user, userId, user2, foundUsers, destroyedUsers;
-	      return regeneratorRuntime.wrap(function _callee5$(_context5) {
-	        while (1) {
-	          switch (_context5.prev = _context5.next) {
-	            case 0:
-	              adapter = this.$$adapter;
-	              User = this.$$User;
-	              props = { name: 'John' };
-	
-	
-	              assert.debug('create', User.name, props);
-	              _context5.next = 6;
-	              return adapter.create(User, props);
-	
-	            case 6:
-	              user = _context5.sent;
-	              userId = user[User.idAttribute];
-	
-	              assert.debug('created', User.name, user);
-	
-	              assert.debug('create', User.name, { name: 'Sally' });
-	              _context5.next = 12;
-	              return adapter.create(User, { name: 'Sally' });
-	
-	            case 12:
-	              user2 = _context5.sent;
-	
-	              assert.debug('created', User.name, user2);
-	
-	              assert.debug('findAll', User.name, props);
-	              _context5.next = 17;
-	              return adapter.findAll(User, props);
-	
-	            case 17:
-	              foundUsers = _context5.sent;
-	
-	              assert.debug('found', User.name, foundUsers);
-	              assert.equal(foundUsers.length, 1, 'foundUsers.length');
-	              assert.equal(foundUsers[0][User.idAttribute], userId, 'foundUsers[0][User.idAttribute]');
-	              assert.equal(foundUsers[0].name, 'John', 'foundUsers[0].name');
-	
-	              assert.debug('destroyAll', User.name, props);
-	              _context5.next = 25;
-	              return adapter.destroyAll(User, props, { returnDeletedIds: true });
-	
-	            case 25:
-	              destroyedUsers = _context5.sent;
-	
-	              assert.debug('destroyed', User.name, destroyedUsers);
-	              assert.equal(destroyedUsers.length, 1, 'destroyedUsers.length');
-	              assert.deepEqual(destroyedUsers, [userId], 'destroyedUsers');
-	
-	              assert.debug('findAll', User.name, props);
-	              _context5.next = 32;
-	              return adapter.findAll(User, props);
-	
-	            case 32:
-	              foundUsers = _context5.sent;
-	
-	              assert.debug('found', User.name, foundUsers);
-	              assert.equal(foundUsers.length, 0);
-	
-	              assert.debug('findAll', User.name, {});
-	              _context5.next = 38;
-	              return adapter.findAll(User, {});
-	
-	            case 38:
-	              foundUsers = _context5.sent;
-	
-	              assert.debug('found', User.name, foundUsers);
-	              assert.equal(foundUsers.length, 1);
-	
-	            case 41:
-	            case 'end':
-	              return _context5.stop();
-	          }
-	        }
-	      }, _callee5, this);
 	    })));
 	  });
 	};

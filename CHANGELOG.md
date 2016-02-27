@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.8 - 26 February 2016
+
+- destroy and destroyAll no longer have return values
+
 ##### 2.0.0-alpha.7 - 26 February 2016
 
 - Improved testing

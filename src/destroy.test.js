@@ -70,13 +70,13 @@ module.exports = function (options) {
         assert.isDefined(id, 'afterDestroy should have received id argument')
         assert.isObject(opts, 'afterDestroy should have received opts argument')
         // Test re-assignment
-        return Promise.resolve(1234)
+        return Promise.resolve('foo')
       }
 
       assert.debug('destroy', User.name, userId)
-      const destroyedUser = await adapter.destroy(User, userId)
+      const destroyedUser = await adapter.destroy(User, userId, { raw: true })
       assert.debug('destroyed', User.name, destroyedUser)
-      assert.equal(destroyedUser, 1234, 'destroyedUser')
+      assert.equal(destroyedUser, 'foo', 'destroyedUser')
       assert.isTrue(beforeDestroyCalled, 'beforeDestroy should have been called')
       assert.isTrue(afterDestroyCalled, 'afterDestroy should have been called')
     })
@@ -116,21 +116,6 @@ module.exports = function (options) {
       assert.isUndefined(result.data, 'result.data')
       assert.isDefined(result.deleted, 'result.deleted')
       assert.equal(result.deleted, 0, 'result.deleted')
-    })
-    it('should destroy a user and return deleted id', async function () {
-      const adapter = this.$$adapter
-      const User = this.$$User
-      const props = { name: 'John' }
-
-      assert.debug('create', User.name, props)
-      let user = await adapter.create(User, props)
-      let userId = user[User.idAttribute]
-      assert.debug('created', User.name, user)
-
-      assert.debug('destroy', User.name, userId)
-      const destroyedUser = await adapter.destroy(User, userId, { returnDeletedIds: true })
-      assert.debug('destroyed', User.name, destroyedUser)
-      assert.equal(destroyedUser, userId, 'destroyedUser')
     })
   })
 }
