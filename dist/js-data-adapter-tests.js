@@ -1857,10 +1857,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	              assert.debug('destroyed', User.name, result);
 	              assert.isUndefined(result.data, 'result.data');
-	              assert.isDefined(result.deleted, 'result.deleted');
-	              assert.equal(result.deleted, 1, 'result.deleted');
+	              if (result.hasOwnProperty('deleted')) {
+	                assert.isDefined(result.deleted, 'result.deleted');
+	                assert.equal(result.deleted, 1, 'result.deleted');
+	              }
 	
-	            case 17:
+	            case 16:
 	            case 'end':
 	              return _context3.stop();
 	          }
@@ -1913,10 +1915,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	              assert.debug('destroyed', User.name, result);
 	              assert.isUndefined(result.data, 'result.data');
-	              assert.isDefined(result.deleted, 'result.deleted');
-	              assert.equal(result.deleted, 0, 'result.deleted');
+	              if (result.hasOwnProperty('deleted')) {
+	                assert.isDefined(result.deleted, 'result.deleted');
+	                assert.equal(result.deleted, 0, 'result.deleted');
+	              }
 	
-	            case 10:
+	            case 9:
 	            case 'end':
 	              return _context5.stop();
 	          }
@@ -2050,10 +2054,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	              assert.debug('destroyed', User.name, result);
 	              assert.isUndefined(result.data, 'result.data');
-	              assert.isDefined(result.deleted, 'result.deleted');
-	              assert.equal(result.deleted, 1, 'result.deleted');
+	              if (result.hasOwnProperty('deleted')) {
+	                assert.isDefined(result.deleted, 'result.deleted');
+	                assert.equal(result.deleted, 1, 'result.deleted');
+	              }
 	
-	            case 16:
+	            case 15:
 	            case 'end':
 	              return _context2.stop();
 	          }
@@ -2106,10 +2112,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	              assert.debug('destroyed', User.name, result);
 	              assert.isUndefined(result.data, 'result.data');
-	              assert.isDefined(result.deleted, 'result.deleted');
-	              assert.equal(result.deleted, 0, 'result.deleted');
+	              if (result.hasOwnProperty('deleted')) {
+	                assert.isDefined(result.deleted, 'result.deleted');
+	                assert.equal(result.deleted, 0, 'result.deleted');
+	              }
 	
-	            case 10:
+	            case 9:
 	            case 'end':
 	              return _context4.stop();
 	          }

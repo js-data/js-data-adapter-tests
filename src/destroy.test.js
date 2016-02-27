@@ -94,8 +94,10 @@ module.exports = function (options) {
       const result = await adapter.destroy(User, userId, { raw: true })
       assert.debug('destroyed', User.name, result)
       assert.isUndefined(result.data, 'result.data')
-      assert.isDefined(result.deleted, 'result.deleted')
-      assert.equal(result.deleted, 1, 'result.deleted')
+      if (result.hasOwnProperty('deleted')) {
+        assert.isDefined(result.deleted, 'result.deleted')
+        assert.equal(result.deleted, 1, 'result.deleted')
+      }
     })
     it('should destroy nothing', async function () {
       const adapter = this.$$adapter
@@ -114,8 +116,10 @@ module.exports = function (options) {
       const result = await adapter.destroy(User, 'non-existent-id', { raw: true })
       assert.debug('destroyed', User.name, result)
       assert.isUndefined(result.data, 'result.data')
-      assert.isDefined(result.deleted, 'result.deleted')
-      assert.equal(result.deleted, 0, 'result.deleted')
+      if (result.hasOwnProperty('deleted')) {
+        assert.isDefined(result.deleted, 'result.deleted')
+        assert.equal(result.deleted, 0, 'result.deleted')
+      }
     })
   })
 }
