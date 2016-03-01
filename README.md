@@ -9,9 +9,57 @@
 
 Tests for [js-data](http://www.js-data.io/) adapters.
 
-See [js-data-sql](https://github.com/js-data/js-data-sql/blob/master/mocha.start.js) for Node.js usage.
+## Usage
 
-See [js-data-localstorage](https://github.com/js-data/js-data-localstorage/blob/master/karma.start.js) for browser usage.
+### Node.js
+
+```
+npm install --save-dev js-data-adapter-tests mocha sinon chai babel-polyfill
+```
+
+`mocha.start.js`:
+
+```js
+require('babel-polyfill')
+
+var JSData = require('js-data')
+var JSDataAdapterTests = require('js-data-adapter-tests')
+var MyAdapter = require('./')
+
+global.assert = JSDataAdapterTests.assert;
+global.sinon = JSDataAdapterTests.sinon;
+
+JSDataAdapterTests.init({
+  // minimum required config
+  JSData: JSData,
+  Adapter: MyAdapter
+})
+```
+
+### Karma
+
+```
+npm install --save-dev js-data-adapter-tests mocha sinon chai babel-polyfill karma karma-mocha karma-sinon karma-chai
+```
+
+`karma.start.js`:
+
+```js
+// babel-polyfill should be included by karma.conf.js
+
+window.assert = JSDataAdapterTests.assert
+// sinon should be loaded by karma.conf.js
+
+JSDataAdapterTests.init({
+  // minimum required config
+  JSData: JSData,
+  Adapter: MyAdapter
+})
+```
+
+See [js-data-rethinkdb](https://github.com/js-data/js-data-rethinkdb/blob/master/mocha.start.js) for a Node.js example.
+
+See [js-data-localstorage](https://github.com/js-data/js-data-localstorage/blob/master/karma.start.js) for a Karma example.
 
 ### Changelog
 [CHANGELOG.md](https://github.com/js-data/js-data-adapter-tests/blob/master/CHANGELOG.md)

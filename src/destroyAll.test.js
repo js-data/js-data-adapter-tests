@@ -1,5 +1,5 @@
 /* global assert:true */
-module.exports = function (options) {
+export default function (options) {
   describe('Adapter#destroyAll', function () {
     it('should exist', function () {
       assert.equal(typeof this.$$adapter.destroyAll, 'function', 'adapter should have a "destroyAll" method')

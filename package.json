@@ -2,7 +2,7 @@
   "name": "js-data-adapter-tests",
   "description": "Tests for js-data adapters.",
   "homepage": "https://github.com/js-data/js-data-adapter-tests",
-  "version": "2.0.0-alpha.10",
+  "version": "2.0.0-alpha.11",
   "repository": {
     "type": "git",
     "url": "https://github.com/js-data/js-data-adapter-tests.git"
@@ -17,8 +17,7 @@
   ],
   "scripts": {
     "lint": "standard src/**/*.js",
-    "bundle": "webpack --config webpack.config.js",
-    "watch": "webpack --config webpack.config.js --watch",
+    "bundle": "rollup -c rollup.config.js -f umd -o dist/js-data-adapter-tests.js -m dist/js-data-adapter-tests.js.map src/index.js",
     "test": "npm run lint && npm run bundle"
   },
   "standard": {
@@ -26,6 +25,7 @@
     "globals": [
       "Mocha",
       "describe",
+      "sinon",
       "it",
       "before",
       "after",
@@ -34,16 +34,21 @@
       "assert"
     ]
   },
+  "peerDependencies": {
+    "chai": "3.5.0",
+    "mocha": "2.4.5",
+    "sinon": "1.17.3"
+  },
   "devDependencies": {
-    "babel-core": "6.5.2",
+    "babel-core": "6.6.0",
     "babel-eslint": "5.0.0",
-    "babel-loader": "6.2.3",
     "babel-plugin-syntax-async-functions": "6.5.0",
-    "babel-plugin-transform-regenerator": "6.5.2",
-    "babel-polyfill": "6.5.0",
-    "babel-preset-es2015": "6.5.0",
+    "babel-plugin-transform-regenerator": "6.6.0",
+    "babel-polyfill": "6.6.0",
+    "babel-preset-es2015-rollup": "1.1.1",
     "babel-preset-stage-0": "6.5.0",
-    "standard": "6.0.7",
-    "webpack": "1.12.14"
+    "rollup": "0.25.4",
+    "rollup-plugin-babel": "2.4.0",
+    "standard": "6.0.7"
   }
 }

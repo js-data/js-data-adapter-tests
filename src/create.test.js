@@ -1,5 +1,5 @@
 /* global assert:true */
-module.exports = function (options) {
+export default function (options) {
   describe('Adapter#create', function () {
     it('should exist', function () {
       assert.equal(typeof this.$$adapter.create, 'function', 'adapter should have a "create" method')

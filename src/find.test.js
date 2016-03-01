@@ -1,5 +1,5 @@
 /* global assert:true */
-module.exports = function (options) {
+export default function (options) {
   describe('Adapter#find', function () {
     var adapter, User, Profile, Post, Comment, Tag
 
@@ -17,6 +17,8 @@ module.exports = function (options) {
     })
 
     it('should find a user', async function () {
+      this.toClear.push('Post')
+      this.toClear.push('Comment')
       let props = { name: 'John' }
       assert.debug('create', User.name, props)
       const user = await adapter.create(User, props)
@@ -160,6 +162,9 @@ module.exports = function (options) {
     })
 
     it('should load belongsTo relations', async function () {
+      this.toClear.push('Post')
+      this.toClear.push('Comment')
+      this.toClear.push('Profile')
       let props = { name: 'John' }
       assert.debug('create', User.name, props)
       const user = await adapter.create(User, props)
@@ -192,6 +197,9 @@ module.exports = function (options) {
     })
 
     it('should load hasMany and belongsTo relations', async function () {
+      this.toClear.push('Post')
+      this.toClear.push('Comment')
+      this.toClear.push('Profile')
       let props = { name: 'John' }
       assert.debug('create', User.name, props)
       const user = await adapter.create(User, props)
@@ -225,6 +233,8 @@ module.exports = function (options) {
 
     if (options.features === 'all' || options.features.indexOf('findHasManyLocalKeys') !== -1) {
       it('should load hasMany localKeys (array) relations', async function () {
+        this.toClear.push('Post')
+        this.toClear.push('Tag')
         let props = { value: 'big data' }
         assert.debug('create', Tag.name, props)
         const tag = await adapter.create(Tag, props)
@@ -251,6 +261,7 @@ module.exports = function (options) {
         assert.isDefined(post.tags[1][Tag.idAttribute], 'post.tags[1][Tag.idAttribute]')
       })
       it('should load hasMany localKeys (empty array) relations', async function () {
+        this.toClear.push('Post')
         let props = { content: 'test' }
         assert.debug('create', Post.name, props)
         let post = await adapter.create(Post, props)
@@ -266,6 +277,7 @@ module.exports = function (options) {
         assert.deepEqual(post.tags, [], 'post.tags')
       })
       it('should load hasMany localKeys (object) relations', async function () {
+        this.toClear = ['Tag', 'Post']
         let props = { value: 'big data' }
         assert.debug('create', Tag.name, props)
         const tag = await adapter.create(Tag, props)
@@ -295,6 +307,8 @@ module.exports = function (options) {
 
     if (options.features === 'all' || options.features.indexOf('findHasManyForeignKeys') !== -1) {
       it('should load hasMany foreignKeys (array) relations', async function () {
+        this.toClear.push('Post')
+        this.toClear.push('Tag')
         let props = { value: 'big data' }
         assert.debug('create', Tag.name, props)
         let tag = await adapter.create(Tag, props)

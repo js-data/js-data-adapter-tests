@@ -1,5 +1,5 @@
 /* global assert:true */
-module.exports = function (options) {
+export default function (options) {
   describe('Adapter#updateMany', function () {
     it('should exist', function () {
       assert.equal(typeof this.$$adapter.updateMany, 'function', 'adapter should have a "updateMany" method')

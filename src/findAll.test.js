@@ -1,5 +1,5 @@
 /* global assert:true */
-module.exports = function (options) {
+export default function (options) {
   describe('Adapter#findAll', function () {
     var adapter, User, Profile, Post, Comment
 
@@ -99,6 +99,9 @@ module.exports = function (options) {
     }
 
     it('should load belongsTo relations', async function () {
+      this.toClear.push('Post')
+      this.toClear.push('Profile')
+      this.toClear.push('Comment')
       let props = { name: 'John' }
       assert.debug('create', User.name, props)
       const user = await adapter.create(User, props)
@@ -148,6 +151,9 @@ module.exports = function (options) {
     })
 
     it('should load hasMany and belongsTo relations', async function () {
+      this.toClear.push('Post')
+      this.toClear.push('Profile')
+      this.toClear.push('Comment')
       let props = { name: 'John' }
       assert.debug('create', User.name, props)
       const user = await adapter.create(User, props)
@@ -198,6 +204,9 @@ module.exports = function (options) {
 
     if (options.features === 'all' || options.features.indexOf('filterOnRelations') !== -1) {
       it('should filter using belongsTo relation', async function () {
+        this.toClear.push('Post')
+        this.toClear.push('Profile')
+        this.toClear.push('Comment')
         var profile1 = await adapter.create(Profile, { email: 'foo@test.com' })
         var user1 = await adapter.create(User, {name: 'John', profileId: profile1.id})
 
@@ -215,6 +224,9 @@ module.exports = function (options) {
       })
 
       it('should filter through multiple hasOne/belongsTo relations', async function () {
+        this.toClear.push('Post')
+        this.toClear.push('Profile')
+        this.toClear.push('Comment')
         var profile1 = await adapter.create(Profile, { email: 'foo@test.com' })
         var user1 = await adapter.create(User, {name: 'John', profileId: profile1.id})
 
@@ -233,6 +245,9 @@ module.exports = function (options) {
       })
 
       it('should filter using multiple hasOne/belongsTo relations', async function () {
+        this.toClear.push('Post')
+        this.toClear.push('Profile')
+        this.toClear.push('Comment')
         var profile1 = await adapter.create(Profile, { email: 'foo@test.com' })
         var user1 = await adapter.create(User, {name: 'John', profileId: profile1.id})
 

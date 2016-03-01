@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.11 - 29 February 2016
+
+- Some improved testing
+
 ##### 2.0.0-alpha.10 - 26 February 2016
 
 - Some fixes

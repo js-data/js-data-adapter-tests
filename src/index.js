@@ -1,3 +1,20 @@
+import afterCreateTest from './afterCreate.test'
+import afterUpdateTest from './afterUpdate.test'
+import beforeCreateTest from './beforeCreate.test'
+import beforeUpdateTest from './beforeUpdate.test'
+import createTest from './create.test'
+import createManyTest from './createMany.test'
+import destroyTest from './destroy.test'
+import destroyAllTest from './destroyAll.test'
+import findTest from './find.test'
+import findAllTest from './findAll.test'
+import updateTest from './update.test'
+import updateAllTest from './updateAll.test'
+import updateManyTest from './updateMany.test'
+
+import {assert} from 'chai'
+import sinon from 'sinon'
+
 assert.equalObjects = function (a, b, m) {
   assert.deepEqual(JSON.parse(JSON.stringify(a)), JSON.parse(JSON.stringify(b)), m || (JSON.stringify(a) + ' should be equal to ' + JSON.stringify(b)))
 }
@@ -19,7 +36,7 @@ assert.debug = function (...args) {
 
 var prefix = 'TestRunner.init(options): options'
 
-module.exports = {
+export default {
   init: function (options) {
     options = options || {}
     debug = !!options.debug
@@ -141,49 +158,60 @@ module.exports = {
       this.$$store.defineMapper('comment', options.commentConfig || options.JSData.utils.copy(commentOptions))
       this.$$Tag = this.$$container.defineMapper('tag', options.tagConfig || options.JSData.utils.copy(tagOptions))
       this.$$store.defineMapper('tag', options.tagConfig || options.JSData.utils.copy(tagOptions))
+      this.toClear = ['User']
     })
 
     describe('js-data-adapter-tests', function () {
+      if (options.methods === 'all' || options.methods.indexOf('beforeCreate') !== -1) {
+        beforeCreateTest(options)
+      }
       if (options.methods === 'all' || options.methods.indexOf('create') !== -1) {
-        require('./create.test')(options)
+        createTest(options)
+      }
+      if (options.methods === 'all' || options.methods.indexOf('afterCreate') !== -1) {
+        afterCreateTest(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('createMany') !== -1) {
-        require('./createMany.test')(options)
+        createManyTest(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('find') !== -1) {
-        require('./find.test')(options)
+        findTest(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('findAll') !== -1) {
-        require('./findAll.test')(options)
+        findAllTest(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('destroy') !== -1) {
-        require('./destroy.test')(options)
+        destroyTest(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('destroyAll') !== -1) {
-        require('./destroyAll.test')(options)
+        destroyAllTest(options)
+      }
+      if (options.methods === 'all' || options.methods.indexOf('beforeUpdate') !== -1) {
+        beforeUpdateTest(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('update') !== -1) {
-        require('./update.test')(options)
+        updateTest(options)
+      }
+      if (options.methods === 'all' || options.methods.indexOf('afterUpdate') !== -1) {
+        afterUpdateTest(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('updateAll') !== -1) {
-        require('./updateAll.test')(options)
+        updateAllTest(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('updateMany') !== -1) {
-        require('./updateMany.test')(options)
+        updateManyTest(options)
       }
     })
 
     afterEach(async function () {
-      await this.$$adapter.destroyAll(this.$$Comment)
-      await this.$$adapter.destroyAll(this.$$Post)
-      await this.$$adapter.destroyAll(this.$$User)
-      await this.$$adapter.destroyAll(this.$$Profile)
-      await this.$$adapter.destroyAll(this.$$Address)
-      await this.$$adapter.destroyAll(this.$$Organization)
-      await this.$$adapter.destroyAll(this.$$Tag)
+      const Test = this
+      await Promise.all(Test.toClear.map(function (Mapper) {
+        return Test.$$adapter.destroyAll(Test['$$' + Mapper])
+      }))
     })
   },
-  assert: assert,
+  assert,
+  sinon,
   fail: function (msg) {
     assert.equal('should not reach this!: ' + msg, 'failure')
   },

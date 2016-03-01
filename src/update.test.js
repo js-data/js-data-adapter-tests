@@ -1,5 +1,5 @@
 /* global assert:true */
-module.exports = function (options) {
+export default function (options) {
   describe('Adapter#update', function () {
     it('should exist', function () {
       assert.equal(typeof this.$$adapter.update, 'function', 'adapter should have a "update" method')
@@ -30,41 +30,16 @@ module.exports = function (options) {
       assert.equal(updatedUser.name, 'Johnny')
       assert.equal(updatedUser[User.idAttribute], user[User.idAttribute])
 
-      let beforeUpdateCalled = false
-      let afterUpdateCalled = false
-
-      // Test beforeUpdate and afterUpdate
-      adapter.beforeUpdate = function (mapper, id, props, opts) {
-        beforeUpdateCalled = true
-        assert.isObject(mapper, 'beforeUpdate should have received mapper argument')
-        assert.isDefined(id, 'beforeUpdate should have received id argument')
-        assert.isObject(props, 'beforeUpdate should have received props argument')
-        assert.isObject(opts, 'beforeUpdate should have received opts argument')
-        // Test re-assignment
-        return Promise.resolve({ name: 'bar' })
-      }
-      adapter.afterUpdate = function (mapper, id, props, opts, record) {
-        afterUpdateCalled = true
-        assert.isObject(mapper, 'afterUpdate should have received mapper argument')
-        assert.isDefined(id, 'afterUpdate should have received id argument')
-        assert.isObject(props, 'afterUpdate should have received props argument')
-        assert.isObject(opts, 'afterUpdate should have received opts argument')
-        assert.isObject(record, 'afterUpdate should have received record argument')
-        // Test re-assignment
-        return Promise.resolve({ [User.idAttribute]: user[User.idAttribute], name: record.name + 'baz' })
-      }
-      assert.debug('update', User.name, user[User.idAttribute], { name: 'foo' })
-      updatedUser = await adapter.update(User, user[User.idAttribute], { name: 'foo' })
+      assert.debug('update', User.name, user[User.idAttribute], { name: 'Johnny' })
+      updatedUser = await adapter.update(User, user[User.idAttribute], { name: 'Johnny' })
       assert.debug('updated', User.name, updatedUser)
-      assert.equal(updatedUser.name, 'barbaz')
+      assert.equal(updatedUser.name, 'Johnny')
       assert.equal(updatedUser[User.idAttribute], user[User.idAttribute])
-      assert.isTrue(beforeUpdateCalled, 'beforeUpdate should have been called')
-      assert.isTrue(afterUpdateCalled, 'afterUpdate should have been called')
 
       assert.debug('find', User.name, user[User.idAttribute])
       foundUser = await adapter.find(User, user[User.idAttribute])
       assert.debug('found', User.name, foundUser)
-      assert.equal(foundUser.name, 'bar')
+      assert.equal(foundUser.name, 'Johnny')
       assert.equal(foundUser[User.idAttribute], user[User.idAttribute])
     })
     it('should update a user and return raw', async function () {
