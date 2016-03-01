@@ -277,7 +277,8 @@ export default function (options) {
         assert.deepEqual(post.tags, [], 'post.tags')
       })
       it('should load hasMany localKeys (object) relations', async function () {
-        this.toClear = ['Tag', 'Post']
+        this.toClear.push('Post')
+        this.toClear.push('Tag')
         let props = { value: 'big data' }
         assert.debug('create', Tag.name, props)
         const tag = await adapter.create(Tag, props)

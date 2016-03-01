@@ -1112,12 +1112,16 @@
                 User = this.$$User;
                 user1 = { name: 'John', age: 20 };
                 user2 = { name: 'John', age: 30 };
-                _context.next = 6;
+
+
+                assert.debug('createMany', User.name, [user1, user2]);
+                _context.next = 7;
                 return adapter.createMany(User, [user1, user2]);
 
-              case 6:
+              case 7:
                 users = _context.sent;
 
+                assert.debug('created', User.name, users);
                 users.sort(function (a, b) {
                   return a.age - b.age;
                 });
@@ -1130,15 +1134,17 @@
                   return x.age === 30;
                 }).length, 1);
 
-                _context.next = 14;
+                assert.debug('findAll', User.name, { age: 20 });
+                _context.next = 17;
                 return adapter.findAll(User, { age: 20 });
 
-              case 14:
+              case 17:
                 users3 = _context.sent;
 
+                assert.debug('found', User.name, users3);
                 assert.equal(users3.length, 1);
 
-              case 16:
+              case 20:
               case 'end':
                 return _context.stop();
             }
@@ -2084,44 +2090,45 @@
             while (1) {
               switch (_context9.prev = _context9.next) {
                 case 0:
-                  this.toClear = ['Tag', 'Post'];
+                  this.toClear.push('Post');
+                  this.toClear.push('Tag');
                   props = { value: 'big data' };
 
                   assert.debug('create', Tag.name, props);
-                  _context9.next = 5;
+                  _context9.next = 6;
                   return adapter.create(Tag, props);
 
-                case 5:
+                case 6:
                   tag = _context9.sent;
 
                   assert.debug('created', Tag.name, tag);
 
                   props = { value: 'servers' };
                   assert.debug('create', Tag.name, props);
-                  _context9.next = 11;
+                  _context9.next = 12;
                   return adapter.create(Tag, props);
 
-                case 11:
+                case 12:
                   tag2 = _context9.sent;
 
                   assert.debug('created', Tag.name, tag2);
 
                   props = { content: 'test', tagIds: (_tagIds = {}, babelHelpers.defineProperty(_tagIds, tag[Tag.idAttribute], true), babelHelpers.defineProperty(_tagIds, tag2[Tag.idAttribute], true), _tagIds) };
                   assert.debug('create', Post.name, props);
-                  _context9.next = 17;
+                  _context9.next = 18;
                   return adapter.create(Post, props);
 
-                case 17:
+                case 18:
                   post = _context9.sent;
                   postId = post[Post.idAttribute];
 
                   assert.debug('created', Post.name, post);
 
                   assert.debug('find', Post.name, postId);
-                  _context9.next = 23;
+                  _context9.next = 24;
                   return adapter.find(Post, postId, { 'with': ['tag'] });
 
-                case 23:
+                case 24:
                   post = _context9.sent;
 
                   assert.debug('found', Post.name);
@@ -2131,7 +2138,7 @@
                   assert.isDefined(post.tags[0][Tag.idAttribute], 'post.tags[0][Tag.idAttribute]');
                   assert.isDefined(post.tags[1][Tag.idAttribute], 'post.tags[1][Tag.idAttribute]');
 
-                case 29:
+                case 30:
                 case 'end':
                   return _context9.stop();
               }
@@ -2893,29 +2900,18 @@
                 assert.equal(updatedUser.name, 'Johnny');
                 assert.equal(updatedUser[User.idAttribute], user[User.idAttribute]);
 
-                assert.debug('update', User.name, user[User.idAttribute], { name: 'Johnny' });
-                _context.next = 28;
-                return adapter.update(User, user[User.idAttribute], { name: 'Johnny' });
-
-              case 28:
-                updatedUser = _context.sent;
-
-                assert.debug('updated', User.name, updatedUser);
-                assert.equal(updatedUser.name, 'Johnny');
-                assert.equal(updatedUser[User.idAttribute], user[User.idAttribute]);
-
                 assert.debug('find', User.name, user[User.idAttribute]);
-                _context.next = 35;
+                _context.next = 28;
                 return adapter.find(User, user[User.idAttribute]);
 
-              case 35:
+              case 28:
                 foundUser = _context.sent;
 
                 assert.debug('found', User.name, foundUser);
                 assert.equal(foundUser.name, 'Johnny');
                 assert.equal(foundUser[User.idAttribute], user[User.idAttribute]);
 
-              case 39:
+              case 32:
               case 'end':
                 return _context.stop();
             }

@@ -30,12 +30,6 @@ export default function (options) {
       assert.equal(updatedUser.name, 'Johnny')
       assert.equal(updatedUser[User.idAttribute], user[User.idAttribute])
 
-      assert.debug('update', User.name, user[User.idAttribute], { name: 'Johnny' })
-      updatedUser = await adapter.update(User, user[User.idAttribute], { name: 'Johnny' })
-      assert.debug('updated', User.name, updatedUser)
-      assert.equal(updatedUser.name, 'Johnny')
-      assert.equal(updatedUser[User.idAttribute], user[User.idAttribute])
-
       assert.debug('find', User.name, user[User.idAttribute])
       foundUser = await adapter.find(User, user[User.idAttribute])
       assert.debug('found', User.name, foundUser)
