@@ -6,6 +6,7 @@ import createTest from './create.test'
 import createManyTest from './createMany.test'
 import destroyTest from './destroy.test'
 import destroyAllTest from './destroyAll.test'
+import extendTest from './extend.test'
 import findTest from './find.test'
 import findAllTest from './findAll.test'
 import updateTest from './update.test'
@@ -173,6 +174,9 @@ export default {
       }
       if (options.methods === 'all' || options.methods.indexOf('createMany') !== -1) {
         createManyTest(options)
+      }
+      if (options.methods === 'all' || options.methods.indexOf('extend') !== -1) {
+        extendTest(options)
       }
       if (options.methods === 'all' || options.methods.indexOf('find') !== -1) {
         findTest(options)

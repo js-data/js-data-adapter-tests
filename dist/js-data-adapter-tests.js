@@ -42,6 +42,30 @@
     };
   };
 
+  babelHelpers.classCallCheck = function (instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  };
+
+  babelHelpers.createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
   babelHelpers.defineProperty = function (obj, key, value) {
     if (key in obj) {
       Object.defineProperty(obj, key, {
@@ -55,6 +79,30 @@
     }
 
     return obj;
+  };
+
+  babelHelpers.inherits = function (subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  };
+
+  babelHelpers.possibleConstructorReturn = function (self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
   };
 
   babelHelpers;
@@ -1571,6 +1619,69 @@
           }
         }, _callee4, this);
       })));
+    });
+  }
+
+  /* global assert:true */
+  function extendTest (options) {
+    describe('Adapter.extend', function () {
+      it('should exist', function () {
+        assert.equal(babelHelpers.typeof(this.$$adapter.constructor.extend), 'function', 'adapter constructor function should have an "extend" method');
+      });
+      it('should return a subclass of the adapter class using extend', function () {
+        var Adapter = this.$$adapter.constructor;
+
+        var SubAdapter = Adapter.extend({
+          foo: function foo() {
+            return 'foo';
+          }
+        }, {
+          bar: function bar() {
+            return 'bar';
+          }
+        });
+
+        assert.equal(SubAdapter.bar(), 'bar', 'SubAdapter.bar() should return "bar"');
+        assert.isTrue(SubAdapter.extend === Adapter.extend, 'should have same static methods');
+
+        var subAdapter = new SubAdapter();
+
+        assert.equal(subAdapter.foo(), 'foo', 'subAdapter.foo() should return "foo"');
+        assert.isTrue(subAdapter.find === subAdapter.find, 'should have same instance methods');
+      });
+      it('should return a subclass of the adapter class using ES6 classes', function () {
+        var Adapter = this.$$adapter.constructor;
+
+        var SubAdapter = function (_Adapter) {
+          babelHelpers.inherits(SubAdapter, _Adapter);
+
+          function SubAdapter() {
+            babelHelpers.classCallCheck(this, SubAdapter);
+            return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(SubAdapter).apply(this, arguments));
+          }
+
+          babelHelpers.createClass(SubAdapter, [{
+            key: 'foo',
+            value: function foo() {
+              return 'foo';
+            }
+          }], [{
+            key: 'bar',
+            value: function bar() {
+              return 'bar';
+            }
+          }]);
+          return SubAdapter;
+        }(Adapter);
+
+        assert.equal(SubAdapter.bar(), 'bar', 'SubAdapter.bar() should return "bar"');
+        assert.isTrue(SubAdapter.extend === Adapter.extend, 'should have same static methods');
+
+        var subAdapter = new SubAdapter();
+
+        assert.equal(subAdapter.foo(), 'foo', 'subAdapter.foo() should return "foo"');
+        assert.isTrue(subAdapter.find === subAdapter.find, 'should have same instance methods');
+      });
     });
   }
 
@@ -3418,6 +3529,9 @@
         }
         if (options.methods === 'all' || options.methods.indexOf('createMany') !== -1) {
           createManyTest(options);
+        }
+        if (options.methods === 'all' || options.methods.indexOf('extend') !== -1) {
+          extendTest(options);
         }
         if (options.methods === 'all' || options.methods.indexOf('find') !== -1) {
           findTest(options);

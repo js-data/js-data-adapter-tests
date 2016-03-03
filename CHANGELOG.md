@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.13 - 03 March 2016
+
+- Added tests for subclassing adapters
+
 ##### 2.0.0-alpha.12 - 01 March 2016
 
 - Some improved testing
