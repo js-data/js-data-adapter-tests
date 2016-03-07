@@ -41,8 +41,16 @@ export default {
   init: function (options) {
     options = options || {}
     debug = !!options.debug
-    options.methods = options.methods || 'all'
-    options.features = options.features || 'all'
+    options.hasMethod = function (method) {
+      options.methods || (options.methods = 'all')
+      options.xmethods || (options.xmethods = [])
+      return (options.methods === 'all' || options.methods.indexOf(method) !== -1) && options.xmethods.indexOf(method) === -1
+    }
+    options.hasFeature = function (feature) {
+      options.features || (options.features = 'all')
+      options.xfeatures || (options.xfeatures = [])
+      return (options.features === 'all' || options.features.indexOf(feature) !== -1) && options.xfeatures.indexOf(feature) === -1
+    }
     if (!options.Adapter || typeof options.Adapter !== 'function') {
       throw new Error(prefix + '.Adapter: Expected function, Actual: ' + typeof options.Adapter)
     }
@@ -163,46 +171,46 @@ export default {
     })
 
     describe('js-data-adapter-tests', function () {
-      if (options.methods === 'all' || options.methods.indexOf('beforeCreate') !== -1) {
+      if (options.hasMethod('beforeCreate')) {
         beforeCreateTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('create') !== -1) {
+      if (options.hasMethod('create')) {
         createTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('afterCreate') !== -1) {
+      if (options.hasMethod('afterCreate')) {
         afterCreateTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('createMany') !== -1) {
+      if (options.hasMethod('createMany')) {
         createManyTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('extend') !== -1) {
+      if (options.hasMethod('extend')) {
         extendTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('find') !== -1) {
+      if (options.hasMethod('find')) {
         findTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('findAll') !== -1) {
+      if (options.hasMethod('findAll')) {
         findAllTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('destroy') !== -1) {
+      if (options.hasMethod('destroy')) {
         destroyTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('destroyAll') !== -1) {
+      if (options.hasMethod('destroyAll')) {
         destroyAllTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('beforeUpdate') !== -1) {
+      if (options.hasMethod('beforeUpdate')) {
         beforeUpdateTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('update') !== -1) {
+      if (options.hasMethod('update')) {
         updateTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('afterUpdate') !== -1) {
+      if (options.hasMethod('afterUpdate')) {
         afterUpdateTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('updateAll') !== -1) {
+      if (options.hasMethod('updateAll')) {
         updateAllTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('updateMany') !== -1) {
+      if (options.hasMethod('updateMany')) {
         updateManyTest(options)
       }
     })

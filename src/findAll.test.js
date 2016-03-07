@@ -36,7 +36,7 @@ export default function (options) {
       assert.equal(users2[0].name, 'John', users2[0].name)
     })
 
-    if (options.features === 'all' || options.features.indexOf('inOp') !== -1) {
+    if (options.hasFeature('findAllInOp')) {
       it('should filter users using the "in" operator', async function () {
         var users = await adapter.findAll(User, {
           where: {
@@ -57,7 +57,7 @@ export default function (options) {
       })
     }
 
-    if (options.features === 'all' || options.features.indexOf('likeOp') !== -1) {
+    if (options.hasFeature('findAllLikeOp')) {
       it('should filter users using the "like" operator', async function () {
         var users = await adapter.findAll(User, {
           where: {
@@ -84,125 +84,233 @@ export default function (options) {
       })
     }
 
-    if (options.features === 'all' || options.features.indexOf('filterOpNotFound') !== -1) {
-      it('should throw "Operator not found" error', async function () {
-        assert.throw(function () {
-          return adapter.findAll(User, {
-            where: {
-              name: {
-                op: 'John'
-              }
+    if (options.hasFeature('findAllOpNotFound')) {
+      it('should throw "Operator not found" error', function () {
+        return adapter.findAll(User, {
+          where: {
+            name: {
+              op: 'John'
             }
-          })
-        }, Error, 'Operator not found')
+          }
+        }).then(function () {
+          throw new Error('should have failed!')
+        }, function (err) {
+          assert.equal(err.message, 'Operator op not supported!')
+        })
       })
     }
 
-    it('should load belongsTo relations', async function () {
-      this.toClear.push('Post')
-      this.toClear.push('Profile')
-      this.toClear.push('Comment')
-      let props = { name: 'John' }
-      assert.debug('create', User.name, props)
-      const user = await adapter.create(User, props)
-      assert.debug('created', User.name, user)
+    if (options.hasFeature('findAllBelongsTo')) {
+      it('should load belongsTo relations', async function () {
+        this.toClear.push('Post')
+        this.toClear.push('Profile')
+        this.toClear.push('Comment')
+        let props = { name: 'John' }
+        assert.debug('create', User.name, props)
+        const user = await adapter.create(User, props)
+        assert.debug('created', User.name, user)
 
-      props = { email: 'foo@test.com', userId: user[User.idAttribute] }
-      assert.debug('create', Profile.name, props)
-      const profile = await adapter.create(Profile, props)
-      assert.debug('created', Profile.name, profile)
+        props = { email: 'foo@test.com', userId: user[User.idAttribute] }
+        assert.debug('create', Profile.name, props)
+        const profile = await adapter.create(Profile, props)
+        assert.debug('created', Profile.name, profile)
 
-      props = { content: 'foo', userId: user[User.idAttribute] }
-      assert.debug('create', Post.name, props)
-      const post = await adapter.create(Post, props)
-      assert.debug('created', Post.name, post)
+        props = { content: 'foo', userId: user[User.idAttribute] }
+        assert.debug('create', Post.name, props)
+        const post = await adapter.create(Post, props)
+        assert.debug('created', Post.name, post)
 
-      props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId }
-      assert.debug('create', Comment.name, props)
-      let comment = await adapter.create(Comment, props)
-      assert.debug('created', Comment.name, comment)
+        props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId }
+        assert.debug('create', Comment.name, props)
+        let comment = await adapter.create(Comment, props)
+        assert.debug('created', Comment.name, comment)
 
-      props = { name: 'Sally' }
-      assert.debug('create', User.name, props)
-      const user2 = await adapter.create(User, props)
-      assert.debug('created', User.name, user2)
+        props = { name: 'Sally' }
+        assert.debug('create', User.name, props)
+        const user2 = await adapter.create(User, props)
+        assert.debug('created', User.name, user2)
 
-      props = { content: 'bar', userId: user2[User.idAttribute] }
-      assert.debug('create', Post.name, props)
-      const post2 = await adapter.create(Post, props)
-      assert.debug('created', Post.name, post2)
+        props = { content: 'bar', userId: user2[User.idAttribute] }
+        assert.debug('create', Post.name, props)
+        const post2 = await adapter.create(Post, props)
+        assert.debug('created', Post.name, post2)
 
-      props = { content: 'test67', postId: post2[Post.idAttribute], userId: post2.userId }
-      assert.debug('create', Comment.name, props)
-      let comment2 = await adapter.create(Comment, props)
-      assert.debug('created', Comment.name, comment2)
+        props = { content: 'test67', postId: post2[Post.idAttribute], userId: post2.userId }
+        assert.debug('create', Comment.name, props)
+        let comment2 = await adapter.create(Comment, props)
+        assert.debug('created', Comment.name, comment2)
 
-      assert.debug('findAll', Comment.name, {})
-      const comments = await adapter.findAll(Comment, {}, {'with': ['user', 'user.profile', 'post', 'post.user']})
-      assert.debug('found', Comment.name, comments)
+        assert.debug('findAll', Comment.name, {})
+        const comments = await adapter.findAll(Comment, {}, {'with': ['user', 'post']})
+        assert.debug('found', Comment.name, comments)
 
-      assert.isDefined(comments[0].post, 'comments[0].post')
-      assert.isDefined(comments[0].post.user, 'comments[0].post.user')
-      assert.isDefined(comments[0].user, 'comments[0].user')
-      assert.isDefined(comments[0].user.profile || comments[1].user.profile, 'comments[0].user.profile || comments[1].user.profile')
-      assert.isDefined(comments[1].post, 'comments[1].post')
-      assert.isDefined(comments[1].post.user, 'comments[1].post.user')
-      assert.isDefined(comments[1].user, 'comments[1].user')
-    })
+        assert.isDefined(comments[0].post, 'comments[0].post')
+        assert.isDefined(comments[0].user, 'comments[0].user')
+        assert.isDefined(comments[1].post, 'comments[1].post')
+        assert.isDefined(comments[1].user, 'comments[1].user')
+      })
+    }
 
-    it('should load hasMany and belongsTo relations', async function () {
-      this.toClear.push('Post')
-      this.toClear.push('Profile')
-      this.toClear.push('Comment')
-      let props = { name: 'John' }
-      assert.debug('create', User.name, props)
-      const user = await adapter.create(User, props)
-      assert.debug('created', User.name, user)
+    if (options.hasFeature('findAllBelongsToNested')) {
+      it('should load belongsTo relations (nested)', async function () {
+        this.toClear.push('Post')
+        this.toClear.push('Profile')
+        this.toClear.push('Comment')
+        let props = { name: 'John' }
+        assert.debug('create', User.name, props)
+        const user = await adapter.create(User, props)
+        assert.debug('created', User.name, user)
 
-      props = { email: 'foo@test.com', userId: user[User.idAttribute] }
-      assert.debug('create', Profile.name, props)
-      const profile = await adapter.create(Profile, props)
-      assert.debug('created', Profile.name, profile)
+        props = { email: 'foo@test.com', userId: user[User.idAttribute] }
+        assert.debug('create', Profile.name, props)
+        const profile = await adapter.create(Profile, props)
+        assert.debug('created', Profile.name, profile)
 
-      props = { content: 'foo', userId: user[User.idAttribute] }
-      assert.debug('create', Post.name, props)
-      const post = await adapter.create(Post, props)
-      assert.debug('created', Post.name, post)
+        props = { content: 'foo', userId: user[User.idAttribute] }
+        assert.debug('create', Post.name, props)
+        const post = await adapter.create(Post, props)
+        assert.debug('created', Post.name, post)
 
-      props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId }
-      assert.debug('create', Comment.name, props)
-      let comment = await adapter.create(Comment, props)
-      assert.debug('created', Comment.name, comment)
+        props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId }
+        assert.debug('create', Comment.name, props)
+        let comment = await adapter.create(Comment, props)
+        assert.debug('created', Comment.name, comment)
 
-      props = { name: 'Sally' }
-      assert.debug('create', User.name, props)
-      const user2 = await adapter.create(User, props)
-      assert.debug('created', User.name, user2)
+        props = { name: 'Sally' }
+        assert.debug('create', User.name, props)
+        const user2 = await adapter.create(User, props)
+        assert.debug('created', User.name, user2)
 
-      props = { content: 'bar', userId: user2[User.idAttribute] }
-      assert.debug('create', Post.name, props)
-      const post2 = await adapter.create(Post, props)
-      assert.debug('created', Post.name, post2)
+        props = { content: 'bar', userId: user2[User.idAttribute] }
+        assert.debug('create', Post.name, props)
+        const post2 = await adapter.create(Post, props)
+        assert.debug('created', Post.name, post2)
 
-      props = { content: 'test67', postId: post2[Post.idAttribute], userId: post2.userId }
-      assert.debug('create', Comment.name, props)
-      let comment2 = await adapter.create(Comment, props)
-      assert.debug('created', Comment.name, comment2)
+        props = { content: 'test67', postId: post2[Post.idAttribute], userId: post2.userId }
+        assert.debug('create', Comment.name, props)
+        let comment2 = await adapter.create(Comment, props)
+        assert.debug('created', Comment.name, comment2)
 
-      assert.debug('find', Post.name, {})
-      const posts = await adapter.findAll(Post, {}, {'with': ['user', 'comment', 'comment.user', 'comment.user.profile']})
-      assert.debug('found', Post.name, posts)
+        assert.debug('findAll', Comment.name, {})
+        const comments = await adapter.findAll(Comment, {}, {'with': ['user', 'user.profile', 'post', 'post.user']})
+        assert.debug('found', Comment.name, comments)
 
-      assert.isDefined(posts[0].comments, 'posts[0].comments')
-      assert.isDefined(posts[0].comments[0].user, 'posts[0].comments[0].user')
-      assert.isDefined(posts[0].comments[0].user.profile || posts[1].comments[0].user.profile, 'posts[0].comments[0].user.profile || posts[1].comments[0].user.profile')
-      assert.isDefined(posts[0].user, 'posts[0].user')
-      assert.isDefined(posts[1].comments, 'posts[1].comments')
-      assert.isDefined(posts[1].comments[0].user, 'posts[1].comments[0].user')
-      assert.isDefined(posts[1].user, 'posts[1].user')
-    })
+        assert.isDefined(comments[0].post, 'comments[0].post')
+        assert.isDefined(comments[0].post.user, 'comments[0].post.user')
+        assert.isDefined(comments[0].user, 'comments[0].user')
+        assert.isDefined(comments[0].user.profile || comments[1].user.profile, 'comments[0].user.profile || comments[1].user.profile')
+        assert.isDefined(comments[1].post, 'comments[1].post')
+        assert.isDefined(comments[1].post.user, 'comments[1].post.user')
+        assert.isDefined(comments[1].user, 'comments[1].user')
+      })
+    }
 
-    if (options.features === 'all' || options.features.indexOf('filterOnRelations') !== -1) {
+    if (options.hasFeature('findAllBelongsToHasMany')) {
+      it('should load hasMany and belongsTo relations', async function () {
+        this.toClear.push('Post')
+        this.toClear.push('Profile')
+        this.toClear.push('Comment')
+        let props = { name: 'John' }
+        assert.debug('create', User.name, props)
+        const user = await adapter.create(User, props)
+        assert.debug('created', User.name, user)
+
+        props = { email: 'foo@test.com', userId: user[User.idAttribute] }
+        assert.debug('create', Profile.name, props)
+        const profile = await adapter.create(Profile, props)
+        assert.debug('created', Profile.name, profile)
+
+        props = { content: 'foo', userId: user[User.idAttribute] }
+        assert.debug('create', Post.name, props)
+        const post = await adapter.create(Post, props)
+        assert.debug('created', Post.name, post)
+
+        props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId }
+        assert.debug('create', Comment.name, props)
+        let comment = await adapter.create(Comment, props)
+        assert.debug('created', Comment.name, comment)
+
+        props = { name: 'Sally' }
+        assert.debug('create', User.name, props)
+        const user2 = await adapter.create(User, props)
+        assert.debug('created', User.name, user2)
+
+        props = { content: 'bar', userId: user2[User.idAttribute] }
+        assert.debug('create', Post.name, props)
+        const post2 = await adapter.create(Post, props)
+        assert.debug('created', Post.name, post2)
+
+        props = { content: 'test67', postId: post2[Post.idAttribute], userId: post2.userId }
+        assert.debug('create', Comment.name, props)
+        let comment2 = await adapter.create(Comment, props)
+        assert.debug('created', Comment.name, comment2)
+
+        assert.debug('find', Post.name, {})
+        const posts = await adapter.findAll(Post, {}, {'with': ['user', 'comment']})
+        assert.debug('found', Post.name, posts)
+
+        assert.isDefined(posts[0].comments, 'posts[0].comments')
+        assert.isDefined(posts[0].user, 'posts[0].user')
+        assert.isDefined(posts[1].comments, 'posts[1].comments')
+        assert.isDefined(posts[1].user, 'posts[1].user')
+      })
+    }
+
+    if (options.hasFeature('findAllBelongsToHasManyNested')) {
+      it('should load hasMany and belongsTo relations', async function () {
+        this.toClear.push('Post')
+        this.toClear.push('Profile')
+        this.toClear.push('Comment')
+        let props = { name: 'John' }
+        assert.debug('create', User.name, props)
+        const user = await adapter.create(User, props)
+        assert.debug('created', User.name, user)
+
+        props = { email: 'foo@test.com', userId: user[User.idAttribute] }
+        assert.debug('create', Profile.name, props)
+        const profile = await adapter.create(Profile, props)
+        assert.debug('created', Profile.name, profile)
+
+        props = { content: 'foo', userId: user[User.idAttribute] }
+        assert.debug('create', Post.name, props)
+        const post = await adapter.create(Post, props)
+        assert.debug('created', Post.name, post)
+
+        props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId }
+        assert.debug('create', Comment.name, props)
+        let comment = await adapter.create(Comment, props)
+        assert.debug('created', Comment.name, comment)
+
+        props = { name: 'Sally' }
+        assert.debug('create', User.name, props)
+        const user2 = await adapter.create(User, props)
+        assert.debug('created', User.name, user2)
+
+        props = { content: 'bar', userId: user2[User.idAttribute] }
+        assert.debug('create', Post.name, props)
+        const post2 = await adapter.create(Post, props)
+        assert.debug('created', Post.name, post2)
+
+        props = { content: 'test67', postId: post2[Post.idAttribute], userId: post2.userId }
+        assert.debug('create', Comment.name, props)
+        let comment2 = await adapter.create(Comment, props)
+        assert.debug('created', Comment.name, comment2)
+
+        assert.debug('find', Post.name, {})
+        const posts = await adapter.findAll(Post, {}, {'with': ['user', 'comment', 'comment.user', 'comment.user.profile']})
+        assert.debug('found', Post.name, posts)
+
+        assert.isDefined(posts[0].comments, 'posts[0].comments')
+        assert.isDefined(posts[0].comments[0].user, 'posts[0].comments[0].user')
+        assert.isDefined(posts[0].comments[0].user.profile || posts[1].comments[0].user.profile, 'posts[0].comments[0].user.profile || posts[1].comments[0].user.profile')
+        assert.isDefined(posts[0].user, 'posts[0].user')
+        assert.isDefined(posts[1].comments, 'posts[1].comments')
+        assert.isDefined(posts[1].comments[0].user, 'posts[1].comments[0].user')
+        assert.isDefined(posts[1].user, 'posts[1].user')
+      })
+    }
+
+    if (options.hasFeature('filterOnRelations')) {
       it('should filter using belongsTo relation', async function () {
         this.toClear.push('Post')
         this.toClear.push('Profile')

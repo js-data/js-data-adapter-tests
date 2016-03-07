@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.14 - 08 March 2016
+
+- Features and Methods are now opt-out rather than opt-in
+
 ##### 2.0.0-alpha.13 - 03 March 2016
 
 - Added tests for subclassing adapters
