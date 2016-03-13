@@ -194,6 +194,70 @@ export default function (options) {
       assert.isDefined(comment.user, 'comment.user')
     })
 
+    it('should load belongsTo relations and filter sub queries', async function () {
+      this.toClear.push('Post')
+      this.toClear.push('Comment')
+      let props = { name: 'John' }
+      assert.debug('create', User.name, props)
+      let user = await adapter.create(User, props)
+      assert.debug('created', User.name, user)
+
+      props = { status: 'draft', userId: user[User.idAttribute] }
+      assert.debug('create', Post.name, props)
+      const post = await adapter.create(Post, props)
+      assert.debug('created', Post.name, post)
+
+      props = { status: 'published', userId: user[User.idAttribute] }
+      assert.debug('create', Post.name, props)
+      const post2 = await adapter.create(Post, props)
+      assert.debug('created', Post.name, post2)
+
+      props = { status: 'draft', userId: 1234 }
+      assert.debug('create', Post.name, props)
+      const post3 = await adapter.create(Post, props)
+      assert.debug('created', Post.name, post3)
+
+      props = { status: 'published', userId: 1234 }
+      assert.debug('create', Post.name, props)
+      const post4 = await adapter.create(Post, props)
+      assert.debug('created', Post.name, post4)
+
+      assert.debug('find', User.name, user[User.idAttribute])
+      user = await adapter.find(User, user[User.idAttribute], {'with': ['post']})
+      assert.debug('found', User.name, user)
+
+      assert.isDefined(user, 'user')
+      assert.isDefined(user.posts, 'user.posts')
+      assert.equal(user.posts.length, 2, 'user.posts.length')
+
+      assert.debug('find', User.name, user[User.idAttribute])
+      user = await adapter.find(User, user[User.idAttribute], {'with': [{
+        relation: 'post',
+        query: {
+          status: 'published'
+        }
+      }]})
+      assert.debug('found', User.name, user)
+
+      assert.isDefined(user, 'user')
+      assert.isDefined(user.posts, 'user.posts')
+      assert.equal(user.posts.length, 1, 'user.posts.length')
+
+      assert.debug('find', User.name, user[User.idAttribute])
+      user = await adapter.find(User, user[User.idAttribute], {'with': [{
+        relation: 'post',
+        replace: true,
+        query: {
+          status: 'published'
+        }
+      }]})
+      assert.debug('found', User.name, user)
+
+      assert.isDefined(user, 'user')
+      assert.isDefined(user.posts, 'user.posts')
+      assert.equal(user.posts.length, 2, 'user.posts.length')
+    })
+
     if (options.hasFeature('findBelongsToNested')) {
       it('should load belongsTo relations (nested)', async function () {
         this.toClear.push('Post')

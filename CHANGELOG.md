@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.15 - 12 March 2016
+
+- Added tests for filtering in "with" sub queries
+
 ##### 2.0.0-alpha.14 - 08 March 2016
 
 - Features and Methods are now opt-out rather than opt-in
