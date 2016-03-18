@@ -1092,6 +1092,178 @@
   }
 
   /* global assert:true */
+  function countTest (options) {
+    describe('Adapter#count', function () {
+      it('should exist', function () {
+        assert.equal(babelHelpers.typeof(this.$$adapter.count), 'function', 'adapter should have a "count" method');
+      });
+      it('should count users', babelHelpers.asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+        var adapter, User, props, count, user, user2;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                adapter = this.$$adapter;
+                User = this.$$User;
+                props = { name: 'John' };
+
+
+                assert.debug('count', User.name, {});
+                _context.next = 6;
+                return adapter.count(User);
+
+              case 6:
+                count = _context.sent;
+
+                assert.debug('counted', User.name, count);
+                assert.equal(count, 0);
+
+                assert.debug('count', User.name, { name: 'John' });
+                _context.next = 12;
+                return adapter.count(User, { name: 'John' });
+
+              case 12:
+                count = _context.sent;
+
+                assert.debug('counted', User.name, count);
+                assert.equal(count, 0);
+
+                assert.debug('count', User.name, { name: 'Sally' });
+                _context.next = 18;
+                return adapter.count(User, { name: 'Sally' });
+
+              case 18:
+                count = _context.sent;
+
+                assert.debug('counted', User.name, count);
+                assert.equal(count, 0);
+
+                assert.debug('create', User.name, props);
+                _context.next = 24;
+                return adapter.create(User, props);
+
+              case 24:
+                user = _context.sent;
+
+                assert.debug('created', User.name, user);
+
+                assert.debug('count', User.name, {});
+                _context.next = 29;
+                return adapter.count(User);
+
+              case 29:
+                count = _context.sent;
+
+                assert.debug('counted', User.name, count);
+                assert.equal(count, 1);
+
+                assert.debug('count', User.name, { name: 'John' });
+                _context.next = 35;
+                return adapter.count(User, { name: 'John' });
+
+              case 35:
+                count = _context.sent;
+
+                assert.debug('counted', User.name, count);
+                assert.equal(count, 1);
+
+                assert.debug('count', User.name, { name: 'Sally' });
+                _context.next = 41;
+                return adapter.count(User, { name: 'Sally' });
+
+              case 41:
+                count = _context.sent;
+
+                assert.debug('counted', User.name, count);
+                assert.equal(count, 0);
+
+                assert.debug('create', User.name, { name: 'Sally' });
+                _context.next = 47;
+                return adapter.create(User, { name: 'Sally' });
+
+              case 47:
+                user2 = _context.sent;
+
+                assert.debug('created', User.name, user2);
+
+                assert.debug('count', User.name, {});
+                _context.next = 52;
+                return adapter.count(User);
+
+              case 52:
+                count = _context.sent;
+
+                assert.debug('counted', User.name, count);
+                assert.equal(count, 2);
+
+                assert.debug('count', User.name, { name: 'John' });
+                _context.next = 58;
+                return adapter.count(User, { name: 'John' });
+
+              case 58:
+                count = _context.sent;
+
+                assert.debug('counted', User.name, count);
+                assert.equal(count, 1);
+
+                assert.debug('count', User.name, { name: 'Sally' });
+                _context.next = 64;
+                return adapter.count(User, { name: 'Sally' });
+
+              case 64:
+                count = _context.sent;
+
+                assert.debug('counted', User.name, count);
+                assert.equal(count, 1);
+
+              case 67:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      })));
+      it('should count users and return raw', babelHelpers.asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+        var adapter, User, props, user, result;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                adapter = this.$$adapter;
+                User = this.$$User;
+                props = { name: 'John' };
+
+
+                assert.debug('create', User.name, props);
+                _context2.next = 6;
+                return adapter.create(User, props);
+
+              case 6:
+                user = _context2.sent;
+
+                assert.debug('created', User.name, user);
+
+                assert.debug('count', User.name, props);
+                _context2.next = 11;
+                return adapter.count(User, props, { raw: true });
+
+              case 11:
+                result = _context2.sent;
+
+                assert.debug('counted', User.name, result);
+                assert.equal(result.data, 1, 'result.data');
+
+              case 14:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      })));
+    });
+  }
+
+  /* global assert:true */
   function createTest (options) {
     describe('Adapter#create', function () {
       it('should exist', function () {
@@ -3542,6 +3714,178 @@
   }
 
   /* global assert:true */
+  function sumTest (options) {
+    describe('Adapter#sum', function () {
+      it('should exist', function () {
+        assert.equal(babelHelpers.typeof(this.$$adapter.sum), 'function', 'adapter should have a "sum" method');
+      });
+      it('should sum users\' age', babelHelpers.asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+        var adapter, User, props, sum, user, user2;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                adapter = this.$$adapter;
+                User = this.$$User;
+                props = { name: 'John', age: 30 };
+
+
+                assert.debug('sum', User.name, {});
+                _context.next = 6;
+                return adapter.sum(User, 'age');
+
+              case 6:
+                sum = _context.sent;
+
+                assert.debug('summed', User.name, sum);
+                assert.equal(sum, 0);
+
+                assert.debug('sum', User.name, { name: 'John' });
+                _context.next = 12;
+                return adapter.sum(User, 'age', { name: 'John' });
+
+              case 12:
+                sum = _context.sent;
+
+                assert.debug('summed', User.name, sum);
+                assert.equal(sum, 0);
+
+                assert.debug('sum', User.name, { name: 'Sally' });
+                _context.next = 18;
+                return adapter.sum(User, 'age', { name: 'Sally' });
+
+              case 18:
+                sum = _context.sent;
+
+                assert.debug('summed', User.name, sum);
+                assert.equal(sum, 0);
+
+                assert.debug('create', User.name, props);
+                _context.next = 24;
+                return adapter.create(User, props);
+
+              case 24:
+                user = _context.sent;
+
+                assert.debug('created', User.name, user);
+
+                assert.debug('sum', User.name, {});
+                _context.next = 29;
+                return adapter.sum(User, 'age');
+
+              case 29:
+                sum = _context.sent;
+
+                assert.debug('summed', User.name, sum);
+                assert.equal(sum, 30);
+
+                assert.debug('sum', User.name, { name: 'John' });
+                _context.next = 35;
+                return adapter.sum(User, 'age', { name: 'John' });
+
+              case 35:
+                sum = _context.sent;
+
+                assert.debug('summed', User.name, sum);
+                assert.equal(sum, 30);
+
+                assert.debug('sum', User.name, { name: 'Sally' });
+                _context.next = 41;
+                return adapter.sum(User, 'age', { name: 'Sally' });
+
+              case 41:
+                sum = _context.sent;
+
+                assert.debug('summed', User.name, sum);
+                assert.equal(sum, 0);
+
+                assert.debug('create', User.name, { name: 'Sally' });
+                _context.next = 47;
+                return adapter.create(User, { name: 'Sally', age: 27 });
+
+              case 47:
+                user2 = _context.sent;
+
+                assert.debug('created', User.name, user2);
+
+                assert.debug('sum', User.name, {});
+                _context.next = 52;
+                return adapter.sum(User, 'age');
+
+              case 52:
+                sum = _context.sent;
+
+                assert.debug('summed', User.name, sum);
+                assert.equal(sum, 57);
+
+                assert.debug('sum', User.name, { name: 'John' });
+                _context.next = 58;
+                return adapter.sum(User, 'age', { name: 'John' });
+
+              case 58:
+                sum = _context.sent;
+
+                assert.debug('summed', User.name, sum);
+                assert.equal(sum, 30);
+
+                assert.debug('sum', User.name, { name: 'Sally' });
+                _context.next = 64;
+                return adapter.sum(User, 'age', { name: 'Sally' });
+
+              case 64:
+                sum = _context.sent;
+
+                assert.debug('summed', User.name, sum);
+                assert.equal(sum, 27);
+
+              case 67:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      })));
+      it('should sum users\' age and return raw', babelHelpers.asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+        var adapter, User, props, user, result;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                adapter = this.$$adapter;
+                User = this.$$User;
+                props = { name: 'John', age: 30 };
+
+
+                assert.debug('create', User.name, props);
+                _context2.next = 6;
+                return adapter.create(User, props);
+
+              case 6:
+                user = _context2.sent;
+
+                assert.debug('created', User.name, user);
+
+                assert.debug('sum', User.name, props);
+                _context2.next = 11;
+                return adapter.sum(User, 'age', props, { raw: true });
+
+              case 11:
+                result = _context2.sent;
+
+                assert.debug('summed', User.name, result);
+                assert.equal(result.data, 30, 'result.data');
+
+              case 14:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      })));
+    });
+  }
+
+  /* global assert:true */
   function updateTest (options) {
     describe('Adapter#update', function () {
       it('should exist', function () {
@@ -4112,6 +4456,9 @@
         if (options.hasMethod('beforeCreate')) {
           beforeCreateTest(options);
         }
+        if (options.hasMethod('count')) {
+          countTest(options);
+        }
         if (options.hasMethod('create')) {
           createTest(options);
         }
@@ -4138,6 +4485,9 @@
         }
         if (options.hasMethod('beforeUpdate')) {
           beforeUpdateTest(options);
+        }
+        if (options.hasMethod('sum')) {
+          sumTest(options);
         }
         if (options.hasMethod('update')) {
           updateTest(options);

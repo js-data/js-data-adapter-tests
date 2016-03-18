@@ -2,6 +2,7 @@ import afterCreateTest from './afterCreate.test'
 import afterUpdateTest from './afterUpdate.test'
 import beforeCreateTest from './beforeCreate.test'
 import beforeUpdateTest from './beforeUpdate.test'
+import countTest from './count.test'
 import createTest from './create.test'
 import createManyTest from './createMany.test'
 import destroyTest from './destroy.test'
@@ -9,6 +10,7 @@ import destroyAllTest from './destroyAll.test'
 import extendTest from './extend.test'
 import findTest from './find.test'
 import findAllTest from './findAll.test'
+import sumTest from './sum.test'
 import updateTest from './update.test'
 import updateAllTest from './updateAll.test'
 import updateManyTest from './updateMany.test'
@@ -174,6 +176,9 @@ export default {
       if (options.hasMethod('beforeCreate')) {
         beforeCreateTest(options)
       }
+      if (options.hasMethod('count')) {
+        countTest(options)
+      }
       if (options.hasMethod('create')) {
         createTest(options)
       }
@@ -200,6 +205,9 @@ export default {
       }
       if (options.hasMethod('beforeUpdate')) {
         beforeUpdateTest(options)
+      }
+      if (options.hasMethod('sum')) {
+        sumTest(options)
       }
       if (options.hasMethod('update')) {
         updateTest(options)

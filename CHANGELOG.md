@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.16 - 17 March 2016
+
+- Added tests for "count" and "sum" methods
+
 ##### 2.0.0-alpha.15 - 12 March 2016
 
 - Added tests for filtering in "with" sub queries
