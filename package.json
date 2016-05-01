@@ -2,7 +2,7 @@
   "name": "js-data-adapter-tests",
   "description": "Tests for js-data adapters.",
   "homepage": "https://github.com/js-data/js-data-adapter-tests",
-  "version": "2.0.0-alpha.16",
+  "version": "2.0.0-alpha.17",
   "repository": {
     "type": "git",
     "url": "https://github.com/js-data/js-data-adapter-tests.git"
@@ -16,7 +16,7 @@
     "test"
   ],
   "scripts": {
-    "lint": "repo-tools lint src/**/*.js rollup.config.js",
+    "lint": "repo-tools lint \"**/*.js\"",
     "bundle": "rollup -c rollup.config.js -f umd -o dist/js-data-adapter-tests.js -m dist/js-data-adapter-tests.js.map src/index.js",
     "watch": "watch \"npm run bundle\" src/",
     "test": "npm run lint && npm run bundle",
@@ -34,6 +34,9 @@
       "beforeEach",
       "afterEach",
       "assert"
+    ],
+    "ignore": [
+      "dist/"
     ]
   },
   "peerDependencies": {
@@ -42,15 +45,14 @@
     "sinon": "1.17.3"
   },
   "devDependencies": {
-    "babel-core": "6.7.2",
     "babel-plugin-syntax-async-functions": "6.5.0",
     "babel-plugin-transform-regenerator": "6.6.5",
-    "babel-polyfill": "6.7.2",
+    "babel-polyfill": "6.7.4",
     "babel-preset-es2015-rollup": "1.1.1",
     "babel-preset-stage-0": "6.5.0",
-    "js-data-repo-tools": "0.2.0",
-    "rollup": "0.25.4",
+    "js-data-repo-tools": "0.5.0",
+    "rollup": "0.26.1",
     "rollup-plugin-babel": "2.4.0",
-    "watch": "0.17.1"
+    "watch": "0.18.0"
   }
 }

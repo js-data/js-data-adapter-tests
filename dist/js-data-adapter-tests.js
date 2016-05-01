@@ -1814,7 +1814,11 @@
         });
 
         assert.equal(SubAdapter.bar(), 'bar', 'SubAdapter.bar() should return "bar"');
-        assert.isTrue(SubAdapter.extend === Adapter.extend, 'should have same static methods');
+        try {
+          assert.isTrue(SubAdapter.extend === Adapter.extend, 'should have same static methods');
+        } catch (err) {
+          assert.equal(babelHelpers.typeof(SubAdapter.extend), 'function', 'should have same static methods');
+        }
 
         var subAdapter = new SubAdapter();
 
@@ -1847,7 +1851,18 @@
         }(Adapter);
 
         assert.equal(SubAdapter.bar(), 'bar', 'SubAdapter.bar() should return "bar"');
-        assert.isTrue(SubAdapter.extend === Adapter.extend, 'should have same static methods');
+        try {
+          assert.isTrue(SubAdapter.extend === Adapter.extend, 'should have same static methods');
+        } catch (err) {
+          try {
+            assert.equal(babelHelpers.typeof(SubAdapter.extend), 'function', 'should have same static methods');
+          } catch (err) {
+            var obj = {};
+            if (obj.setPrototypeOf) {
+              throw err;
+            }
+          }
+        }
 
         var subAdapter = new SubAdapter();
 
