@@ -225,7 +225,26 @@ export default {
 
     afterEach(async function () {
       const Test = this
-      await Promise.all(Test.toClear.map(function (Mapper) {
+      const toClear = []
+      if (Test.toClear.indexOf('Tag') !== -1) {
+        toClear.push('Tag')
+      }
+      if (Test.toClear.indexOf('Comment') !== -1) {
+        toClear.push('Comment')
+      }
+      if (Test.toClear.indexOf('Post') !== -1) {
+        toClear.push('Post')
+      }
+      if (Test.toClear.indexOf('Profile') !== -1) {
+        toClear.push('Profile')
+      }
+      if (Test.toClear.indexOf('User') !== -1) {
+        toClear.push('User')
+      }
+      if (Test.toClear.indexOf('Address') !== -1) {
+        toClear.push('Address')
+      }
+      await Promise.all(toClear.map(function (Mapper) {
         return Test.$$adapter.destroyAll(Test['$$' + Mapper])
       }))
     })

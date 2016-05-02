@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.18 - 02 May 2016
+
+- Fix for SQL testing
+
 ##### 2.0.0-alpha.17 - 30 April 2016
 
 - Fix for testing in IE9

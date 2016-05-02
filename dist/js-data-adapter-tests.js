@@ -4519,18 +4519,38 @@
       });
 
       afterEach(babelHelpers.asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-        var Test;
+        var Test, toClear;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 Test = this;
-                _context.next = 3;
-                return Promise.all(Test.toClear.map(function (Mapper) {
+                toClear = [];
+
+                if (Test.toClear.indexOf('Tag') !== -1) {
+                  toClear.push('Tag');
+                }
+                if (Test.toClear.indexOf('Comment') !== -1) {
+                  toClear.push('Comment');
+                }
+                if (Test.toClear.indexOf('Post') !== -1) {
+                  toClear.push('Post');
+                }
+                if (Test.toClear.indexOf('Profile') !== -1) {
+                  toClear.push('Profile');
+                }
+                if (Test.toClear.indexOf('User') !== -1) {
+                  toClear.push('User');
+                }
+                if (Test.toClear.indexOf('Address') !== -1) {
+                  toClear.push('Address');
+                }
+                _context.next = 10;
+                return Promise.all(toClear.map(function (Mapper) {
                   return Test.$$adapter.destroyAll(Test['$$' + Mapper]);
                 }));
 
-              case 3:
+              case 10:
               case 'end':
                 return _context.stop();
             }
