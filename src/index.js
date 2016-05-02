@@ -244,9 +244,13 @@ export default {
       if (Test.toClear.indexOf('Address') !== -1) {
         toClear.push('Address')
       }
-      await Promise.all(toClear.map(function (Mapper) {
-        return Test.$$adapter.destroyAll(Test['$$' + Mapper])
-      }))
+      let promise = Promise.resolve()
+      toClear.forEach(function (Mapper) {
+        promise = promise.then(function () {
+          return Test.$$adapter.destroyAll(Test['$$' + Mapper])
+        })
+      })
+      await promise
     })
   },
   assert,

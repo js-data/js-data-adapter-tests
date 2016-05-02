@@ -4519,7 +4519,7 @@
       });
 
       afterEach(babelHelpers.asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-        var Test, toClear;
+        var Test, toClear, promise;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -4545,12 +4545,17 @@
                 if (Test.toClear.indexOf('Address') !== -1) {
                   toClear.push('Address');
                 }
-                _context.next = 10;
-                return Promise.all(toClear.map(function (Mapper) {
-                  return Test.$$adapter.destroyAll(Test['$$' + Mapper]);
-                }));
+                promise = Promise.resolve();
 
-              case 10:
+                toClear.forEach(function (Mapper) {
+                  promise = promise.then(function () {
+                    return Test.$$adapter.destroyAll(Test['$$' + Mapper]);
+                  });
+                });
+                _context.next = 12;
+                return promise;
+
+              case 12:
               case 'end':
                 return _context.stop();
             }
