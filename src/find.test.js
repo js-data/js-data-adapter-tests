@@ -202,6 +202,11 @@ export default function (options) {
       let user = await adapter.create(User, props)
       assert.debug('created', User.name, user)
 
+      props = { name: 'Sally' }
+      assert.debug('create', User.name, props)
+      let user2 = await adapter.create(User, props)
+      assert.debug('created', User.name, user)
+
       props = { status: 'draft', userId: user[User.idAttribute] }
       assert.debug('create', Post.name, props)
       const post = await adapter.create(Post, props)
@@ -212,12 +217,12 @@ export default function (options) {
       const post2 = await adapter.create(Post, props)
       assert.debug('created', Post.name, post2)
 
-      props = { status: 'draft', userId: 1234 }
+      props = { status: 'draft', userId: user2[User.idAttribute] }
       assert.debug('create', Post.name, props)
       const post3 = await adapter.create(Post, props)
       assert.debug('created', Post.name, post3)
 
-      props = { status: 'published', userId: 1234 }
+      props = { status: 'published', userId: user2[User.idAttribute] }
       assert.debug('create', Post.name, props)
       const post4 = await adapter.create(Post, props)
       assert.debug('created', Post.name, post4)

@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.20 - 02 May 2016
+
+- Fix for SQL testing
+
 ##### 2.0.0-alpha.19 - 02 May 2016
 
 - Fix for SQL testing
