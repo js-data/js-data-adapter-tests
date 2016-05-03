@@ -1,8 +1,8 @@
 {
   "name": "js-data-adapter-tests",
   "description": "Tests for js-data adapters.",
-  "version": "1.5.0",
   "homepage": "https://github.com/js-data/js-data-adapter-tests",
+  "version": "2.0.0-alpha.21",
   "repository": {
     "type": "git",
     "url": "https://github.com/js-data/js-data-adapter-tests.git"
@@ -16,33 +16,47 @@
     "test"
   ],
   "scripts": {
-    "lint": "standard src/**/*.js",
-    "bundle": "webpack --config webpack.config.js",
-    "test": "npm run lint && npm run bundle"
+    "lint": "repo-tools lint \"**/*.js\"",
+    "bundle": "rollup -c rollup.config.js -f umd -o dist/js-data-adapter-tests.js -m dist/js-data-adapter-tests.js.map src/index.js",
+    "watch": "watch \"npm run bundle\" src/",
+    "test": "npm run lint && npm run bundle",
+    "release": "npm test && repo-tools updates && repo-tools changelog"
   },
   "standard": {
     "parser": "babel-eslint",
     "globals": [
       "Mocha",
       "describe",
+      "sinon",
       "it",
       "before",
       "after",
       "beforeEach",
       "afterEach",
       "assert"
+    ],
+    "ignore": [
+      "dist/"
     ]
   },
+  "babel": {
+    "presets": ["es2015-rollup", "stage-0"],
+    "plugins": ["syntax-async-functions", "transform-regenerator"]
+  },
+  "peerDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "sinon": "^1.17.3"
+  },
   "devDependencies": {
-    "babel-core": "6.5.2",
-    "babel-eslint": "5.0.0",
-    "babel-loader": "6.2.3",
-    "babel-plugin-syntax-async-functions": "6.5.0",
-    "babel-plugin-transform-regenerator": "6.5.2",
-    "babel-polyfill": "6.5.0",
-    "babel-preset-es2015": "6.5.0",
+    "babel-plugin-syntax-async-functions": "6.8.0",
+    "babel-plugin-transform-regenerator": "6.8.0",
+    "babel-polyfill": "6.8.0",
+    "babel-preset-es2015-rollup": "1.1.1",
     "babel-preset-stage-0": "6.5.0",
-    "standard": "6.0.5",
-    "webpack": "1.12.13"
+    "js-data-repo-tools": "0.5.0",
+    "rollup": "0.26.2",
+    "rollup-plugin-babel": "2.4.0",
+    "watch": "0.18.0"
   }
 }

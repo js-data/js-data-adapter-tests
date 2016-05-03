@@ -1,3 +1,23 @@
+import afterCreateTest from './afterCreate.test'
+import afterUpdateTest from './afterUpdate.test'
+import beforeCreateTest from './beforeCreate.test'
+import beforeUpdateTest from './beforeUpdate.test'
+import countTest from './count.test'
+import createTest from './create.test'
+import createManyTest from './createMany.test'
+import destroyTest from './destroy.test'
+import destroyAllTest from './destroyAll.test'
+import extendTest from './extend.test'
+import findTest from './find.test'
+import findAllTest from './findAll.test'
+import sumTest from './sum.test'
+import updateTest from './update.test'
+import updateAllTest from './updateAll.test'
+import updateManyTest from './updateMany.test'
+
+import {assert} from 'chai'
+import sinon from 'sinon'
+
 assert.equalObjects = function (a, b, m) {
   assert.deepEqual(JSON.parse(JSON.stringify(a)), JSON.parse(JSON.stringify(b)), m || (JSON.stringify(a) + ' should be equal to ' + JSON.stringify(b)))
 }
@@ -10,31 +30,47 @@ let debug = false
 
 assert.debug = function (...args) {
   if (debug) {
-    console.log(...args)
+    args.forEach(function (arg, i) {
+      args[i] = JSON.stringify(arg, null, 2)
+    })
+    console.log('DEBUG (TEST):', ...args)
   }
 }
 
 var prefix = 'TestRunner.init(options): options'
 
-module.exports = {
+export default {
   init: function (options) {
     options = options || {}
     debug = !!options.debug
-    options.methods = options.methods || 'all'
-    options.features = options.features || 'all'
-    if (!options.DS || typeof options.DS !== 'function') {
-      throw new Error(prefix + '.DS: Expected function, Actual: ' + typeof options.DS)
+    options.hasMethod = function (method) {
+      options.methods || (options.methods = 'all')
+      options.xmethods || (options.xmethods = [])
+      return (options.methods === 'all' || options.methods.indexOf(method) !== -1) && options.xmethods.indexOf(method) === -1
+    }
+    options.hasFeature = function (feature) {
+      options.features || (options.features = 'all')
+      options.xfeatures || (options.xfeatures = [])
+      return (options.features === 'all' || options.features.indexOf(feature) !== -1) && options.xfeatures.indexOf(feature) === -1
     }
     if (!options.Adapter || typeof options.Adapter !== 'function') {
       throw new Error(prefix + '.Adapter: Expected function, Actual: ' + typeof options.Adapter)
     }
     beforeEach(function () {
       this.$$adapter = new options.Adapter(options.adapterConfig)
-      this.$$store = new options.DS(options.storeConfig || {
-        log: false,
-        debug: false
+      this.$$container = new options.JSData.Container(options.containerConfig || {
+        mapperDefaults: {
+          debug: false
+        }
       })
-      this.$$User = this.$$store.defineResource(options.userConfig || {
+      this.$$store = new options.JSData.DataStore(options.storeConfig || {
+        mapperDefaults: {
+          debug: false
+        }
+      })
+      this.$$container.registerAdapter('adapter', this.$$adapter, { 'default': true })
+      this.$$store.registerAdapter('adapter', this.$$adapter, { 'default': true })
+      var userOptions = {
         name: 'user',
         relations: {
           hasMany: {
@@ -52,98 +88,173 @@ module.exports = {
               localField: 'address',
               foreignKey: 'userId'
             }
-          }
-        }
-      })
-      this.$$Profile = this.$$store.defineResource(options.profileConfig || {
-        name: 'profile',
-        relations: {
+          },
           belongsTo: {
-            user: {
-              localField: 'user',
-              localkey: 'userId'
+            organization: {
+              localField: 'organization',
+              foreignKey: 'organizationId'
             }
           }
         }
-      })
-      this.$$Address = this.$$store.defineResource(options.addressConfig || {
-        name: 'address',
+      }
+      var organizationOptions = {
+        name: 'organization',
         relations: {
-          belongsTo: {
+          hasMany: {
             user: {
-              localField: 'user',
-              localkey: 'userId'
+              localField: 'users',
+              foreignKey: 'organizationId'
             }
           }
         }
-      })
-      this.$$Post = this.$$store.defineResource(options.postConfig || {
+      }
+      var postOptions = {
         name: 'post',
         relations: {
           belongsTo: {
             user: {
               localField: 'user',
-              localKey: 'userId'
+              foreignKey: 'userId'
             }
           },
           hasMany: {
             comment: {
               localField: 'comments',
               foreignKey: 'postId'
+            },
+            tag: {
+              localField: 'tags',
+              localKeys: 'tagIds'
             }
           }
         }
-      })
-      this.$$Comment = this.$$store.defineResource(options.commentConfig || {
+      }
+      var commentOptions = {
         name: 'comment',
         relations: {
           belongsTo: {
             post: {
               localField: 'post',
-              localKey: 'postId'
+              foreignKey: 'postId'
             },
             user: {
               localField: 'user',
-              localKey: 'userId'
+              foreignKey: 'userId'
             }
           }
         }
-      })
+      }
+      var tagOptions = {
+        name: 'tag',
+        relations: {
+          hasMany: {
+            post: {
+              localField: 'posts',
+              foreignKeys: 'tagIds'
+            }
+          }
+        }
+      }
+      this.$$User = this.$$container.defineMapper('user', options.userConfig || options.JSData.utils.copy(userOptions))
+      this.$$store.defineMapper('user', options.userConfig || options.JSData.utils.copy(userOptions))
+      this.$$Organization = this.$$container.defineMapper('organization', options.organizationConfig || options.JSData.utils.copy(organizationOptions))
+      this.$$store.defineMapper('organization', options.organizationConfig || options.JSData.utils.copy(organizationOptions))
+      this.$$Profile = this.$$container.defineMapper('profile', options.profileConfig || {})
+      this.$$store.defineMapper('profile', options.profileConfig || {})
+      this.$$Address = this.$$container.defineMapper('address', options.addressConfig || {})
+      this.$$store.defineMapper('address', options.addressConfig || {})
+      this.$$Post = this.$$container.defineMapper('post', options.postConfig || options.JSData.utils.copy(postOptions))
+      this.$$store.defineMapper('post', options.postConfig || options.JSData.utils.copy(postOptions))
+      this.$$Comment = this.$$container.defineMapper('comment', options.commentConfig || options.JSData.utils.copy(commentOptions))
+      this.$$store.defineMapper('comment', options.commentConfig || options.JSData.utils.copy(commentOptions))
+      this.$$Tag = this.$$container.defineMapper('tag', options.tagConfig || options.JSData.utils.copy(tagOptions))
+      this.$$store.defineMapper('tag', options.tagConfig || options.JSData.utils.copy(tagOptions))
+      this.toClear = ['User']
     })
 
     describe('js-data-adapter-tests', function () {
-      if (options.methods === 'all' || options.methods.indexOf('create') !== -1) {
-        require('./create.test')(options)
+      if (options.hasMethod('beforeCreate')) {
+        beforeCreateTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('find') !== -1) {
-        require('./find.test')(options)
+      if (options.hasMethod('count')) {
+        countTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('findAll') !== -1) {
-        require('./findAll.test')(options)
+      if (options.hasMethod('create')) {
+        createTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('destroy') !== -1) {
-        require('./destroy.test')(options)
+      if (options.hasMethod('afterCreate')) {
+        afterCreateTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('destroyAll') !== -1) {
-        require('./destroyAll.test')(options)
+      if (options.hasMethod('createMany')) {
+        createManyTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('update') !== -1) {
-        require('./update.test')(options)
+      if (options.hasMethod('extend')) {
+        extendTest(options)
       }
-      if (options.methods === 'all' || options.methods.indexOf('updateAll') !== -1) {
-        require('./updateAll.test')(options)
+      if (options.hasMethod('find')) {
+        findTest(options)
+      }
+      if (options.hasMethod('findAll')) {
+        findAllTest(options)
+      }
+      if (options.hasMethod('destroy')) {
+        destroyTest(options)
+      }
+      if (options.hasMethod('destroyAll')) {
+        destroyAllTest(options)
+      }
+      if (options.hasMethod('beforeUpdate')) {
+        beforeUpdateTest(options)
+      }
+      if (options.hasMethod('sum')) {
+        sumTest(options)
+      }
+      if (options.hasMethod('update')) {
+        updateTest(options)
+      }
+      if (options.hasMethod('afterUpdate')) {
+        afterUpdateTest(options)
+      }
+      if (options.hasMethod('updateAll')) {
+        updateAllTest(options)
+      }
+      if (options.hasMethod('updateMany')) {
+        updateManyTest(options)
       }
     })
 
     afterEach(async function () {
-      await this.$$adapter.destroyAll(this.$$Comment)
-      await this.$$adapter.destroyAll(this.$$Post)
-      await this.$$adapter.destroyAll(this.$$User)
-      await this.$$adapter.destroyAll(this.$$Profile)
-      await this.$$adapter.destroyAll(this.$$Address)
+      const Test = this
+      const toClear = []
+      if (Test.toClear.indexOf('Tag') !== -1) {
+        toClear.push('Tag')
+      }
+      if (Test.toClear.indexOf('Comment') !== -1) {
+        toClear.push('Comment')
+      }
+      if (Test.toClear.indexOf('Post') !== -1) {
+        toClear.push('Post')
+      }
+      if (Test.toClear.indexOf('Profile') !== -1) {
+        toClear.push('Profile')
+      }
+      if (Test.toClear.indexOf('User') !== -1) {
+        toClear.push('User')
+      }
+      if (Test.toClear.indexOf('Address') !== -1) {
+        toClear.push('Address')
+      }
+      let promise = Promise.resolve()
+      toClear.forEach(function (Mapper) {
+        promise = promise.then(function () {
+          return Test.$$adapter.destroyAll(Test['$$' + Mapper])
+        })
+      })
+      await promise
     })
   },
-  assert: assert,
+  assert,
+  sinon,
   fail: function (msg) {
     assert.equal('should not reach this!: ' + msg, 'failure')
   },
