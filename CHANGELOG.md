@@ -1,3 +1,7 @@
+##### 2.0.0-alpha.21 - 03 May 2016
+
+- Fix peer dependencies
+
 ##### 2.0.0-alpha.20 - 02 May 2016
 
 - Fix for SQL testing

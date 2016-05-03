@@ -2,7 +2,7 @@
   "name": "js-data-adapter-tests",
   "description": "Tests for js-data adapters.",
   "homepage": "https://github.com/js-data/js-data-adapter-tests",
-  "version": "2.0.0-alpha.20",
+  "version": "2.0.0-alpha.21",
   "repository": {
     "type": "git",
     "url": "https://github.com/js-data/js-data-adapter-tests.git"
@@ -44,18 +44,18 @@
     "plugins": ["syntax-async-functions", "transform-regenerator"]
   },
   "peerDependencies": {
-    "chai": "3.5.0",
-    "mocha": "2.4.5",
-    "sinon": "1.17.3"
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "sinon": "^1.17.3"
   },
   "devDependencies": {
-    "babel-plugin-syntax-async-functions": "6.5.0",
-    "babel-plugin-transform-regenerator": "6.6.5",
-    "babel-polyfill": "6.7.4",
+    "babel-plugin-syntax-async-functions": "6.8.0",
+    "babel-plugin-transform-regenerator": "6.8.0",
+    "babel-polyfill": "6.8.0",
     "babel-preset-es2015-rollup": "1.1.1",
     "babel-preset-stage-0": "6.5.0",
     "js-data-repo-tools": "0.5.0",
-    "rollup": "0.26.1",
+    "rollup": "0.26.2",
     "rollup-plugin-babel": "2.4.0",
     "watch": "0.18.0"
   }
