@@ -15,7 +15,7 @@ module.exports = function (options) {
     })
 
     it('should filter users', async function () {
-      let props = { name: 'John' }
+      const props = { name: 'John' }
       assert.debug('findAll', { age: 30 })
       const users = await adapter.findAll(User, { age: 30 })
       assert.debug('found', JSON.stringify(users, null, 2))
@@ -120,7 +120,7 @@ module.exports = function (options) {
 
       props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId }
       assert.debug('create', props)
-      let comment = await adapter.create(Comment, props)
+      const comment = await adapter.create(Comment, props)
       assert.debug('created', JSON.stringify(comment, null, 2))
 
       props = { name: 'Sally' }
@@ -135,7 +135,7 @@ module.exports = function (options) {
 
       props = { content: 'test67', postId: post2[Post.idAttribute], userId: post2.userId }
       assert.debug('create', props)
-      let comment2 = await adapter.create(Comment, props)
+      const comment2 = await adapter.create(Comment, props)
       assert.debug('created', JSON.stringify(comment2, null, 2))
 
       assert.debug('findAll')
@@ -168,7 +168,7 @@ module.exports = function (options) {
 
       props = { content: 'test2', postId: post[Post.idAttribute], userId: post.userId }
       assert.debug('create', props)
-      let comment = await adapter.create(Comment, props)
+      const comment = await adapter.create(Comment, props)
       assert.debug('created', JSON.stringify(comment, null, 2))
 
       props = { name: 'Sally' }
@@ -183,7 +183,7 @@ module.exports = function (options) {
 
       props = { content: 'test67', postId: post2[Post.idAttribute], userId: post2.userId }
       assert.debug('create', props)
-      let comment2 = await adapter.create(Comment, props)
+      const comment2 = await adapter.create(Comment, props)
       assert.debug('created', JSON.stringify(comment2, null, 2))
 
       assert.debug('find')
